@@ -1,0 +1,18 @@
+# Phase 0 Requirements (Minimal dependencies for foundation setup)
+# No version pins - let pip resolve compatible versions for your Python version
+# After install, run: pip freeze > requirements-phase0-lock.txt
+
+# Database (async PostgreSQL driver)
+asyncpg
+
+# Redis
+redis
+
+# Testing
+pytest
+pytest-asyncio
+faker
+
+# Utilities
+python-dotenv
+python-dateutil

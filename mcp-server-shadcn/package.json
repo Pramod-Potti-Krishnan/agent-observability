@@ -1,0 +1,19 @@
+{
+  "name": "mcp-server-shadcn",
+  "version": "1.0.0",
+  "description": "MCP server for shadcn/ui components",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "mcp-server-shadcn": "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["mcp", "shadcn", "ui"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.20.1"
+  }
+}

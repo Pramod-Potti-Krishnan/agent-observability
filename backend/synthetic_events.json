@@ -1,0 +1,1702 @@
+[
+  {
+    "event_id": "event_03f0d56787e243b4",
+    "timestamp": "2025-10-12T11:20:46.592902+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "data_analyzer",
+    "event_type": "anomaly",
+    "severity": "info",
+    "title": "Unexpected output pattern",
+    "description": "Detected unusual pattern in agent responses",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_6a719933d94649eb"
+    },
+    "acknowledged": true,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_cf88923bdbe147b2",
+    "timestamp": "2025-10-11T08:44:35.249873+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "alert",
+    "severity": "info",
+    "title": "Cost threshold exceeded",
+    "description": "Request volume 87x higher than baseline",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_058d3006b4f84938"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_cb1752b0e9504f1b",
+    "timestamp": "2025-09-30T13:03:59.353782+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "sales_agent",
+    "event_type": "anomaly",
+    "severity": "error",
+    "title": "Anomalous behavior detected",
+    "description": "Output length anomaly detected",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_4bffd96a2fe54161"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_8eaaa9fdced94c8d",
+    "timestamp": "2025-10-06T01:25:01.133401+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "code_reviewer",
+    "event_type": "anomaly",
+    "severity": "info",
+    "title": "Unusual response time",
+    "description": "Response time deviates from normal by 31%",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_b3be240f7f444ec5"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_136d9eeff0b446ae",
+    "timestamp": "2025-10-13T12:08:40.742020+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "anomaly",
+    "severity": "warning",
+    "title": "Unexpected output pattern",
+    "description": "Output length anomaly detected",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_b5e9bc800e174fcc"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_7a3d51a2ea944eea",
+    "timestamp": "2025-09-22T15:51:08.166119+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "data_analyzer",
+    "event_type": "anomaly",
+    "severity": "warning",
+    "title": "Unexpected output pattern",
+    "description": "Response time deviates from normal by 53%",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_9257297992bb4738"
+    },
+    "acknowledged": true,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_51f3d52f305a4226",
+    "timestamp": "2025-10-05T12:01:09.890156+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "guardrail_violation",
+    "severity": "info",
+    "title": "PII detected in output",
+    "description": "Detected personal information in agent response",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_77fd3c10105b49e6"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_02a18941187c49b3",
+    "timestamp": "2025-10-12T00:23:17.209108+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "code_reviewer",
+    "event_type": "threshold_breach",
+    "severity": "warning",
+    "title": "Rate limit approaching",
+    "description": "Monthly budget reached 41% of limit",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_f7e716d6873649d4"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_b424b6e35fa34c36",
+    "timestamp": "2025-10-20T14:28:41.802580+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "guardrail_violation",
+    "severity": "error",
+    "title": "Prompt injection attempt",
+    "description": "Detected personal information in agent response",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_05b79c7d4f424bf9"
+    },
+    "acknowledged": true,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_bf92da17b9044df6",
+    "timestamp": "2025-10-03T08:53:53.380071+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "code_reviewer",
+    "event_type": "alert",
+    "severity": "critical",
+    "title": "Latency spike detected",
+    "description": "Hourly cost exceeded $71",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_ad1b90e111454b18"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_ed483ac2a655477b",
+    "timestamp": "2025-10-11T08:57:17.173923+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "sales_agent",
+    "event_type": "threshold_breach",
+    "severity": "error",
+    "title": "Budget threshold exceeded",
+    "description": "Monthly budget reached 21% of limit",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_91afa728060d4a58"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_a423ee79f5194963",
+    "timestamp": "2025-10-07T05:14:47.193630+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "sales_agent",
+    "event_type": "guardrail_violation",
+    "severity": "error",
+    "title": "Prompt injection attempt",
+    "description": "Detected personal information in agent response",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_9a033e3549fc4e5c"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_7b94c8bb30204d6b",
+    "timestamp": "2025-10-19T10:07:18.708028+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "data_analyzer",
+    "event_type": "anomaly",
+    "severity": "critical",
+    "title": "Unusual response time",
+    "description": "Response time deviates from normal by 28%",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_d2af2851e47a4006"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_1c311e0496f146ae",
+    "timestamp": "2025-10-02T20:40:31.102157+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "guardrail_violation",
+    "severity": "error",
+    "title": "Prompt injection attempt",
+    "description": "Potential prompt injection detected",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_0eb1fa8520c4427e"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_9de2bd5e891b48c3",
+    "timestamp": "2025-10-08T10:19:14.070420+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "anomaly",
+    "severity": "critical",
+    "title": "Unusual response time",
+    "description": "Response time deviates from normal by 21%",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_6a3508ecc43d4d4f"
+    },
+    "acknowledged": true,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_905e7925453e470f",
+    "timestamp": "2025-10-21T13:22:59.849038+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "code_reviewer",
+    "event_type": "threshold_breach",
+    "severity": "critical",
+    "title": "Latency SLA breached",
+    "description": "Monthly budget reached 6% of limit",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_7be84d86a9744ac0"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_9b96e934960b426c",
+    "timestamp": "2025-10-14T03:57:50.278094+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "sales_agent",
+    "event_type": "guardrail_violation",
+    "severity": "info",
+    "title": "Prompt injection attempt",
+    "description": "Detected personal information in agent response",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_c009753e435d4353"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_d909e227d8ad4741",
+    "timestamp": "2025-10-15T18:53:52.637988+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "sales_agent",
+    "event_type": "anomaly",
+    "severity": "warning",
+    "title": "Anomalous behavior detected",
+    "description": "Detected unusual pattern in agent responses",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_846b196480e14f8a"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_01543fe1e9884b0b",
+    "timestamp": "2025-10-06T02:31:25.782862+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "sales_agent",
+    "event_type": "threshold_breach",
+    "severity": "warning",
+    "title": "Rate limit approaching",
+    "description": "API rate at 36% of limit",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_51abb3b0f0684f4e"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_55a6b26f9b034053",
+    "timestamp": "2025-10-13T15:53:55.027516+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "code_reviewer",
+    "event_type": "anomaly",
+    "severity": "info",
+    "title": "Unusual response time",
+    "description": "Output length anomaly detected",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_e02e29e6baac4c33"
+    },
+    "acknowledged": true,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_6ffba6c295fd4174",
+    "timestamp": "2025-09-23T10:52:26.327916+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "data_analyzer",
+    "event_type": "guardrail_violation",
+    "severity": "info",
+    "title": "PII detected in output",
+    "description": "Detected personal information in agent response",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_657c89a04a5f4258"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_951e7a0f89f74a74",
+    "timestamp": "2025-10-08T17:13:32.595852+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "code_reviewer",
+    "event_type": "guardrail_violation",
+    "severity": "error",
+    "title": "Toxic content flagged",
+    "description": "Potential prompt injection detected",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_2af7f7f75755407a"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_2cf9d7e07a6e4c98",
+    "timestamp": "2025-09-24T23:25:39.740579+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "sales_agent",
+    "event_type": "anomaly",
+    "severity": "critical",
+    "title": "Unusual response time",
+    "description": "Detected unusual pattern in agent responses",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_ca056285665d4d48"
+    },
+    "acknowledged": true,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_4d5cba5adf5143a7",
+    "timestamp": "2025-09-29T13:07:47.644337+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "alert",
+    "severity": "critical",
+    "title": "Latency spike detected",
+    "description": "Average latency reached 52ms",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_294a44ab9ac1443e"
+    },
+    "acknowledged": true,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_71f5097321a04b57",
+    "timestamp": "2025-10-10T01:11:43.916212+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "customer_support",
+    "event_type": "alert",
+    "severity": "warning",
+    "title": "Unusual traffic pattern",
+    "description": "Hourly cost exceeded $93",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_9b7d9d31bf2947be"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_e4cb66c0c8b24ff2",
+    "timestamp": "2025-10-03T14:42:18.468828+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "code_reviewer",
+    "event_type": "alert",
+    "severity": "error",
+    "title": "Cost threshold exceeded",
+    "description": "Hourly cost exceeded $60",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_bfae5f086adc458c"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_b3d4967701774c03",
+    "timestamp": "2025-09-29T03:42:37.309568+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "customer_support",
+    "event_type": "anomaly",
+    "severity": "error",
+    "title": "Unexpected output pattern",
+    "description": "Detected unusual pattern in agent responses",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_9f6fcf0fc5154131"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_b859ba09ef284bff",
+    "timestamp": "2025-10-20T04:30:31.345531+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "alert",
+    "severity": "warning",
+    "title": "Cost threshold exceeded",
+    "description": "Error rate increased to 84% in the last 5 minutes",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_98d3b33baaf24d96"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_540b3e13e09b49f6",
+    "timestamp": "2025-10-08T03:50:17.639718+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "alert",
+    "severity": "error",
+    "title": "Latency spike detected",
+    "description": "Error rate increased to 88% in the last 5 minutes",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_be2f5082f36a41b8"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_a878754ed6794274",
+    "timestamp": "2025-09-26T11:35:22.779468+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "code_reviewer",
+    "event_type": "threshold_breach",
+    "severity": "critical",
+    "title": "Rate limit approaching",
+    "description": "Latency exceeded SLA by 37ms",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_b38533bbb89c468e"
+    },
+    "acknowledged": true,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_1544cf0ed55c44da",
+    "timestamp": "2025-10-20T17:51:05.023602+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "code_reviewer",
+    "event_type": "guardrail_violation",
+    "severity": "critical",
+    "title": "PII detected in output",
+    "description": "Detected personal information in agent response",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_829c4f836e5a40e7"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_45e04a553939428d",
+    "timestamp": "2025-10-06T19:16:14.488097+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "threshold_breach",
+    "severity": "info",
+    "title": "Rate limit approaching",
+    "description": "API rate at 90% of limit",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_357f6eed4a37416e"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_4a15abe6d9884939",
+    "timestamp": "2025-10-17T22:57:12.188441+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "alert",
+    "severity": "error",
+    "title": "Unusual traffic pattern",
+    "description": "Hourly cost exceeded $20",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_4b4898c9729944a5"
+    },
+    "acknowledged": true,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_0af5775e03df4120",
+    "timestamp": "2025-10-09T21:09:26.020276+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "data_analyzer",
+    "event_type": "guardrail_violation",
+    "severity": "info",
+    "title": "Toxic content flagged",
+    "description": "Potential prompt injection detected",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_8281f05c969f4149"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_17e49f6c8f674a41",
+    "timestamp": "2025-10-06T19:35:26.172690+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "anomaly",
+    "severity": "critical",
+    "title": "Unexpected output pattern",
+    "description": "Response time deviates from normal by 50%",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_f18ed540c58f4fee"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_87653bca17ba4d81",
+    "timestamp": "2025-10-17T18:33:21.729118+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "code_reviewer",
+    "event_type": "anomaly",
+    "severity": "critical",
+    "title": "Unusual response time",
+    "description": "Response time deviates from normal by 69%",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_0f2b74bd5be14aa9"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_c432f82952e546fb",
+    "timestamp": "2025-09-28T02:10:15.844070+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "code_reviewer",
+    "event_type": "guardrail_violation",
+    "severity": "critical",
+    "title": "Prompt injection attempt",
+    "description": "Content toxicity score: 88/10",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_311cc3e7ae0145dc"
+    },
+    "acknowledged": true,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_bade8109ba5f4ca6",
+    "timestamp": "2025-10-07T03:10:36.022171+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "threshold_breach",
+    "severity": "critical",
+    "title": "Budget threshold exceeded",
+    "description": "Monthly budget reached 7% of limit",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_6f641f1e46234352"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_8ec083489abc4ef8",
+    "timestamp": "2025-10-04T18:01:18.545744+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "sales_agent",
+    "event_type": "alert",
+    "severity": "info",
+    "title": "Latency spike detected",
+    "description": "Hourly cost exceeded $51",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_5c1166861ee54ecc"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_b28c0735567d4e25",
+    "timestamp": "2025-10-19T12:17:12.056088+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "alert",
+    "severity": "info",
+    "title": "Unusual traffic pattern",
+    "description": "Request volume 45x higher than baseline",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_b95f16e40da64710"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_22711be831e0429e",
+    "timestamp": "2025-10-19T16:23:44.475896+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "anomaly",
+    "severity": "critical",
+    "title": "Unexpected output pattern",
+    "description": "Detected unusual pattern in agent responses",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_888104bb4b7b467b"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_635dd0aa8aef43e0",
+    "timestamp": "2025-09-24T09:10:37.381390+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "sales_agent",
+    "event_type": "anomaly",
+    "severity": "warning",
+    "title": "Unexpected output pattern",
+    "description": "Response time deviates from normal by 23%",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_d099d1e256c441b6"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_71dade0d7b4040e4",
+    "timestamp": "2025-09-25T13:01:11.710392+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "code_reviewer",
+    "event_type": "guardrail_violation",
+    "severity": "critical",
+    "title": "Toxic content flagged",
+    "description": "Potential prompt injection detected",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_d595d01df7604b29"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_1430d07207374a7e",
+    "timestamp": "2025-09-29T10:00:59.777682+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "data_analyzer",
+    "event_type": "guardrail_violation",
+    "severity": "error",
+    "title": "Prompt injection attempt",
+    "description": "Content toxicity score: 24/10",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_e9f39b6954764c76"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_b47943dd34f84d65",
+    "timestamp": "2025-10-03T18:30:29.814980+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "data_analyzer",
+    "event_type": "anomaly",
+    "severity": "info",
+    "title": "Unusual response time",
+    "description": "Output length anomaly detected",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_6ad6517bf671459f"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_367b12b1957a4de4",
+    "timestamp": "2025-09-27T04:50:20.271434+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "code_reviewer",
+    "event_type": "threshold_breach",
+    "severity": "critical",
+    "title": "Latency SLA breached",
+    "description": "API rate at 39% of limit",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_dabd780fbd6148e4"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_301de5097e2f4b3c",
+    "timestamp": "2025-10-15T22:53:24.026652+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "data_analyzer",
+    "event_type": "threshold_breach",
+    "severity": "warning",
+    "title": "Rate limit approaching",
+    "description": "API rate at 66% of limit",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_cf461a2844a647c2"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_5e64619398e9494a",
+    "timestamp": "2025-10-01T07:14:42.738556+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "data_analyzer",
+    "event_type": "alert",
+    "severity": "error",
+    "title": "Cost threshold exceeded",
+    "description": "Hourly cost exceeded $95",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_52e2359d92f9471b"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_2dbe62c60acc4f19",
+    "timestamp": "2025-10-08T12:32:25.825139+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "alert",
+    "severity": "error",
+    "title": "Cost threshold exceeded",
+    "description": "Error rate increased to 66% in the last 5 minutes",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_fa32f29efb094655"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_c8692ca7176d4e34",
+    "timestamp": "2025-09-25T06:09:49.168527+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "sales_agent",
+    "event_type": "threshold_breach",
+    "severity": "warning",
+    "title": "Budget threshold exceeded",
+    "description": "Latency exceeded SLA by 14ms",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_5ebadea4784d472f"
+    },
+    "acknowledged": true,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_e7bc76115b944fb5",
+    "timestamp": "2025-10-11T15:52:21.149130+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "data_analyzer",
+    "event_type": "anomaly",
+    "severity": "info",
+    "title": "Unexpected output pattern",
+    "description": "Response time deviates from normal by 56%",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_2dd613aef5cd4ba8"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_5f70018cf72848eb",
+    "timestamp": "2025-09-28T01:57:08.447999+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "sales_agent",
+    "event_type": "anomaly",
+    "severity": "info",
+    "title": "Unusual response time",
+    "description": "Response time deviates from normal by 89%",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_875efc701dde4f70"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_926ed1e1d08a4be3",
+    "timestamp": "2025-09-30T12:56:52.563719+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "sales_agent",
+    "event_type": "alert",
+    "severity": "critical",
+    "title": "High error rate detected",
+    "description": "Error rate increased to 27% in the last 5 minutes",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_83f13be1fe4a44e1"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_bf169657954a4e42",
+    "timestamp": "2025-09-22T23:59:17.176103+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "data_analyzer",
+    "event_type": "guardrail_violation",
+    "severity": "error",
+    "title": "Toxic content flagged",
+    "description": "Potential prompt injection detected",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_f567ca6c2c744968"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_976a9c595a984002",
+    "timestamp": "2025-10-04T03:08:29.867870+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "customer_support",
+    "event_type": "alert",
+    "severity": "info",
+    "title": "Cost threshold exceeded",
+    "description": "Request volume 30x higher than baseline",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_eae6a1e335144d7a"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_a757eda5124d48c3",
+    "timestamp": "2025-09-23T09:05:24.715700+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "customer_support",
+    "event_type": "threshold_breach",
+    "severity": "warning",
+    "title": "Budget threshold exceeded",
+    "description": "Latency exceeded SLA by 56ms",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_f5654d68e795455c"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_28d68e64ca754f12",
+    "timestamp": "2025-10-04T19:09:10.081431+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "sales_agent",
+    "event_type": "alert",
+    "severity": "critical",
+    "title": "Unusual traffic pattern",
+    "description": "Request volume 54x higher than baseline",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_ff986b365cae4861"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_281ebf2edd304488",
+    "timestamp": "2025-09-27T16:43:26.449098+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "threshold_breach",
+    "severity": "info",
+    "title": "Rate limit approaching",
+    "description": "Latency exceeded SLA by 78ms",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_9606f07846044f88"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_5ba77963f8e64fe2",
+    "timestamp": "2025-09-30T19:11:14.781929+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "threshold_breach",
+    "severity": "info",
+    "title": "Latency SLA breached",
+    "description": "Monthly budget reached 79% of limit",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_7bceab40708a44aa"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_0c05e9d8d2c54786",
+    "timestamp": "2025-09-25T10:59:23.375417+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "data_analyzer",
+    "event_type": "anomaly",
+    "severity": "critical",
+    "title": "Unusual response time",
+    "description": "Output length anomaly detected",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_047e6773b02446e5"
+    },
+    "acknowledged": true,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_785e1cf4fa8741da",
+    "timestamp": "2025-09-23T16:20:12.879571+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "code_reviewer",
+    "event_type": "threshold_breach",
+    "severity": "info",
+    "title": "Rate limit approaching",
+    "description": "Latency exceeded SLA by 6ms",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_7319c842f17d4811"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_eca5f78ec7084382",
+    "timestamp": "2025-09-29T16:17:26.142637+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "threshold_breach",
+    "severity": "error",
+    "title": "Rate limit approaching",
+    "description": "Latency exceeded SLA by 58ms",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_ab8d7d66806f430b"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_7032101ee5794e94",
+    "timestamp": "2025-10-02T22:18:38.996372+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "sales_agent",
+    "event_type": "anomaly",
+    "severity": "error",
+    "title": "Anomalous behavior detected",
+    "description": "Output length anomaly detected",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_91dfecb1fd9e41e9"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_b24d3088a86549da",
+    "timestamp": "2025-10-16T11:55:44.738810+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "sales_agent",
+    "event_type": "guardrail_violation",
+    "severity": "info",
+    "title": "Prompt injection attempt",
+    "description": "Content toxicity score: 37/10",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_6daa7966b23e4b69"
+    },
+    "acknowledged": true,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_47f9a1aa8bbe4a61",
+    "timestamp": "2025-10-03T16:04:51.542402+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "customer_support",
+    "event_type": "guardrail_violation",
+    "severity": "warning",
+    "title": "Prompt injection attempt",
+    "description": "Potential prompt injection detected",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_5b0178ed171d4476"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_a67d908b8620495d",
+    "timestamp": "2025-10-01T11:28:13.742487+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "threshold_breach",
+    "severity": "info",
+    "title": "Rate limit approaching",
+    "description": "Latency exceeded SLA by 27ms",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_5fc0daedcffc44c1"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_795c4ad43cbb4743",
+    "timestamp": "2025-10-15T09:51:40.581572+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "customer_support",
+    "event_type": "anomaly",
+    "severity": "error",
+    "title": "Anomalous behavior detected",
+    "description": "Response time deviates from normal by 53%",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_a20b3df7499a42ba"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_8e8cb26aee51485f",
+    "timestamp": "2025-10-17T23:43:24.246515+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "data_analyzer",
+    "event_type": "alert",
+    "severity": "info",
+    "title": "High error rate detected",
+    "description": "Error rate increased to 55% in the last 5 minutes",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_4d652c0cff2a428f"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_e552c97be36045da",
+    "timestamp": "2025-10-10T01:11:35.810654+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "code_reviewer",
+    "event_type": "anomaly",
+    "severity": "critical",
+    "title": "Unexpected output pattern",
+    "description": "Output length anomaly detected",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_ea2bbe399d1b491b"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_24cd1343795244b4",
+    "timestamp": "2025-10-02T10:39:38.308353+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "customer_support",
+    "event_type": "guardrail_violation",
+    "severity": "critical",
+    "title": "Toxic content flagged",
+    "description": "Content toxicity score: 67/10",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_90ca5518bef54633"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_047c9ec82f9543dd",
+    "timestamp": "2025-10-09T07:31:25.934653+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "guardrail_violation",
+    "severity": "critical",
+    "title": "Prompt injection attempt",
+    "description": "Content toxicity score: 24/10",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_ada09756d4d64732"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_6ac30bcd7db54e14",
+    "timestamp": "2025-10-21T03:23:15.206239+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "data_analyzer",
+    "event_type": "guardrail_violation",
+    "severity": "critical",
+    "title": "Prompt injection attempt",
+    "description": "Potential prompt injection detected",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_3c354b36297046d5"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_d426498bcc1f46da",
+    "timestamp": "2025-10-10T05:51:47.593933+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "code_reviewer",
+    "event_type": "alert",
+    "severity": "warning",
+    "title": "Cost threshold exceeded",
+    "description": "Hourly cost exceeded $34",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_5fd30988d42744d8"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_71657d926dc44efb",
+    "timestamp": "2025-09-26T18:10:50.801091+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "alert",
+    "severity": "info",
+    "title": "Cost threshold exceeded",
+    "description": "Average latency reached 28ms",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_9ba1ae8604df43eb"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_eabec9d582ed4244",
+    "timestamp": "2025-10-05T22:52:39.148710+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "code_reviewer",
+    "event_type": "anomaly",
+    "severity": "critical",
+    "title": "Anomalous behavior detected",
+    "description": "Detected unusual pattern in agent responses",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_b360848a5050462e"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_931ae6e32b9c4357",
+    "timestamp": "2025-10-07T03:03:34.560743+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "data_analyzer",
+    "event_type": "threshold_breach",
+    "severity": "warning",
+    "title": "Budget threshold exceeded",
+    "description": "Latency exceeded SLA by 90ms",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_88a53f8399084434"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_cf84676fb10a4a1a",
+    "timestamp": "2025-10-11T17:52:59.486570+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "code_reviewer",
+    "event_type": "alert",
+    "severity": "error",
+    "title": "Latency spike detected",
+    "description": "Hourly cost exceeded $72",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_6dc1621aa60d444b"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_b2e051ad8cab4a5e",
+    "timestamp": "2025-09-25T15:08:00.625677+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "customer_support",
+    "event_type": "guardrail_violation",
+    "severity": "critical",
+    "title": "PII detected in output",
+    "description": "Detected personal information in agent response",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_fe06484b0a914236"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_6462524085a44ce9",
+    "timestamp": "2025-10-06T02:33:59.753613+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "data_analyzer",
+    "event_type": "threshold_breach",
+    "severity": "warning",
+    "title": "Budget threshold exceeded",
+    "description": "Monthly budget reached 75% of limit",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_b01bc02cfa6440a6"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_b9d5673207004c25",
+    "timestamp": "2025-10-17T22:53:04.941086+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "sales_agent",
+    "event_type": "threshold_breach",
+    "severity": "info",
+    "title": "Rate limit approaching",
+    "description": "Monthly budget reached 81% of limit",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_358b1890a79e4cfc"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_3c13358294d648f6",
+    "timestamp": "2025-10-18T18:37:53.381720+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "data_analyzer",
+    "event_type": "guardrail_violation",
+    "severity": "warning",
+    "title": "Toxic content flagged",
+    "description": "Detected personal information in agent response",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_c7ad537d4aa74fb8"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_e7aed88b5ed24793",
+    "timestamp": "2025-09-26T06:58:45.008784+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "code_reviewer",
+    "event_type": "anomaly",
+    "severity": "info",
+    "title": "Unexpected output pattern",
+    "description": "Detected unusual pattern in agent responses",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_6f1b110466c643b6"
+    },
+    "acknowledged": true,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_9b38a1e84d8d4b1c",
+    "timestamp": "2025-10-07T04:44:50.068147+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "data_analyzer",
+    "event_type": "threshold_breach",
+    "severity": "warning",
+    "title": "Latency SLA breached",
+    "description": "Monthly budget reached 61% of limit",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_bc6b0f34827d43cd"
+    },
+    "acknowledged": true,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_43e221d3554a45d2",
+    "timestamp": "2025-09-25T13:29:15.492427+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "sales_agent",
+    "event_type": "threshold_breach",
+    "severity": "warning",
+    "title": "Budget threshold exceeded",
+    "description": "Latency exceeded SLA by 23ms",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_6a558ae9c9de4a55"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_99a001f54d6c4793",
+    "timestamp": "2025-10-04T17:19:30.105298+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "sales_agent",
+    "event_type": "threshold_breach",
+    "severity": "error",
+    "title": "Budget threshold exceeded",
+    "description": "Monthly budget reached 75% of limit",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_5bca0cb0fb3a4cf8"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_5ccedb351bc445b6",
+    "timestamp": "2025-09-24T18:49:57.741227+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "customer_support",
+    "event_type": "threshold_breach",
+    "severity": "error",
+    "title": "Latency SLA breached",
+    "description": "API rate at 90% of limit",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_53e57e79044c4e10"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_1893d32e299f4ee4",
+    "timestamp": "2025-09-22T01:40:48.001969+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "sales_agent",
+    "event_type": "alert",
+    "severity": "warning",
+    "title": "Latency spike detected",
+    "description": "Request volume 24x higher than baseline",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_576b0602f1214caf"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_a979d49c7fbe423a",
+    "timestamp": "2025-10-12T09:55:17.547556+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "anomaly",
+    "severity": "info",
+    "title": "Anomalous behavior detected",
+    "description": "Detected unusual pattern in agent responses",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_0620743b6afc4ea8"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_043236a5136a46c0",
+    "timestamp": "2025-09-22T09:27:15.297279+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "sales_agent",
+    "event_type": "anomaly",
+    "severity": "error",
+    "title": "Unusual response time",
+    "description": "Response time deviates from normal by 57%",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_2362a66213d749d6"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_959dc5485c0147d3",
+    "timestamp": "2025-10-17T20:53:03.494274+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "data_analyzer",
+    "event_type": "threshold_breach",
+    "severity": "info",
+    "title": "Latency SLA breached",
+    "description": "Monthly budget reached 10% of limit",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_f2cfb2eccb464c41"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_887327f1d2854c3e",
+    "timestamp": "2025-10-19T01:42:04.925971+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "sales_agent",
+    "event_type": "guardrail_violation",
+    "severity": "critical",
+    "title": "PII detected in output",
+    "description": "Content toxicity score: 14/10",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_52272de82ed74f6d"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_4ca1b4e5e883433c",
+    "timestamp": "2025-09-28T23:52:16.883569+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "sales_agent",
+    "event_type": "threshold_breach",
+    "severity": "warning",
+    "title": "Budget threshold exceeded",
+    "description": "Latency exceeded SLA by 41ms",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_17b96f1b39e149e1"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_3cbc332d1a2e413f",
+    "timestamp": "2025-10-03T03:08:51.507701+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "customer_support",
+    "event_type": "anomaly",
+    "severity": "critical",
+    "title": "Anomalous behavior detected",
+    "description": "Response time deviates from normal by 91%",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_56488264a6454279"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_9b475d9f15624d0d",
+    "timestamp": "2025-10-03T23:18:48.652028+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "customer_support",
+    "event_type": "threshold_breach",
+    "severity": "info",
+    "title": "Budget threshold exceeded",
+    "description": "Monthly budget reached 80% of limit",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_67e207fef528482c"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_df03c737f05b4bd0",
+    "timestamp": "2025-10-03T07:31:54.415134+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "code_reviewer",
+    "event_type": "anomaly",
+    "severity": "info",
+    "title": "Unusual response time",
+    "description": "Output length anomaly detected",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_e60f105ac4d945af"
+    },
+    "acknowledged": true,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_5ea96bf57cfa41c1",
+    "timestamp": "2025-10-11T08:10:20.180234+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "code_reviewer",
+    "event_type": "anomaly",
+    "severity": "critical",
+    "title": "Unexpected output pattern",
+    "description": "Response time deviates from normal by 5%",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_3543d30016a74de0"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_66c2c5d9d8e54023",
+    "timestamp": "2025-10-16T10:41:48.427499+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "customer_support",
+    "event_type": "guardrail_violation",
+    "severity": "error",
+    "title": "Toxic content flagged",
+    "description": "Potential prompt injection detected",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_79937c5e04b8478b"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_d78c25a8586245c9",
+    "timestamp": "2025-09-24T05:18:08.895494+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "data_analyzer",
+    "event_type": "threshold_breach",
+    "severity": "warning",
+    "title": "Rate limit approaching",
+    "description": "Monthly budget reached 7% of limit",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_1e97687d941d424e"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_d1017766807a4be8",
+    "timestamp": "2025-10-09T19:14:38.741922+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "content_writer",
+    "event_type": "anomaly",
+    "severity": "error",
+    "title": "Unexpected output pattern",
+    "description": "Output length anomaly detected",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_9d9956e189d64282"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  },
+  {
+    "event_id": "event_30c3767a9950488a",
+    "timestamp": "2025-09-24T00:48:05.326648+00:00",
+    "workspace_id": "00000000-0000-0000-0000-000000000001",
+    "agent_id": "data_analyzer",
+    "event_type": "guardrail_violation",
+    "severity": "info",
+    "title": "PII detected in output",
+    "description": "Content toxicity score: 67/10",
+    "metadata": {
+      "source": "synthetic_generator",
+      "trace_id": "trace_4f9616e10abc4295"
+    },
+    "acknowledged": false,
+    "acknowledged_at": null,
+    "acknowledged_by": null
+  }
+]

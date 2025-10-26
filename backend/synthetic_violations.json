@@ -1,0 +1,452 @@
+[
+  {
+    "violation_type": "toxicity",
+    "severity": "error",
+    "message": "Detected toxic language with confidence score 0.89",
+    "timestamp": "2025-09-26T05:29:46.325704+00:00",
+    "trace_id": "trace_0758f738d4d846a7",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "pii_detection",
+    "severity": "critical",
+    "message": "Detected email address and phone number in output",
+    "timestamp": "2025-10-02T05:46:12.411859+00:00",
+    "trace_id": "trace_5005b6ec98964172",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "pii_detection",
+    "severity": "critical",
+    "message": "Detected email address and phone number in output",
+    "timestamp": "2025-10-07T14:58:37.231134+00:00",
+    "trace_id": "trace_58e6215a622b450e",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "prompt_injection",
+    "severity": "critical",
+    "message": "Detected potential prompt injection attempt",
+    "timestamp": "2025-10-07T05:48:46.787317+00:00",
+    "trace_id": "trace_075fb530e2104863",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "toxicity",
+    "severity": "error",
+    "message": "Detected toxic language with confidence score 0.89",
+    "timestamp": "2025-09-27T16:24:41.322293+00:00",
+    "trace_id": "trace_d11761a4e90e42e0",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "content_policy",
+    "severity": "warning",
+    "message": "Output may violate content policy guidelines",
+    "timestamp": "2025-10-02T20:26:38.388509+00:00",
+    "trace_id": "trace_d980ec46dacd44a4",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "content_policy",
+    "severity": "warning",
+    "message": "Output may violate content policy guidelines",
+    "timestamp": "2025-10-13T09:12:27.222314+00:00",
+    "trace_id": "trace_98f26661291443e9",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "toxicity",
+    "severity": "error",
+    "message": "Detected toxic language with confidence score 0.89",
+    "timestamp": "2025-10-16T16:58:50.988444+00:00",
+    "trace_id": "trace_7d7f25a4a4fe4b29",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "toxicity",
+    "severity": "error",
+    "message": "Detected toxic language with confidence score 0.89",
+    "timestamp": "2025-10-05T22:12:04.085635+00:00",
+    "trace_id": "trace_b641528be2b74c7a",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "prompt_injection",
+    "severity": "critical",
+    "message": "Detected potential prompt injection attempt",
+    "timestamp": "2025-09-30T07:07:31.134489+00:00",
+    "trace_id": "trace_81ac0abbc0a4419a",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "pii_detection",
+    "severity": "critical",
+    "message": "Detected email address and phone number in output",
+    "timestamp": "2025-10-08T04:07:42.481718+00:00",
+    "trace_id": "trace_ba0bddfb0fa44316",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "pii_detection",
+    "severity": "critical",
+    "message": "Detected email address and phone number in output",
+    "timestamp": "2025-10-14T18:07:20.785927+00:00",
+    "trace_id": "trace_9feee046207f40d7",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "toxicity",
+    "severity": "error",
+    "message": "Detected toxic language with confidence score 0.89",
+    "timestamp": "2025-09-27T09:48:01.931534+00:00",
+    "trace_id": "trace_ccecae3397e74609",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "prompt_injection",
+    "severity": "critical",
+    "message": "Detected potential prompt injection attempt",
+    "timestamp": "2025-10-01T12:50:38.756968+00:00",
+    "trace_id": "trace_bf07db9a3f864223",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "pii_detection",
+    "severity": "critical",
+    "message": "Detected email address and phone number in output",
+    "timestamp": "2025-09-22T01:35:50.542704+00:00",
+    "trace_id": "trace_0aac01ba94d44924",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "content_policy",
+    "severity": "warning",
+    "message": "Output may violate content policy guidelines",
+    "timestamp": "2025-10-19T18:22:01.366889+00:00",
+    "trace_id": "trace_c197f72736ac4137",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "toxicity",
+    "severity": "error",
+    "message": "Detected toxic language with confidence score 0.89",
+    "timestamp": "2025-09-28T16:17:10.066668+00:00",
+    "trace_id": "trace_ecfbb2021a1e4c5a",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "prompt_injection",
+    "severity": "critical",
+    "message": "Detected potential prompt injection attempt",
+    "timestamp": "2025-10-07T14:27:13.365228+00:00",
+    "trace_id": "trace_9b05629f8f394fe8",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "toxicity",
+    "severity": "error",
+    "message": "Detected toxic language with confidence score 0.89",
+    "timestamp": "2025-10-10T16:38:30.188902+00:00",
+    "trace_id": "trace_d7aee508f12d45e9",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "toxicity",
+    "severity": "error",
+    "message": "Detected toxic language with confidence score 0.89",
+    "timestamp": "2025-10-18T23:52:41.107393+00:00",
+    "trace_id": "trace_e151f6fd4f4e4d56",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "content_policy",
+    "severity": "warning",
+    "message": "Output may violate content policy guidelines",
+    "timestamp": "2025-10-21T16:07:23.942704+00:00",
+    "trace_id": "trace_82a2269dd7d4484a",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "pii_detection",
+    "severity": "critical",
+    "message": "Detected email address and phone number in output",
+    "timestamp": "2025-10-07T21:15:30.873605+00:00",
+    "trace_id": "trace_a5bae8b1e9ca4626",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "prompt_injection",
+    "severity": "critical",
+    "message": "Detected potential prompt injection attempt",
+    "timestamp": "2025-09-26T03:09:15.663539+00:00",
+    "trace_id": "trace_41ad1c5603604229",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "pii_detection",
+    "severity": "critical",
+    "message": "Detected email address and phone number in output",
+    "timestamp": "2025-10-13T00:04:45.020518+00:00",
+    "trace_id": "trace_612badea335f40f3",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "toxicity",
+    "severity": "error",
+    "message": "Detected toxic language with confidence score 0.89",
+    "timestamp": "2025-10-11T01:17:47.011609+00:00",
+    "trace_id": "trace_3eeb52e69f0545fb",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "pii_detection",
+    "severity": "critical",
+    "message": "Detected email address and phone number in output",
+    "timestamp": "2025-10-18T08:24:32.460825+00:00",
+    "trace_id": "trace_506c9b2558d24d87",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "content_policy",
+    "severity": "warning",
+    "message": "Output may violate content policy guidelines",
+    "timestamp": "2025-10-12T13:52:58.466709+00:00",
+    "trace_id": "trace_cc951090afc84f81",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "content_policy",
+    "severity": "warning",
+    "message": "Output may violate content policy guidelines",
+    "timestamp": "2025-10-08T13:21:33.885058+00:00",
+    "trace_id": "trace_83a4eae58a2d4058",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "pii_detection",
+    "severity": "critical",
+    "message": "Detected email address and phone number in output",
+    "timestamp": "2025-10-05T12:30:25.797168+00:00",
+    "trace_id": "trace_eb4c43be624d4897",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "pii_detection",
+    "severity": "critical",
+    "message": "Detected email address and phone number in output",
+    "timestamp": "2025-10-01T10:46:24.849045+00:00",
+    "trace_id": "trace_9696715d37514ecf",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "prompt_injection",
+    "severity": "critical",
+    "message": "Detected potential prompt injection attempt",
+    "timestamp": "2025-09-30T16:24:05.062181+00:00",
+    "trace_id": "trace_3d574910e771420a",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "pii_detection",
+    "severity": "critical",
+    "message": "Detected email address and phone number in output",
+    "timestamp": "2025-10-01T20:47:02.589262+00:00",
+    "trace_id": "trace_d39c65a1f97047ba",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "prompt_injection",
+    "severity": "critical",
+    "message": "Detected potential prompt injection attempt",
+    "timestamp": "2025-09-30T16:04:29.175927+00:00",
+    "trace_id": "trace_72a1ae0b817a4e79",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "pii_detection",
+    "severity": "critical",
+    "message": "Detected email address and phone number in output",
+    "timestamp": "2025-10-13T10:42:25.829269+00:00",
+    "trace_id": "trace_9e9284142cec451a",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "pii_detection",
+    "severity": "critical",
+    "message": "Detected email address and phone number in output",
+    "timestamp": "2025-10-09T11:45:19.011063+00:00",
+    "trace_id": "trace_1a776cc261234c36",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "toxicity",
+    "severity": "error",
+    "message": "Detected toxic language with confidence score 0.89",
+    "timestamp": "2025-10-16T06:56:18.519640+00:00",
+    "trace_id": "trace_49a99f599e3e4ad0",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "prompt_injection",
+    "severity": "critical",
+    "message": "Detected potential prompt injection attempt",
+    "timestamp": "2025-10-09T20:37:22.429226+00:00",
+    "trace_id": "trace_2edba9466caf48be",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "prompt_injection",
+    "severity": "critical",
+    "message": "Detected potential prompt injection attempt",
+    "timestamp": "2025-10-16T10:51:18.718803+00:00",
+    "trace_id": "trace_7128125d832f4d32",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "pii_detection",
+    "severity": "critical",
+    "message": "Detected email address and phone number in output",
+    "timestamp": "2025-09-23T05:28:26.524301+00:00",
+    "trace_id": "trace_68509c64ffa14706",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "prompt_injection",
+    "severity": "critical",
+    "message": "Detected potential prompt injection attempt",
+    "timestamp": "2025-10-13T12:37:45.435353+00:00",
+    "trace_id": "trace_44bf022619004127",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "prompt_injection",
+    "severity": "critical",
+    "message": "Detected potential prompt injection attempt",
+    "timestamp": "2025-10-08T11:45:44.827057+00:00",
+    "trace_id": "trace_577a70b103f34180",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "pii_detection",
+    "severity": "critical",
+    "message": "Detected email address and phone number in output",
+    "timestamp": "2025-10-21T16:10:43.034626+00:00",
+    "trace_id": "trace_9d8852f9242e4025",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "prompt_injection",
+    "severity": "critical",
+    "message": "Detected potential prompt injection attempt",
+    "timestamp": "2025-10-04T14:17:13.320678+00:00",
+    "trace_id": "trace_c51a838a079f422e",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "prompt_injection",
+    "severity": "critical",
+    "message": "Detected potential prompt injection attempt",
+    "timestamp": "2025-10-02T15:43:20.242004+00:00",
+    "trace_id": "trace_06231210dfa545cc",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "pii_detection",
+    "severity": "critical",
+    "message": "Detected email address and phone number in output",
+    "timestamp": "2025-10-20T06:05:11.690623+00:00",
+    "trace_id": "trace_895b34c12ebd42b1",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "toxicity",
+    "severity": "error",
+    "message": "Detected toxic language with confidence score 0.89",
+    "timestamp": "2025-10-05T14:21:52.191396+00:00",
+    "trace_id": "trace_9d9e026f9d1c4ec9",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "toxicity",
+    "severity": "error",
+    "message": "Detected toxic language with confidence score 0.89",
+    "timestamp": "2025-09-26T08:35:07.339587+00:00",
+    "trace_id": "trace_195e2ea80b7f4adb",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "prompt_injection",
+    "severity": "critical",
+    "message": "Detected potential prompt injection attempt",
+    "timestamp": "2025-10-21T20:52:51.092276+00:00",
+    "trace_id": "trace_7c2514f525b34617",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "content_policy",
+    "severity": "warning",
+    "message": "Output may violate content policy guidelines",
+    "timestamp": "2025-09-23T06:50:10.466245+00:00",
+    "trace_id": "trace_525b6a8a297848de",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  },
+  {
+    "violation_type": "prompt_injection",
+    "severity": "critical",
+    "message": "Detected potential prompt injection attempt",
+    "timestamp": "2025-10-01T18:47:08.466398+00:00",
+    "trace_id": "trace_e98ecbc5e0ae45f1",
+    "detected_content": "Sample detected content (redacted)",
+    "redacted_content": "[REDACTED]"
+  }
+]
