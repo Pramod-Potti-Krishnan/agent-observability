@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent Observability Platform - Enhanced Presentation</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .presentation-index {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .presentation-index h1 {
+            font-size: 56px;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+
+        .presentation-index .subtitle {
+            font-size: 24px;
+            color: var(--medium-gray);
+            margin-bottom: 10px;
+        }
+
+        .presentation-index .enhanced-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 40px;
+        }
+
+        .slide-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            margin-bottom: 40px;
+        }
+
+        .slide-link {
+            background: white;
+            border: 3px solid var(--light-gray);
+            border-radius: 16px;
+            padding: 30px 20px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+        }
+
+        .slide-link:hover {
+            border-color: var(--secondary-blue);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2);
+        }
+
+        .slide-link .slide-num {
+            font-size: 18px;
+            color: var(--secondary-blue);
+            font-weight: 700;
+            background: var(--light-gray);
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+
+        .slide-link .enhanced-badge-small {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #10b981;
+            color: white;
+            font-size: 10px;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        .slide-link h3 {
+            font-size: 22px;
+            color: var(--primary-blue);
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .slide-link p {
+            font-size: 14px;
+            color: var(--medium-gray);
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .slide-link .chart-count {
+            font-size: 12px;
+            color: #10b981;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .start-button {
+            margin-top: 30px;
+        }
+
+        .start-button a {
+            background: var(--secondary-blue);
+            color: white;
+            padding: 18px 50px;
+            border-radius: 12px;
+            font-size: 22px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .start-button a:hover {
+            background: var(--primary-blue);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 40px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .info-box h3 {
+            color: #1f2937;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .info-box p {
+            margin: 8px 0;
+            font-size: 14px;
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+
+        .info-box strong {
+            color: #3b82f6;
+        }
+
+        .comparison-section {
+            margin-top: 50px;
+            padding: 30px;
+            background: #f9fafb;
+            border-radius: 12px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .comparison-section h3 {
+            color: #1f2937;
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .comparison-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e5e7eb;
+        }
+
+        .comparison-card h4 {
+            color: #3b82f6;
+            margin-bottom: 10px;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .comparison-card li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 13px;
+        }
+
+        .comparison-card li:last-child {
+            border-bottom: none;
+        }
+
+        .comparison-card .check {
+            color: #10b981;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <div class="presentation-index">
+            <h1>AI Agent Observability Platform</h1>
+            <p class="subtitle">Enhanced Chart Analytics</p>
+            <div class="enhanced-badge">✨ NEW: 15 Advanced Visualizations Across 5 Pillars</div>
+
+            <div class="slide-grid">
+                <a href="slide-01.html" class="slide-link">
+                    <div class="slide-num">Slide 1</div>
+                    <h3>Opening</h3>
+                    <p>Introduction to AI Agent Observability and platform value proposition</p>
+                </a>
+
+                <a href="slide-02.html" class="slide-link">
+                    <div class="slide-num">Slide 2</div>
+                    <h3>The Observability Imperative</h3>
+                    <p>Why agent observability matters - risks vs advantages</p>
+                </a>
+
+                <a href="slide-03.html" class="slide-link">
+                    <div class="slide-num">Slide 3</div>
+                    <h3>Platform Overview</h3>
+                    <p>Three-level architecture and 5 operational pillars</p>
+                </a>
+
+                <a href="slide-04-enhanced.html" class="slide-link">
+                    <div class="enhanced-badge-small">ENHANCED</div>
+                    <div class="slide-num">Slide 4</div>
+                    <h3>Quality Observability</h3>
+                    <p>Advanced quality monitoring with heatmaps, drift detection, and cost-quality optimization</p>
+                    <div class="chart-count">✓ 3 New Charts | Top 3 KPIs</div>
+                </a>
+
+                <a href="slide-05-enhanced.html" class="slide-link">
+                    <div class="enhanced-badge-small">ENHANCED</div>
+                    <div class="slide-num">Slide 5</div>
+                    <h3>Performance Observability</h3>
+                    <p>Percentile heatmaps, SLO compliance grid, and bottleneck waterfall analysis</p>
+                    <div class="chart-count">✓ 3 New Charts | Top 3 KPIs</div>
+                </a>
+
+                <a href="slide-06-enhanced.html" class="slide-link">
+                    <div class="enhanced-badge-small">ENHANCED</div>
+                    <div class="slide-num">Slide 6</div>
+                    <h3>Safety & Compliance</h3>
+                    <p>Risk heatmaps, PII protection funnel, and compliance radar for regulatory readiness</p>
+                    <div class="chart-count">✓ 3 New Charts | Top 3 KPIs</div>
+                </a>
+
+                <a href="slide-07-enhanced.html" class="slide-link">
+                    <div class="enhanced-badge-small">ENHANCED</div>
+                    <div class="slide-num">Slide 7</div>
+                    <h3>Cost Management</h3>
+                    <p>Attribution sunburst, budget burn gauge, and provider cost-performance matrix</p>
+                    <div class="chart-count">✓ 3 New Charts | Top 3 KPIs</div>
+                </a>
+
+                <a href="slide-08-enhanced.html" class="slide-link">
+                    <div class="enhanced-badge-small">ENHANCED</div>
+                    <div class="slide-num">Slide 8</div>
+                    <h3>Business Impact & ROI</h3>
+                    <p>Value waterfall, goal progress tree, and impact attribution for strategic decisions</p>
+                    <div class="chart-count">✓ 3 New Charts | Top 3 KPIs</div>
+                </a>
+
+                <a href="slide-09.html" class="slide-link">
+                    <div class="slide-num">Slide 9</div>
+                    <h3>The Complete Picture</h3>
+                    <p>Integration of all five pillars and call to action</p>
+                </a>
+            </div>
+
+            <div class="start-button">
+                <a href="slide-01.html">Start Presentation →</a>
+            </div>
+
+            <div class="info-box">
+                <h3>🎯 What's New in the Enhanced Version</h3>
+                <p><strong>15 Advanced Visualizations:</strong> Diverse chart types including heatmaps, scatter plots, waterfalls, funnels, radars, gauges, sunbursts, and tree diagrams</p>
+                <p><strong>Top 3 KPIs Per Pillar:</strong> Clear, measurable success metrics with target benchmarks</p>
+                <p><strong>Business-Focused Insights:</strong> Each chart includes a clear purpose statement and actionable recommendations</p>
+                <p><strong>Data-Driven Decisions:</strong> Identify $132K/year in additional savings opportunities across quality, performance, and cost optimization</p>
+                <p><strong>Professional Design:</strong> Consistent color coding, responsive layouts, and executive-ready aesthetics</p>
+            </div>
+
+            <div class="comparison-section">
+                <h3>📊 Original vs Enhanced Comparison</h3>
+                <div class="comparison-grid">
+                    <div class="comparison-card">
+                        <h4>Original Slides</h4>
+                        <ul>
+                            <li>Basic line charts and bar graphs</li>
+                            <li>Limited KPI visibility</li>
+                            <li>Single-dimension analysis</li>
+                            <li>Static metrics display</li>
+                            <li>General insights</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Enhanced Slides</h4>
+                        <ul>
+                            <li><span class="check">✓</span> 15 diverse chart types (heatmaps, waterfalls, radars, etc.)</li>
+                            <li><span class="check">✓</span> Top 3 KPIs with targets per pillar</li>
+                            <li><span class="check">✓</span> Multi-dimensional analysis and drill-downs</li>
+                            <li><span class="check">✓</span> Interactive visual narratives</li>
+                            <li><span class="check">✓</span> Specific savings opportunities identified</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box" style="margin-top: 30px; background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-color: #10b981;">
+                <h3>💡 Total Value Delivered</h3>
+                <p><strong>Quality:</strong> $8.5K/month savings + 90% issue prevention</p>
+                <p><strong>Performance:</strong> 75% MTTR reduction + infrastructure optimization</p>
+                <p><strong>Safety:</strong> 100% PII protection + 96.4% compliance readiness</p>
+                <p><strong>Cost:</strong> $11K/month savings + 32% cost reduction</p>
+                <p><strong>Business Impact:</strong> $1.45M annual value + 342% ROI + 4.2-month payback</p>
+                <p style="margin-top: 15px; font-size: 16px;"><strong style="color: #10b981;">Combined Potential: $132K/year additional savings + operational excellence</strong></p>
+            </div>
+
+            <div class="info-box" style="margin-top: 20px;">
+                <p style="font-size: 12px; text-align: center; color: #6b7280;">
+                    For detailed documentation, see <strong>ENHANCED_CHARTS_SUMMARY.md</strong> in this directory
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

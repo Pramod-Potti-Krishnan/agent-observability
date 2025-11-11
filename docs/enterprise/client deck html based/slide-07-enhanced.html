@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cost Management - Enhanced Charts</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .chart-container {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .chart-title {
+            font-size: 13px;
+            color: #1f2937;
+            font-weight: 700;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+        .chart-purpose {
+            font-size: 10px;
+            color: #6b7280;
+            font-style: italic;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .kpi-banner {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .kpi-item {
+            text-align: center;
+        }
+        .kpi-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+        .kpi-label {
+            font-size: 10px;
+            opacity: 0.9;
+        }
+        .kpi-target {
+            font-size: 9px;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <div class="slide-header">
+            <h2>Pillar 4: Cost Management & Optimization - Enhanced Analytics</h2>
+            <p class="subtitle">Turn 'Bill Shock' Into Predictable, Optimized Spend</p>
+        </div>
+
+        <div class="slide-content" style="padding: 20px;">
+            <!-- Top 3 KPIs Banner -->
+            <div class="kpi-banner">
+                <div class="kpi-item">
+                    <div class="kpi-value">-32%</div>
+                    <div class="kpi-label">Cost Reduction</div>
+                    <div class="kpi-target">Target: >30%</div>
+                </div>
+                <div class="kpi-item">
+                    <div class="kpi-value">+3%</div>
+                    <div class="kpi-label">Budget Variance</div>
+                    <div class="kpi-target">Target: ±5%</div>
+                </div>
+                <div class="kpi-item">
+                    <div class="kpi-value">$0.023</div>
+                    <div class="kpi-label">Cost per Request</div>
+                    <div class="kpi-target">Target: <$0.025</div>
+                </div>
+            </div>
+
+            <!-- Chart 1: Cost Attribution Sunburst -->
+            <div class="chart-container">
+                <div class="chart-title">1. Cost Attribution Sunburst - Follow the Money</div>
+                <div class="chart-purpose">Purpose: Hierarchical breakdown showing exactly where every dollar goes</div>
+                <svg width="100%" height="280" viewBox="0 0 750 280" style="overflow: visible;">
+                    <!-- Center circle (Total) -->
+                    <circle cx="375" cy="140" r="40" fill="#3b82f6" opacity="0.9"/>
+                    <text x="375" y="135" font-size="14" fill="white" font-weight="700" text-anchor="middle">$47.2K</text>
+                    <text x="375" y="150" font-size="10" fill="white" text-anchor="middle">Total/Mo</text>
+
+                    <!-- Ring 1: Departments (4 segments starting from top, clockwise) -->
+                    <!-- Sales: 35% = 126° (starts at -90°, ends at 36°) - Top Right -->
+                    <path d="M 375 100 A 40 40 0 0 1 408.28 117.32 L 456.49 108.3 A 70 70 0 0 0 375 70 Z"
+                          fill="#3b82f6" opacity="0.8" stroke="white" stroke-width="2"/>
+                    <text x="430" y="90" font-size="11" fill="#1f2937" font-weight="700">Sales</text>
+                    <text x="430" y="103" font-size="9" fill="#1f2937" font-weight="600">35%</text>
+                    <text x="430" y="114" font-size="8" fill="#6b7280">$16.5K</text>
+
+                    <!-- Support: 28% = 101° (starts at 36°, ends at 137°) - Right -->
+                    <path d="M 408.28 117.32 A 40 40 0 0 1 398.28 175.64 L 446.99 198.36 A 70 70 0 0 0 456.49 108.3 Z"
+                          fill="#10b981" opacity="0.8" stroke="white" stroke-width="2"/>
+                    <text x="465" y="152" font-size="11" fill="#1f2937" font-weight="700">Support</text>
+                    <text x="465" y="165" font-size="9" fill="#1f2937" font-weight="600">28%</text>
+                    <text x="465" y="176" font-size="8" fill="#6b7280">$13.2K</text>
+
+                    <!-- Marketing: 22% = 79° (starts at 137°, ends at 216°) - Bottom -->
+                    <path d="M 398.28 175.64 A 40 40 0 0 1 343.28 168.28 L 305.99 192.49 A 70 70 0 0 0 446.99 198.36 Z"
+                          fill="#f59e0b" opacity="0.8" stroke="white" stroke-width="2"/>
+                    <text x="345" y="215" font-size="11" fill="#1f2937" font-weight="700">Marketing</text>
+                    <text x="345" y="228" font-size="9" fill="#1f2937" font-weight="600">22%</text>
+                    <text x="345" y="239" font-size="8" fill="#6b7280">$10.4K</text>
+
+                    <!-- Engineering: 15% = 54° (starts at 216°, ends at 270°) - Left -->
+                    <path d="M 343.28 168.28 A 40 40 0 0 1 375 100 L 375 70 A 70 70 0 0 0 305.99 192.49 Z"
+                          fill="#8b5cf6" opacity="0.8" stroke="white" stroke-width="2"/>
+                    <text x="280" y="152" font-size="11" fill="#1f2937" font-weight="700" text-anchor="end">Engineering</text>
+                    <text x="280" y="165" font-size="9" fill="#1f2937" font-weight="600" text-anchor="end">15%</text>
+                    <text x="280" y="176" font-size="8" fill="#6b7280" text-anchor="end">$7.1K</text>
+
+                    <!-- Ring 2: Providers within Sales segment (35% of ring from -90° to 36°) -->
+                    <!-- OpenAI: 55% of Sales -->
+                    <path d="M 456.49 108.3 A 70 70 0 0 1 482.17 130.45 L 517.43 121.34 A 100 100 0 0 0 475 50 Z"
+                          fill="#0ea5e9" opacity="0.75" stroke="white" stroke-width="1.5"/>
+                    <text x="505" y="88" font-size="9" fill="#374151" font-weight="700">OpenAI</text>
+                    <text x="505" y="99" font-size="8" fill="#6b7280">$9.2K</text>
+
+                    <!-- Anthropic: 29% of Sales -->
+                    <path d="M 482.17 130.45 A 70 70 0 0 1 475.36 152.89 L 510.51 168.41 A 100 100 0 0 0 517.43 121.34 Z"
+                          fill="#06b6d4" opacity="0.75" stroke="white" stroke-width="1.5"/>
+                    <text x="520" y="145" font-size="9" fill="#374151" font-weight="700">Anthropic</text>
+                    <text x="520" y="156" font-size="8" fill="#6b7280">$4.8K</text>
+
+                    <!-- Google: 16% of Sales -->
+                    <path d="M 475.36 152.89 A 70 70 0 0 1 456.49 108.3 L 517.43 121.34 A 100 100 0 0 0 510.51 168.41 Z"
+                          fill="#14b8a6" opacity="0.75" stroke="white" stroke-width="1.5"/>
+                    <text x="505" y="163" font-size="9" fill="#374151" font-weight="700">Google</text>
+                    <text x="505" y="174" font-size="8" fill="#6b7280">$2.5K</text>
+
+                    <!-- Legend -->
+                    <rect x="50" y="250" width="650" height="25" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1" rx="6"/>
+                    <text x="375" y="267" font-size="10" fill="#6b7280" text-anchor="middle" font-style="italic">
+                        Inner Ring: Departments | Outer Ring: Providers (shown for Sales only) | Click to drill into Models
+                    </text>
+                </svg>
+                <div style="font-size: 10px; color: #6b7280; margin-top: 10px; text-align: center;">
+                    <strong>Drill-Down Insight:</strong> Sales dept → OpenAI → GPT-4 = $7.3K (15.5% of total) |
+                    <strong>Action:</strong> Switch to GPT-3.5-turbo for non-critical workflows → Save $2.8K/mo
+                </div>
+            </div>
+
+            <!-- Chart 2: Budget Burn Rate Gauge -->
+            <div class="chart-container">
+                <div class="chart-title">2. Budget Burn Rate Gauge - Real-Time Spend Tracking</div>
+                <div class="chart-purpose">Purpose: Visual alert system for overspending risk and budget runway</div>
+                <svg width="100%" height="200" style="overflow: visible;">
+                    <!-- Gauge background arc (180 degrees) -->
+                    <defs>
+                        <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#ef4444;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+
+                    <!-- Outer arc (gauge background) -->
+                    <path d="M 150 170 A 100 100 0 0 1 600 170" fill="none" stroke="url(#gaugeGradient)" stroke-width="30" opacity="0.3"/>
+
+                    <!-- Threshold markers -->
+                    <line x1="150" y1="170" x2="130" y2="185" stroke="#10b981" stroke-width="2"/>
+                    <text x="120" y="195" font-size="10" fill="#10b981" font-weight="600" text-anchor="end">0%</text>
+
+                    <line x1="250" y1="85" x2="240" y2="70" stroke="#10b981" stroke-width="2"/>
+                    <text x="230" y="65" font-size="10" fill="#10b981" font-weight="600" text-anchor="middle">50%</text>
+
+                    <line x1="375" y1="70" x2="375" y2="50" stroke="#f59e0b" stroke-width="2"/>
+                    <text x="375" y="40" font-size="10" fill="#f59e0b" font-weight="700" text-anchor="middle">80% ⚠</text>
+
+                    <line x1="500" y1="85" x2="510" y2="70" stroke="#f59e0b" stroke-width="2"/>
+                    <text x="520" y="65" font-size="10" fill="#f59e0b" font-weight="600" text-anchor="middle">90%</text>
+
+                    <line x1="600" y1="170" x2="620" y2="185" stroke="#ef4444" stroke-width="2"/>
+                    <text x="630" y="195" font-size="10" fill="#ef4444" font-weight="700" text-anchor="start">100%</text>
+
+                    <!-- Actual gauge arc (72% of budget used) -->
+                    <path d="M 150 170 A 100 100 0 0 1 519 103" fill="none" stroke="#3b82f6" stroke-width="30" opacity="0.9"/>
+
+                    <!-- Needle pointing to 72% -->
+                    <line x1="375" y1="170" x2="505" y2="113" stroke="#1f2937" stroke-width="4"/>
+                    <circle cx="375" cy="170" r="10" fill="#1f2937"/>
+                    <circle cx="375" cy="170" r="6" fill="white"/>
+
+                    <!-- Current value display -->
+                    <text x="375" y="140" font-size="28" fill="#3b82f6" font-weight="700" text-anchor="middle">72%</text>
+                    <text x="375" y="158" font-size="11" fill="#6b7280" text-anchor="middle">Budget Consumed</text>
+
+                    <!-- Budget details box -->
+                    <rect x="250" y="180" width="250" height="50" fill="#f9fafb" stroke="#e5e7eb" stroke-width="2" rx="8"/>
+                    <text x="375" y="198" font-size="10" fill="#374151" text-anchor="middle">
+                        <tspan font-weight="700">$47.2K spent</tspan> of $65K budget
+                    </text>
+                    <text x="375" y="212" font-size="9" fill="#6b7280" text-anchor="middle">
+                        $17.8K remaining | 9 days left in month
+                    </text>
+                    <text x="375" y="225" font-size="9" fill="#10b981" text-anchor="middle" font-weight="600">
+                        ✓ On Track: Daily burn $1.98K (vs $2.17K target)
+                    </text>
+                </svg>
+                <div style="font-size: 10px; color: #6b7280; margin-top: 10px; text-align: center;">
+                    <strong>Forecast:</strong> Month-end spend $59.4K (under budget by $5.6K) |
+                    <strong>Status:</strong> <span style="color: #10b981; font-weight: 700;">✓ Healthy</span> |
+                    <strong>Trend:</strong> -8% vs last month
+                </div>
+            </div>
+
+            <!-- Chart 3: Provider Cost-Performance Matrix -->
+            <div class="chart-container">
+                <div class="chart-title">3. Provider Cost-Performance Matrix - Find the Sweet Spot</div>
+                <div class="chart-purpose">Purpose: Identify best-value providers balancing cost and performance</div>
+                <svg width="100%" height="220" style="overflow: visible;">
+                    <!-- Axes -->
+                    <line x1="60" y1="200" x2="750" y2="200" stroke="#374151" stroke-width="2"/>
+                    <line x1="60" y1="20" x2="60" y2="200" stroke="#374151" stroke-width="2"/>
+
+                    <!-- Y-axis labels (Performance Score - Quality × Speed) -->
+                    <text x="50" y="205" font-size="9" fill="#6b7280" text-anchor="end">0</text>
+                    <text x="50" y="165" font-size="9" fill="#6b7280" text-anchor="end">25</text>
+                    <text x="50" y="125" font-size="9" fill="#6b7280" text-anchor="end">50</text>
+                    <text x="50" y="85" font-size="9" fill="#6b7280" text-anchor="end">75</text>
+                    <text x="50" y="45" font-size="9" fill="#6b7280" text-anchor="end">100</text>
+                    <text x="10" y="110" font-size="11" fill="#374151" font-weight="600" transform="rotate(-90 10 110)">Performance Score</text>
+
+                    <!-- X-axis labels (Cost per 1K Tokens) -->
+                    <text x="60" y="215" font-size="9" fill="#6b7280">$0.00</text>
+                    <text x="230" y="215" font-size="9" fill="#6b7280">$0.01</text>
+                    <text x="400" y="215" font-size="9" fill="#6b7280">$0.02</text>
+                    <text x="570" y="215" font-size="9" fill="#6b7280">$0.03</text>
+                    <text x="740" y="215" font-size="9" fill="#6b7280">$0.04</text>
+                    <text x="400" y="235" font-size="11" fill="#374151" font-weight="600" text-anchor="middle">Cost per 1K Tokens ($)</text>
+
+                    <!-- Quadrants with shading -->
+                    <!-- Optimal (top left) -->
+                    <rect x="60" y="20" width="340" height="90" fill="#10b981" opacity="0.08"/>
+                    <text x="200" y="60" font-size="11" fill="#10b981" font-weight="700" opacity="0.6">OPTIMAL</text>
+
+                    <!-- Premium (top right) -->
+                    <rect x="400" y="20" width="350" height="90" fill="#3b82f6" opacity="0.08"/>
+                    <text x="550" y="60" font-size="11" fill="#3b82f6" font-weight="700" opacity="0.6">PREMIUM</text>
+
+                    <!-- Budget (bottom left) -->
+                    <rect x="60" y="110" width="340" height="90" fill="#f59e0b" opacity="0.08"/>
+                    <text x="200" y="160" font-size="11" fill="#f59e0b" font-weight="700" opacity="0.6">BUDGET</text>
+
+                    <!-- Avoid (bottom right) -->
+                    <rect x="400" y="110" width="350" height="90" fill="#ef4444" opacity="0.08"/>
+                    <text x="550" y="160" font-size="11" fill="#ef4444" font-weight="700" opacity="0.6">AVOID</text>
+
+                    <!-- Grid lines -->
+                    <line x1="60" y1="110" x2="750" y2="110" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="5,5"/>
+                    <line x1="400" y1="20" x2="400" y2="200" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="5,5"/>
+
+                    <!-- Data points (Provider bubbles) -->
+                    <!-- GPT-4 Turbo: High performance, moderate cost (Premium) -->
+                    <circle cx="520" cy="45" r="22" fill="#3b82f6" opacity="0.7" stroke="#2563eb" stroke-width="3"/>
+                    <text x="520" y="50" font-size="11" fill="white" font-weight="700" text-anchor="middle">GPT-4</text>
+                    <text x="520" y="25" font-size="8" fill="#3b82f6" font-weight="600" text-anchor="middle">$0.025 | 89</text>
+
+                    <!-- Claude 3 Opus: High performance, higher cost (Premium) -->
+                    <circle cx="620" cy="40" r="18" fill="#3b82f6" opacity="0.7" stroke="#2563eb" stroke-width="3"/>
+                    <text x="620" y="44" font-size="10" fill="white" font-weight="700" text-anchor="middle">Claude</text>
+                    <text x="620" y="23" font-size="8" fill="#3b82f6" font-weight="600" text-anchor="middle">$0.032 | 92</text>
+
+                    <!-- GPT-3.5 Turbo: Good performance, low cost (OPTIMAL!) -->
+                    <circle cx="180" cy="75" r="20" fill="#10b981" opacity="0.8" stroke="#059669" stroke-width="3"/>
+                    <text x="180" y="79" font-size="10" fill="white" font-weight="700" text-anchor="middle">GPT-3.5</text>
+                    <text x="180" y="57" font-size="8" fill="#10b981" font-weight="700" text-anchor="middle">$0.005 | 82</text>
+
+                    <!-- Gemini Pro: Good performance, moderate cost (OPTIMAL) -->
+                    <circle cx="310" cy="80" r="19" fill="#10b981" opacity="0.7" stroke="#059669" stroke-width="3"/>
+                    <text x="310" y="84" font-size="10" fill="white" font-weight="700" text-anchor="middle">Gemini</text>
+                    <text x="310" y="63" font-size="8" fill="#10b981" font-weight="600" text-anchor="middle">$0.013 | 80</text>
+
+                    <!-- Llama 3: Lower performance, very low cost (Budget) -->
+                    <circle cx="130" cy="145" r="16" fill="#f59e0b" opacity="0.7" stroke="#d97706" stroke-width="3"/>
+                    <text x="130" y="149" font-size="9" fill="white" font-weight="700" text-anchor="middle">Llama</text>
+                    <text x="130" y="130" font-size="8" fill="#f59e0b" font-weight="600" text-anchor="middle">$0.002 | 68</text>
+
+                    <!-- Legacy Model: Low performance, high cost (AVOID!) -->
+                    <circle cx="580" cy="165" r="14" fill="#ef4444" opacity="0.7" stroke="#dc2626" stroke-width="3"/>
+                    <text x="580" y="168" font-size="8" fill="white" font-weight="700" text-anchor="middle">Legacy</text>
+                    <text x="580" y="150" font-size="8" fill="#ef4444" font-weight="600" text-anchor="middle">$0.028 | 62</text>
+
+                    <!-- Winner indicator -->
+                    <polygon points="180,95 175,105 185,105" fill="#10b981"/>
+                    <text x="180" y="120" font-size="9" fill="#10b981" font-weight="700" text-anchor="middle">BEST VALUE</text>
+                </svg>
+                <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 10px; padding: 0 10px;">
+                    <div><strong>Bubble size</strong> = Monthly spend volume</div>
+                    <div><strong>Recommendation:</strong> Shift 40% of GPT-4 traffic to GPT-3.5 → <span style="color: #10b981; font-weight: 700;">Save $8.2K/mo</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-footer">
+            <div class="slide-number">Slide 7 Enhanced</div>
+            <div class="nav-buttons">
+                <a href="slide-06-enhanced.html" class="nav-button">← Previous</a>
+                <a href="slide-08-enhanced.html" class="nav-button">Next →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight') {
+                window.location.href = 'slide-08-enhanced.html';
+            } else if (event.key === 'ArrowLeft') {
+                window.location.href = 'slide-06-enhanced.html';
+            }
+        });
+    </script>
+</body>
+</html>

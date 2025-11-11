@@ -136,6 +136,9 @@ class TopUsersItem(BaseModel):
     last_active: datetime
     trend: Literal['up', 'down', 'stable']
     change_percentage: float
+    department: Optional[str] = None
+    total_cost_usd: float = 0.0
+    risk_score: Optional[float] = None  # Based on error rate + high-cost usage
 
 
 class TopUsers(BaseModel):
@@ -266,3 +269,161 @@ class ErrorAnalysis(BaseModel):
     total_errors: int
     total_requests: int
     overall_error_rate: float
+
+
+# Quality Monitoring Models
+class QualityTierDistribution(BaseModel):
+    """Distribution across quality tiers"""
+    excellent: int  # >= 9.0
+    good: int       # 7.0-8.9
+    fair: int       # 5.0-6.9
+    poor: int       # 3.0-4.9
+    failing: int    # < 3.0
+
+
+class QualityOverview(BaseModel):
+    """Quality overview metrics"""
+    avg_score: float
+    median_score: float
+    total_evaluations: int
+    distribution: QualityTierDistribution
+    drift_indicator: float  # Percentage change from baseline
+    at_risk_agents: int  # Agents below quality threshold
+    range: str
+
+
+class QualityDistributionItem(BaseModel):
+    """Quality score distribution bucket"""
+    score_range: str  # e.g., "9.0-10.0"
+    count: int
+    percentage: float
+    avg_cost_usd: float
+
+
+class QualityDistribution(BaseModel):
+    """Quality distribution response"""
+    data: List[QualityDistributionItem]
+    total_evaluations: int
+
+
+class TopFailingAgentItem(BaseModel):
+    """Agent with quality issues"""
+    agent_id: str
+    avg_score: float
+    evaluation_count: int
+    failing_rate: float  # Percentage < 5.0
+    recent_trend: Literal['improving', 'stable', 'degrading']
+    cost_impact_usd: float  # Cost of failed evaluations
+    last_failure: Optional[datetime] = None
+
+
+class TopFailingAgents(BaseModel):
+    """Top failing agents response"""
+    data: List[TopFailingAgentItem]
+    total_failing_agents: int
+
+
+class QualityCostTradeoffItem(BaseModel):
+    """Quality vs cost analysis point"""
+    agent_id: str
+    avg_quality_score: float
+    avg_cost_per_request_usd: float
+    total_requests: int
+    efficiency_score: float  # Quality / Cost ratio
+    quadrant: Literal['high_quality_low_cost', 'high_quality_high_cost', 'low_quality_low_cost', 'low_quality_high_cost']
+
+
+class QualityCostTradeoff(BaseModel):
+    """Quality cost tradeoff response"""
+    data: List[QualityCostTradeoffItem]
+    avg_quality: float
+    avg_cost: float
+
+
+class RubricHeatmapItem(BaseModel):
+    """Rubric criteria scores for an agent"""
+    agent_id: str
+    accuracy_score: float
+    relevance_score: float
+    helpfulness_score: float
+    coherence_score: float
+    overall_score: float
+    evaluation_count: int
+
+
+class RubricHeatmap(BaseModel):
+    """Rubric heatmap response"""
+    data: List[RubricHeatmapItem]
+    criteria_averages: dict  # { "accuracy": 8.5, "relevance": 7.2, ... }
+
+
+class DriftTimelineItem(BaseModel):
+    """Quality drift detection point"""
+    timestamp: datetime
+    avg_score: float
+    baseline_score: float
+    drift_percentage: float
+    evaluation_count: int
+    alert_triggered: bool
+
+
+class DriftTimeline(BaseModel):
+    """Drift timeline response"""
+    data: List[DriftTimelineItem]
+    baseline_score: float
+    current_score: float
+    drift_threshold: float
+    granularity: str
+    range: str
+
+
+class AgentCriteriaBreakdown(BaseModel):
+    """Rubric criteria breakdown for an agent"""
+    accuracy: float
+    relevance: float
+    helpfulness: float
+    coherence: float
+
+
+class AgentEvaluationItem(BaseModel):
+    """Individual evaluation for an agent"""
+    id: str
+    trace_id: str
+    overall_score: float
+    accuracy_score: Optional[float] = None
+    relevance_score: Optional[float] = None
+    helpfulness_score: Optional[float] = None
+    coherence_score: Optional[float] = None
+    evaluator: str
+    created_at: datetime
+
+
+class AgentQualityDetails(BaseModel):
+    """Comprehensive quality metrics for a single agent"""
+    agent_id: str
+    avg_score: float
+    median_score: float
+    total_evaluations: int
+    failing_rate: float  # Percentage < 5.0
+    recent_trend: Literal['improving', 'stable', 'degrading']
+    drift_indicator: float  # Percentage change from baseline
+    criteria_breakdown: AgentCriteriaBreakdown
+    timeline: List[DriftTimelineItem]
+    recent_evaluations: List[AgentEvaluationItem]
+    range: str
+
+
+class UnevaluatedTraceItem(BaseModel):
+    """Single un-evaluated trace for manual selection"""
+    trace_id: str
+    input: str
+    output: str
+    timestamp: datetime
+    status: str
+
+
+class UnevaluatedTracesResponse(BaseModel):
+    """Response with un-evaluated traces for an agent"""
+    traces: List[UnevaluatedTraceItem]
+    total: int
+    agent_id: str

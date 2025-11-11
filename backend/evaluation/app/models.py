@@ -81,6 +81,14 @@ class CriteriaResponse(BaseModel):
     total: int
 
 
+class AgentEvaluationRequest(BaseModel):
+    """Request to evaluate traces for a specific agent"""
+    mode: str = Field('auto', pattern="^(manual|auto)$", description="Evaluation mode: manual (specific traces) or auto (recent unevaluated)")
+    trace_ids: Optional[List[str]] = Field(None, description="List of trace IDs to evaluate (manual mode only)")
+    count: Optional[int] = Field(10, ge=1, le=100, description="Number of recent traces to evaluate (auto mode only)")
+    custom_criteria: Optional[List[EvaluationCriteria]] = Field(None, description="Optional custom evaluation criteria")
+
+
 class HealthResponse(BaseModel):
     """Health check response"""
     status: str

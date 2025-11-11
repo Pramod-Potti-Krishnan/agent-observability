@@ -17,11 +17,19 @@ interface CriteriaBreakdownProps {
 }
 
 export function CriteriaBreakdown({ data, loading = false }: CriteriaBreakdownProps) {
+  // Ensure values are numbers with null safety
+  const safeData = {
+    accuracy: data.accuracy || 0,
+    relevance: data.relevance || 0,
+    helpfulness: data.helpfulness || 0,
+    coherence: data.coherence || 0
+  }
+
   const chartData = [
-    { name: 'Accuracy', score: data.accuracy },
-    { name: 'Relevance', score: data.relevance },
-    { name: 'Helpfulness', score: data.helpfulness },
-    { name: 'Coherence', score: data.coherence }
+    { name: 'Accuracy', score: safeData.accuracy },
+    { name: 'Relevance', score: safeData.relevance },
+    { name: 'Helpfulness', score: safeData.helpfulness },
+    { name: 'Coherence', score: safeData.coherence }
   ]
 
   const getBarColor = (score: number) => {

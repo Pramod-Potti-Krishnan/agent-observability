@@ -166,10 +166,11 @@ services:
       - gateway
     networks:
       - agent_obs_network
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /app/.next
+    # Volumes commented out for production build - uncomment for development
+    # volumes:
+    #   - ./frontend:/app
+    #   - /app/node_modules
+    #   - /app/.next
 
   # Evaluation Service (Phase 4)
   evaluation:
@@ -207,6 +208,7 @@ services:
     container_name: agent_obs_guardrail
     environment:
       - POSTGRES_URL=postgresql://postgres:postgres@postgres:5432/agent_observability_metadata
+      - TIMESCALE_URL=postgresql://postgres:postgres@timescaledb:5432/agent_observability
       - REDIS_URL=redis://:redis123@redis:6379/0
       - PORT=8005
       - CACHE_TTL_RULES=600
@@ -214,6 +216,8 @@ services:
     ports:
       - "8005:8005"
     depends_on:
+      timescaledb:
+        condition: service_healthy
       postgres:
         condition: service_healthy
       redis:

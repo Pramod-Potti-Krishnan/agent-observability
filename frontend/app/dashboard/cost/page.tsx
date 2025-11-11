@@ -1,10 +1,22 @@
 'use client'
+export const dynamic = 'force-dynamic'
 
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { KPICard } from '@/components/dashboard/KPICard'
-import { TimeRangeSelector } from '@/components/dashboard/TimeRangeSelector'
+import { FilterBar } from '@/components/filters/FilterBar'
+import { useFilters } from '@/lib/filter-context'
+import { DepartmentBudget } from '@/components/cost/DepartmentBudget'
+import { ProviderComparison } from '@/components/cost/ProviderComparison'
+import { CostOptimizationLeaderboard } from '@/components/cost/CostOptimizationLeaderboard'
+import { TopCostlyAgentsTable } from '@/components/cost/TopCostlyAgentsTable'
+import { CostAttributionSunburst } from '@/components/cost/CostAttributionSunburst'
+import { TokenUsageWaterfall } from '@/components/cost/TokenUsageWaterfall'
+import { CostForecastChart } from '@/components/cost/CostForecastChart'
+import { ProviderCostPerformanceMatrix } from '@/components/cost/ProviderCostPerformanceMatrix'
+import { CachingROICalculator } from '@/components/cost/CachingROICalculator'
+import { CostAnomalyTimeline } from '@/components/cost/CostAnomalyTimeline'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Progress } from '@/components/ui/progress'
@@ -12,9 +24,14 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-import { AlertTriangle, DollarSign, TrendingUp } from 'lucide-react'
+import { AlertTriangle, DollarSign, TrendingUp, Bell, Lightbulb, Download, Target, Eye } from 'lucide-react'
 import apiClient from '@/lib/api-client'
 import { useAuth } from '@/lib/auth-context'
+import { SetBudgetAlertModal } from '@/components/cost/actions/SetBudgetAlertModal'
+import { OptimizationRecommendationsModal } from '@/components/cost/actions/OptimizationRecommendationsModal'
+import { ExportCostReportModal } from '@/components/cost/actions/ExportCostReportModal'
+import { CompareProvidersModal } from '@/components/cost/actions/CompareProvidersModal'
+import { CostAnomalyDetailsModal } from '@/components/cost/actions/CostAnomalyDetailsModal'
 
 interface CostOverview {
   total_spend_usd: number
@@ -46,15 +63,22 @@ interface CostByModelItem {
 export default function CostPage() {
   const { user } = useAuth()
   const queryClient = useQueryClient()
-  const [timeRange, setTimeRange] = useState('7d')
+  const { filters } = useFilters()
   const [budgetLimit, setBudgetLimit] = useState('')
   const [alertThreshold, setAlertThreshold] = useState('')
 
+  // Action modal states
+  const [showBudgetModal, setShowBudgetModal] = useState(false)
+  const [showOptimizationsModal, setShowOptimizationsModal] = useState(false)
+  const [showExportModal, setShowExportModal] = useState(false)
+  const [showCompareProvidersModal, setShowCompareProvidersModal] = useState(false)
+  const [showAnomalyModal, setShowAnomalyModal] = useState(false)
+
   // Fetch cost overview
   const { data: overview, isLoading: overviewLoading, error: overviewError } = useQuery({
-    queryKey: ['cost-overview', timeRange],
+    queryKey: ['cost-overview', filters.range],
     queryFn: async () => {
-      const response = await apiClient.get(`/api/v1/cost/overview?range=${timeRange}`, {
+      const response = await apiClient.get(`/api/v1/cost/overview?range=${filters.range}`, {
         headers: { 'X-Workspace-ID': user?.workspace_id }
       })
       return response.data as CostOverview
@@ -65,11 +89,11 @@ export default function CostPage() {
 
   // Fetch cost trend
   const { data: costTrend, isLoading: trendLoading } = useQuery({
-    queryKey: ['cost-trend', timeRange],
+    queryKey: ['cost-trend', filters.range],
     queryFn: async () => {
-      const granularity = timeRange === '1h' || timeRange === '24h' ? 'hourly' : 'daily'
+      const granularity = filters.range === '1h' || filters.range === '24h' ? 'hourly' : 'daily'
       const response = await apiClient.get(
-        `/api/v1/cost/trend?range=${timeRange}&granularity=${granularity}`,
+        `/api/v1/cost/trend?range=${filters.range}&granularity=${granularity}`,
         { headers: { 'X-Workspace-ID': user?.workspace_id } }
       )
       return response.data.data as CostTrendItem[]
@@ -80,10 +104,10 @@ export default function CostPage() {
 
   // Fetch cost by model
   const { data: costByModel, isLoading: modelLoading } = useQuery({
-    queryKey: ['cost-by-model', timeRange],
+    queryKey: ['cost-by-model', filters.range],
     queryFn: async () => {
       const response = await apiClient.get(
-        `/api/v1/cost/by-model?range=${timeRange}`,
+        `/api/v1/cost/by-model?range=${filters.range}`,
         { headers: { 'X-Workspace-ID': user?.workspace_id } }
       )
       return response.data.data as CostByModelItem[]
@@ -162,26 +186,96 @@ export default function CostPage() {
     )
   }
 
-  return (
-    <div className="p-8 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Cost Management</h1>
-          <p className="text-muted-foreground">
-            Monitor spending, set budgets, and optimize costs
-          </p>
+  // Show loading state while data is being fetched
+  if (overviewLoading) {
+    return (
+      <div className="p-8">
+        <h1 className="text-3xl font-bold mb-6">Cost Management</h1>
+        <div className="space-y-4">
+          <Skeleton className="h-32 w-full" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-24 w-full" />
+          </div>
         </div>
-        <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
       </div>
+    )
+  }
 
-      {/* Budget Warning Alert */}
+  return (
+    <div>
+      {/* Enterprise Multi-Dimensional FilterBar */}
+      <FilterBar />
+
+      <div className="p-8 space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Cost Management</h1>
+            <p className="text-muted-foreground">
+              Monitor spending, set budgets, and optimize costs across departments and providers
+            </p>
+          </div>
+        </div>
+
+        {/* Quick Actions Toolbar */}
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowBudgetModal(true)}
+            className="flex items-center gap-2"
+          >
+            <Bell className="h-4 w-4" />
+            Set Budget Alert
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowOptimizationsModal(true)}
+            className="flex items-center gap-2"
+          >
+            <Lightbulb className="h-4 w-4" />
+            View Optimizations
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowExportModal(true)}
+            className="flex items-center gap-2"
+          >
+            <Download className="h-4 w-4" />
+            Export Report
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowCompareProvidersModal(true)}
+            className="flex items-center gap-2"
+          >
+            <Target className="h-4 w-4" />
+            Compare Providers
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowAnomalyModal(true)}
+            className="flex items-center gap-2"
+          >
+            <Eye className="h-4 w-4" />
+            View Anomalies
+          </Button>
+        </div>
+
+        {/* Budget Warning Alert */}
       {showBudgetWarning && (
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Budget Alert</AlertTitle>
           <AlertDescription>
-            You've used {budgetUsed.toFixed(1)}% of your monthly budget ($
+            You've used {(budgetUsed || 0).toFixed(1)}% of your monthly budget ($
             {overview?.budget_limit_usd?.toLocaleString()}).
             {budgetUsed >= 90 && ' Consider increasing your budget or optimizing costs.'}
           </AlertDescription>
@@ -241,12 +335,21 @@ export default function CostPage() {
           <CardContent className="space-y-2">
             <Progress value={budgetUsed} className="h-3" />
             <div className="flex justify-between text-sm text-muted-foreground">
-              <span>{budgetUsed.toFixed(1)}% used</span>
-              <span>${overview.budget_remaining_usd?.toFixed(2)} remaining</span>
+              <span>{(budgetUsed || 0).toFixed(1)}% used</span>
+              <span>${overview?.budget_remaining_usd?.toFixed(2) ?? '0.00'} remaining</span>
             </div>
           </CardContent>
         </Card>
       )}
+
+      {/* Enterprise: Department Budget Dashboard (PRD 3.9) - Traffic Light Alerts */}
+      <DepartmentBudget />
+
+      {/* Enterprise: Cost Optimization Leaderboard (PRD 3.10) - P0 Actions */}
+      <CostOptimizationLeaderboard />
+
+      {/* Enterprise: Top Costly Agents (PRD 3.11) - Drill-down */}
+      <TopCostlyAgentsTable />
 
       {/* Cost Trend Over Time */}
       <Card>
@@ -371,6 +474,57 @@ export default function CostPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Enterprise: Provider Cost & Performance Comparison (PRD 3.6/3.14) */}
+      <ProviderComparison />
+
+      {/* Advanced Cost Analytics - Phase 2.1: 6 Enterprise Charts (P1) */}
+
+      {/* PRD 3.1 - Cost Attribution Sunburst: Hierarchical breakdown */}
+      <CostAttributionSunburst />
+
+      {/* PRD 3.2 - Token Usage Waterfall: Token flow visualization */}
+      <TokenUsageWaterfall />
+
+      {/* PRD 3.3 - Cost Forecast Chart: 30-day predictive modeling */}
+      <CostForecastChart />
+
+      {/* PRD 3.4 - Provider Cost/Performance Matrix: Scatter plot analysis */}
+      <ProviderCostPerformanceMatrix />
+
+      {/* PRD 3.5 - Caching ROI Calculator: Cache performance metrics */}
+      <CachingROICalculator />
+
+      {/* PRD 3.6 - Cost Anomaly Timeline: Unusual spending detection */}
+      <CostAnomalyTimeline />
+      </div>
+
+      {/* Action Modals */}
+      <SetBudgetAlertModal
+        open={showBudgetModal}
+        onOpenChange={setShowBudgetModal}
+        currentBudget={overview?.budget_limit_usd || 0}
+        currentThreshold={budget?.alert_threshold_percentage || 80}
+      />
+      <OptimizationRecommendationsModal
+        open={showOptimizationsModal}
+        onOpenChange={setShowOptimizationsModal}
+        timeRange={filters.range}
+      />
+      <ExportCostReportModal
+        open={showExportModal}
+        onOpenChange={setShowExportModal}
+      />
+      <CompareProvidersModal
+        open={showCompareProvidersModal}
+        onOpenChange={setShowCompareProvidersModal}
+        timeRange={filters.range}
+      />
+      <CostAnomalyDetailsModal
+        open={showAnomalyModal}
+        onOpenChange={setShowAnomalyModal}
+        timeRange={filters.range}
+      />
     </div>
   )
 }

@@ -34,7 +34,7 @@ export function GeneralSettings() {
   const fetchWorkspace = async () => {
     try {
       const workspaceId = localStorage.getItem('workspace_id') || '37160be9-7d69-43b5-8d5f-9d7b5e14a57a'
-      const response = await fetch('http://localhost:8000/api/v1/workspace', {
+      const response = await fetch('/api/v1/workspace', {
         headers: {
           'X-Workspace-ID': workspaceId
         }
@@ -60,7 +60,7 @@ export function GeneralSettings() {
     setSaving(true)
     try {
       const workspaceId = localStorage.getItem('workspace_id') || '37160be9-7d69-43b5-8d5f-9d7b5e14a57a'
-      const response = await fetch('http://localhost:8000/api/v1/workspace', {
+      const response = await fetch('/api/v1/workspace', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

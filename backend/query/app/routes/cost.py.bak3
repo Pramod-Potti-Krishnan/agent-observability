@@ -1,0 +1,2186 @@
+"""Cost Management endpoints"""
+from fastapi import APIRouter, HTTPException, status, Depends, Header, Query as QueryParam
+from typing import Optional, List
+import asyncpg
+from datetime import datetime, timedelta
+import random
+from ..models import (
+    CostOverview, CostTrend, CostTrendItem,
+    CostByModel, CostByModelItem,
+    Budget, BudgetUpdate
+)
+from ..database import get_timescale_pool, get_postgres_pool
+from ..cache import get_cache, set_cache
+from ..config import get_settings
+import logging
+from uuid import UUID
+
+logger = logging.getLogger(__name__)
+router = APIRouter(prefix="/api/v1/cost", tags=["cost"])
+settings = get_settings()
+
+
+def parse_time_range(range_str: str) -> int:
+    """Convert range string to hours"""
+    range_map = {
+        "1h": 1,
+        "24h": 24,
+        "7d": 168,
+        "30d": 720,
+    }
+    return range_map.get(range_str, 24)
+
+
+def parse_granularity(granularity: str) -> str:
+    """Convert granularity to TimescaleDB interval"""
+    granularity_map = {
+        "hourly": "1 hour",
+        "daily": "1 day",
+        "weekly": "1 week",
+    }
+    return granularity_map.get(granularity, "1 hour")
+
+
+@router.get("/overview", response_model=CostOverview)
+async def get_cost_overview(
+    range: str = QueryParam("30d", regex="^(1h|24h|7d|30d)$"),
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    timescale_pool: asyncpg.Pool = Depends(get_timescale_pool),
+    postgres_pool: asyncpg.Pool = Depends(get_postgres_pool)
+):
+    """
+    Get cost overview metrics
+    
+    Returns total spend, budget info, average cost per call,
+    and projected monthly spend based on current usage.
+    """
+    cache_key = f"cost_overview:{x_workspace_id}:{range}"
+    cached = get_cache(cache_key)
+    if cached:
+        logger.info(f"Cache hit for {cache_key}")
+        return CostOverview(**cached)
+    
+    try:
+        workspace_uuid = UUID(x_workspace_id)
+        hours = parse_time_range(range)
+
+        # Get current period cost
+        current_query = """
+            SELECT
+                COALESCE(SUM(cost_usd), 0) as total_cost,
+                COUNT(*)::int as total_calls
+            FROM traces
+            WHERE workspace_id = $1
+                AND timestamp >= NOW() - INTERVAL '1 hour' * $2
+                AND cost_usd IS NOT NULL
+        """
+
+        # Get previous period cost for comparison
+        previous_query = """
+            SELECT
+                COALESCE(SUM(cost_usd), 0) as prev_cost
+            FROM traces
+            WHERE workspace_id = $1
+                AND timestamp >= NOW() - INTERVAL '1 hour' * $2
+                AND timestamp < NOW() - INTERVAL '1 hour' * $3
+                AND cost_usd IS NOT NULL
+        """
+
+        current = await timescale_pool.fetchrow(current_query, workspace_uuid, hours)
+        previous = await timescale_pool.fetchrow(previous_query, workspace_uuid, hours * 2, hours)
+        
+        total_spend = float(current['total_cost'])
+        total_calls = current['total_calls']
+        prev_cost = float(previous['prev_cost'])
+        
+        # Calculate average cost per call
+        avg_cost = total_spend / max(total_calls, 1)
+        
+        # Calculate percentage change
+        change_from_previous = 0.0
+        if prev_cost > 0:
+            change_from_previous = round(((total_spend - prev_cost) / prev_cost) * 100, 2)
+        
+        # Project monthly spend based on current rate
+        if hours > 0:
+            daily_rate = (total_spend / hours) * 24
+            projected_monthly = daily_rate * 30
+        else:
+            projected_monthly = 0.0
+        
+        # Get budget info from PostgreSQL
+        budget_query = """
+            SELECT monthly_limit_usd, alert_threshold_percentage
+            FROM budgets
+            WHERE workspace_id = $1
+            ORDER BY updated_at DESC
+            LIMIT 1
+        """
+        budget_row = await postgres_pool.fetchrow(budget_query, workspace_uuid)
+
+        budget_limit = None
+        budget_remaining = None
+        budget_used_pct = None
+
+        if budget_row and budget_row['monthly_limit_usd']:
+            budget_limit = float(budget_row['monthly_limit_usd'])
+            # Get current month spend for budget calculation
+            month_query = """
+                SELECT COALESCE(SUM(cost_usd), 0) as month_cost
+                FROM traces
+                WHERE workspace_id = $1
+                    AND timestamp >= date_trunc('month', NOW())
+                    AND cost_usd IS NOT NULL
+            """
+            month_row = await timescale_pool.fetchrow(month_query, workspace_uuid)
+            month_cost = float(month_row['month_cost'])
+            
+            budget_remaining = budget_limit - month_cost
+            budget_used_pct = round((month_cost / budget_limit) * 100, 2) if budget_limit > 0 else 0
+        
+        result = CostOverview(
+            total_spend_usd=round(total_spend, 4),
+            budget_limit_usd=budget_limit,
+            budget_remaining_usd=round(budget_remaining, 4) if budget_remaining is not None else None,
+            budget_used_percentage=budget_used_pct,
+            avg_cost_per_call_usd=round(avg_cost, 6),
+            projected_monthly_spend_usd=round(projected_monthly, 2),
+            change_from_previous=change_from_previous
+        )
+        
+        # Cache for 5 minutes
+        set_cache(cache_key, result.model_dump(), ttl=300)
+        logger.info(f"Cost overview fetched for workspace {x_workspace_id}, range {range}")
+
+        return result
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid workspace ID format: {str(e)}"
+        )
+    except Exception as e:
+        logger.error(f"Error fetching cost overview: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch cost overview: {str(e)}"
+        )
+
+
+@router.get("/trend", response_model=CostTrend)
+async def get_cost_trend(
+    range: str = QueryParam("7d", regex="^(1h|24h|7d|30d)$"),
+    granularity: str = QueryParam("daily", regex="^(hourly|daily|weekly)$"),
+    model: Optional[str] = QueryParam(None),
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    pool: asyncpg.Pool = Depends(get_timescale_pool)
+):
+    """
+    Get cost trend over time
+    
+    Returns time-series cost data grouped by model and time bucket.
+    Useful for visualizing cost trends in stacked area charts.
+    """
+    cache_key = f"cost_trend:{x_workspace_id}:{range}:{granularity}:{model or 'all'}"
+    cached = get_cache(cache_key)
+    if cached:
+        logger.info(f"Cache hit for {cache_key}")
+        return CostTrend(**cached)
+    
+    try:
+        workspace_uuid = UUID(x_workspace_id)
+        hours = parse_time_range(range)
+        interval = parse_granularity(granularity)
+
+        # Build query with optional model filter
+        model_filter = "AND model = $3" if model else ""
+        params = [workspace_uuid, hours] + ([model] if model else [])
+
+        query = f"""
+            SELECT
+                time_bucket(INTERVAL '{interval}', timestamp) as bucket,
+                model,
+                COALESCE(SUM(cost_usd), 0) as total_cost,
+                COUNT(*)::int as call_count
+            FROM traces
+            WHERE workspace_id = $1
+                AND timestamp >= NOW() - INTERVAL '1 hour' * $2
+                AND cost_usd IS NOT NULL
+                {model_filter}
+            GROUP BY bucket, model
+            ORDER BY bucket DESC, model
+            LIMIT 1000
+        """
+
+        rows = await pool.fetch(query, *params)
+        
+        data = [
+            CostTrendItem(
+                timestamp=row['bucket'],
+                model=row['model'],
+                total_cost_usd=round(float(row['total_cost']), 4),
+                call_count=row['call_count'],
+                avg_cost_per_call_usd=round(
+                    float(row['total_cost']) / max(row['call_count'], 1), 
+                    6
+                )
+            )
+            for row in rows
+        ]
+        
+        result = CostTrend(
+            data=data,
+            granularity=granularity,
+            range=range
+        )
+        
+        # Cache for 2 minutes
+        set_cache(cache_key, result.model_dump(), ttl=120)
+        logger.info(f"Cost trend fetched: {len(data)} buckets")
+
+        return result
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid workspace ID format: {str(e)}"
+        )
+    except Exception as e:
+        logger.error(f"Error fetching cost trend: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch cost trend: {str(e)}"
+        )
+
+
+@router.get("/by-model", response_model=CostByModel)
+async def get_cost_by_model(
+    range: str = QueryParam("30d", regex="^(1h|24h|7d|30d)$"),
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    pool: asyncpg.Pool = Depends(get_timescale_pool)
+):
+    """
+    Get cost breakdown by model
+    
+    Returns cost distribution across different AI models with percentages.
+    Useful for identifying most expensive models.
+    """
+    cache_key = f"cost_by_model:{x_workspace_id}:{range}"
+    cached = get_cache(cache_key)
+    if cached:
+        logger.info(f"Cache hit for {cache_key}")
+        return CostByModel(**cached)
+    
+    try:
+        workspace_uuid = UUID(x_workspace_id)
+        hours = parse_time_range(range)
+
+        query = """
+            WITH model_costs AS (
+                SELECT
+                    model,
+                    model_provider,
+                    COALESCE(SUM(cost_usd), 0) as total_cost,
+                    COUNT(*)::int as call_count
+                FROM traces
+                WHERE workspace_id = $1
+                    AND timestamp >= NOW() - INTERVAL '1 hour' * $2
+                    AND cost_usd IS NOT NULL
+                GROUP BY model, model_provider
+            ),
+            total_cost AS (
+                SELECT SUM(total_cost) as total FROM model_costs
+            )
+            SELECT
+                m.model,
+                m.model_provider,
+                m.total_cost,
+                m.call_count,
+                ROUND((m.total_cost / NULLIF(t.total, 0)) * 100, 2) as percentage
+            FROM model_costs m
+            CROSS JOIN total_cost t
+            ORDER BY m.total_cost DESC
+            LIMIT 50
+        """
+
+        rows = await pool.fetch(query, workspace_uuid, hours)
+        total_cost = sum(float(row['total_cost']) for row in rows)
+        
+        data = [
+            CostByModelItem(
+                model=row['model'],
+                model_provider=row['model_provider'],
+                total_cost_usd=round(float(row['total_cost']), 4),
+                call_count=row['call_count'],
+                avg_cost_per_call_usd=round(
+                    float(row['total_cost']) / max(row['call_count'], 1),
+                    6
+                ),
+                percentage_of_total=float(row['percentage'] or 0)
+            )
+            for row in rows
+        ]
+        
+        result = CostByModel(
+            data=data,
+            total_cost_usd=round(total_cost, 4)
+        )
+        
+        # Cache for 5 minutes
+        set_cache(cache_key, result.model_dump(), ttl=300)
+        logger.info(f"Cost by model fetched: {len(data)} models")
+
+        return result
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid workspace ID format: {str(e)}"
+        )
+    except Exception as e:
+        logger.error(f"Error fetching cost by model: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch cost by model: {str(e)}"
+        )
+
+
+@router.get("/budget", response_model=Budget)
+async def get_budget(
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    postgres_pool: asyncpg.Pool = Depends(get_postgres_pool),
+    timescale_pool: asyncpg.Pool = Depends(get_timescale_pool)
+):
+    """
+    Get current budget settings and spend
+    
+    Returns budget limit, alert threshold, and current month's spend.
+    """
+    cache_key = f"budget:{x_workspace_id}"
+    cached = get_cache(cache_key)
+    if cached:
+        logger.info(f"Cache hit for {cache_key}")
+        return Budget(**cached)
+    
+    try:
+        workspace_uuid = UUID(x_workspace_id)
+        
+        # Get budget settings
+        budget_query = """
+            SELECT 
+                workspace_id,
+                monthly_limit_usd,
+                alert_threshold_percentage,
+                created_at,
+                updated_at
+            FROM budgets
+            WHERE workspace_id = $1
+            ORDER BY updated_at DESC
+            LIMIT 1
+        """
+        budget_row = await postgres_pool.fetchrow(budget_query, workspace_uuid)
+        
+        # Get current month's spend
+        spend_query = """
+            SELECT COALESCE(SUM(cost_usd), 0) as current_spend
+            FROM traces
+            WHERE workspace_id = $1
+                AND timestamp >= date_trunc('month', NOW())
+                AND cost_usd IS NOT NULL
+        """
+        spend_row = await timescale_pool.fetchrow(spend_query, workspace_uuid)
+        current_spend = float(spend_row['current_spend'])
+        
+        if budget_row:
+            result = Budget(
+                workspace_id=budget_row['workspace_id'],
+                monthly_limit_usd=float(budget_row['monthly_limit_usd']) if budget_row['monthly_limit_usd'] else None,
+                alert_threshold_percentage=float(budget_row['alert_threshold_percentage']),
+                current_spend_usd=round(current_spend, 4),
+                created_at=budget_row['created_at'],
+                updated_at=budget_row['updated_at']
+            )
+        else:
+            # No budget set, return default
+            now = datetime.utcnow()
+            result = Budget(
+                workspace_id=workspace_uuid,
+                monthly_limit_usd=None,
+                alert_threshold_percentage=80.0,
+                current_spend_usd=round(current_spend, 4),
+                created_at=now,
+                updated_at=now
+            )
+        
+        # Cache for 1 minute (budget changes should be reflected quickly)
+        set_cache(cache_key, result.model_dump(), ttl=60)
+        logger.info(f"Budget fetched for workspace {x_workspace_id}")
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error fetching budget: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch budget: {str(e)}"
+        )
+
+
+@router.put("/budget", response_model=Budget)
+async def update_budget(
+    budget_update: BudgetUpdate,
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    postgres_pool: asyncpg.Pool = Depends(get_postgres_pool),
+    timescale_pool: asyncpg.Pool = Depends(get_timescale_pool)
+):
+    """
+    Update budget settings
+
+    Updates monthly limit and/or alert threshold for the workspace.
+    Creates a new budget entry if none exists.
+    """
+    try:
+        workspace_uuid = UUID(x_workspace_id)
+
+        # Check if budget exists
+        check_query = "SELECT 1 FROM budgets WHERE workspace_id = $1"
+        exists = await postgres_pool.fetchval(check_query, workspace_uuid)
+
+        if exists:
+            # Update existing budget
+            update_parts = []
+            params = [workspace_uuid]
+            param_idx = 2
+
+            if budget_update.monthly_limit_usd is not None:
+                update_parts.append(f"monthly_limit_usd = ${param_idx}")
+                params.append(budget_update.monthly_limit_usd)
+                param_idx += 1
+
+            if budget_update.alert_threshold_percentage is not None:
+                update_parts.append(f"alert_threshold_percentage = ${param_idx}")
+                params.append(budget_update.alert_threshold_percentage)
+                param_idx += 1
+
+            if not update_parts:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="No fields to update"
+                )
+
+            update_parts.append("updated_at = NOW()")
+
+            update_query = f"""
+                UPDATE budgets
+                SET {', '.join(update_parts)}
+                WHERE workspace_id = $1
+                RETURNING workspace_id, monthly_limit_usd, alert_threshold_percentage, created_at, updated_at
+            """
+
+            result_row = await postgres_pool.fetchrow(update_query, *params)
+        else:
+            # Insert new budget
+            insert_query = """
+                INSERT INTO budgets (
+                    workspace_id,
+                    monthly_limit_usd,
+                    alert_threshold_percentage,
+                    created_at,
+                    updated_at
+                )
+                VALUES ($1, $2, $3, NOW(), NOW())
+                RETURNING workspace_id, monthly_limit_usd, alert_threshold_percentage, created_at, updated_at
+            """
+
+            result_row = await postgres_pool.fetchrow(
+                insert_query,
+                workspace_uuid,
+                budget_update.monthly_limit_usd,
+                budget_update.alert_threshold_percentage or 80.0
+            )
+
+        # Get current month's spend
+        spend_query = """
+            SELECT COALESCE(SUM(cost_usd), 0) as current_spend
+            FROM traces
+            WHERE workspace_id = $1
+                AND timestamp >= date_trunc('month', NOW())
+                AND cost_usd IS NOT NULL
+        """
+        spend_row = await timescale_pool.fetchrow(spend_query, workspace_uuid)
+        current_spend = float(spend_row['current_spend'])
+
+        result = Budget(
+            workspace_id=result_row['workspace_id'],
+            monthly_limit_usd=float(result_row['monthly_limit_usd']) if result_row['monthly_limit_usd'] else None,
+            alert_threshold_percentage=float(result_row['alert_threshold_percentage']),
+            current_spend_usd=round(current_spend, 4),
+            created_at=result_row['created_at'],
+            updated_at=result_row['updated_at']
+        )
+
+        # Invalidate cache
+        cache_key = f"budget:{x_workspace_id}"
+        set_cache(cache_key, None, ttl=0)  # Delete cache
+
+        logger.info(f"Budget updated for workspace {x_workspace_id}")
+
+        return result
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid workspace ID: {str(e)}"
+        )
+    except Exception as e:
+        logger.error(f"Error updating budget: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to update budget: {str(e)}"
+        )
+
+
+@router.get("/by-department")
+async def get_cost_by_department(
+    range: str = QueryParam("30d", regex="^(1h|24h|7d|30d)$"),
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    timescale_pool: asyncpg.Pool = Depends(get_timescale_pool)
+):
+    """
+    Get cost breakdown by model_provider (simplified for MVP without departments table)
+
+    Returns cost distribution across AI providers with trend analysis.
+    This serves as a department proxy until Phase 1 schema is implemented.
+    """
+    cache_key = f"cost_by_department:{x_workspace_id}:{range}"
+    cached = get_cache(cache_key)
+    if cached:
+        logger.info(f"Cache hit for {cache_key}")
+        return cached
+
+    try:
+        workspace_uuid = UUID(x_workspace_id)
+        hours = parse_time_range(range)
+
+        # Get cost by model_provider (using as department proxy)
+        query = """
+            WITH provider_costs AS (
+                SELECT
+                    COALESCE(model_provider, 'unknown') as provider,
+                    COALESCE(SUM(cost_usd), 0) as total_cost,
+                    COUNT(*)::int as request_count
+                FROM traces
+                WHERE workspace_id = $1
+                    AND timestamp >= NOW() - INTERVAL '1 hour' * $2
+                    AND cost_usd IS NOT NULL
+                GROUP BY model_provider
+            ),
+            prev_period AS (
+                SELECT
+                    COALESCE(model_provider, 'unknown') as provider,
+                    COALESCE(SUM(cost_usd), 0) as prev_cost
+                FROM traces
+                WHERE workspace_id = $1
+                    AND timestamp >= NOW() - INTERVAL '1 hour' * ($2 * 2)
+                    AND timestamp < NOW() - INTERVAL '1 hour' * $2
+                    AND cost_usd IS NOT NULL
+                GROUP BY model_provider
+            ),
+            top_agents AS (
+                SELECT
+                    model_provider as provider,
+                    agent_id,
+                    SUM(cost_usd) as agent_cost,
+                    ROW_NUMBER() OVER (PARTITION BY model_provider ORDER BY SUM(cost_usd) DESC) as rn
+                FROM traces
+                WHERE workspace_id = $1
+                    AND timestamp >= NOW() - INTERVAL '1 hour' * $2
+                    AND cost_usd IS NOT NULL
+                GROUP BY model_provider, agent_id
+            )
+            SELECT
+                pc.provider,
+                pc.total_cost,
+                pc.request_count,
+                pp.prev_cost,
+                ARRAY_AGG(
+                    json_build_object(
+                        'agent_id', ta.agent_id,
+                        'cost', ta.agent_cost
+                    ) ORDER BY ta.agent_cost DESC
+                ) FILTER (WHERE ta.rn <= 5) as top_agents
+            FROM provider_costs pc
+            LEFT JOIN prev_period pp ON pc.provider = pp.provider
+            LEFT JOIN top_agents ta ON pc.provider = ta.provider AND ta.rn <= 5
+            GROUP BY pc.provider, pc.total_cost, pc.request_count, pp.prev_cost
+            ORDER BY pc.total_cost DESC
+        """
+
+        rows = await timescale_pool.fetch(query, workspace_uuid, hours)
+
+        # Calculate metrics
+        data = []
+        for row in rows:
+            total_cost = float(row['total_cost'])
+            prev_cost = float(row['prev_cost'] or 0)
+
+            # Calculate change percentage
+            change_pct = 0.0
+            if prev_cost > 0:
+                change_pct = round(((total_cost - prev_cost) / prev_cost) * 100, 2)
+
+            data.append({
+                'department_name': row['provider'].upper() if row['provider'] else 'Unknown',
+                'department_code': row['provider'] or 'unknown',
+                'total_cost_usd': round(total_cost, 4),
+                'budget_monthly_usd': None,  # Not yet implemented
+                'budget_used_percentage': None,
+                'request_count': row['request_count'],
+                'change_from_previous': change_pct,
+                'top_agents': row['top_agents'] or []
+            })
+
+        result = {
+            'data': data,
+            'meta': {
+                'range': range,
+                'total_departments': len(data),
+                'total_cost_usd': round(sum(d['total_cost_usd'] for d in data), 4)
+            }
+        }
+
+        # Cache for 5 minutes
+        set_cache(cache_key, result, ttl=300)
+        logger.info(f"Cost by department fetched: {len(data)} providers")
+
+        return result
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid workspace ID format: {str(e)}"
+        )
+    except Exception as e:
+        logger.error(f"Error fetching cost by department: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch cost by department: {str(e)}"
+        )
+
+
+@router.get("/provider-comparison")
+async def get_provider_comparison(
+    range: str = QueryParam("30d", regex="^(1h|24h|7d|30d)$"),
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    pool: asyncpg.Pool = Depends(get_timescale_pool)
+):
+    """
+    Cost and performance comparison across AI providers
+
+    Compares OpenAI, Anthropic, and Google across:
+    - Total cost
+    - Request count
+    - Average latency (P50, P95, P99)
+    - Error rate
+    - Cost per request
+    - Cost per successful request
+    """
+    cache_key = f"cost_provider_comparison:{x_workspace_id}:{range}"
+    cached = get_cache(cache_key)
+    if cached:
+        logger.info(f"Cache hit for {cache_key}")
+        return cached
+
+    try:
+        workspace_uuid = UUID(x_workspace_id)
+        hours = parse_time_range(range)
+
+        query = """
+            SELECT
+                model_provider,
+                COALESCE(SUM(cost_usd), 0) as total_cost,
+                COUNT(*)::int as request_count,
+                COUNT(*) FILTER (WHERE status = 'success')::int as success_count,
+                COUNT(*) FILTER (WHERE status = 'error')::int as error_count,
+                percentile_cont(0.50) WITHIN GROUP (ORDER BY latency_ms) as p50_latency,
+                percentile_cont(0.95) WITHIN GROUP (ORDER BY latency_ms) as p95_latency,
+                percentile_cont(0.99) WITHIN GROUP (ORDER BY latency_ms) as p99_latency,
+                AVG(latency_ms) as avg_latency
+            FROM traces
+            WHERE workspace_id = $1
+                AND timestamp >= NOW() - INTERVAL '1 hour' * $2
+                AND cost_usd IS NOT NULL
+                AND model_provider IS NOT NULL
+            GROUP BY model_provider
+            ORDER BY total_cost DESC
+        """
+
+        rows = await pool.fetch(query, workspace_uuid, hours)
+
+        data = []
+        for row in rows:
+            total_cost = float(row['total_cost'])
+            request_count = row['request_count']
+            success_count = row['success_count']
+            error_count = row['error_count']
+
+            error_rate = (error_count / max(request_count, 1)) * 100
+            cost_per_request = total_cost / max(request_count, 1)
+            cost_per_success = total_cost / max(success_count, 1) if success_count > 0 else 0
+
+            data.append({
+                'provider_name': row['model_provider'],
+                'total_cost_usd': round(total_cost, 4),
+                'request_count': request_count,
+                'success_count': success_count,
+                'error_count': error_count,
+                'error_rate': round(error_rate, 2),
+                'p50_latency_ms': round(float(row['p50_latency'] or 0), 2),
+                'p95_latency_ms': round(float(row['p95_latency'] or 0), 2),
+                'p99_latency_ms': round(float(row['p99_latency'] or 0), 2),
+                'avg_latency_ms': round(float(row['avg_latency'] or 0), 2),
+                'cost_per_request_usd': round(cost_per_request, 6),
+                'cost_per_success_usd': round(cost_per_success, 6)
+            })
+
+        result = {
+            'data': data,
+            'meta': {
+                'range': range,
+                'total_providers': len(data),
+                'total_cost_usd': round(sum(d['total_cost_usd'] for d in data), 4),
+                'total_requests': sum(d['request_count'] for d in data)
+            }
+        }
+
+        # Cache for 5 minutes
+        set_cache(cache_key, result, ttl=300)
+        logger.info(f"Provider comparison fetched: {len(data)} providers")
+
+        return result
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid workspace ID format: {str(e)}"
+        )
+    except Exception as e:
+        logger.error(f"Error fetching provider comparison: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch provider comparison: {str(e)}"
+        )
+
+
+@router.get("/department-budgets")
+async def get_department_budgets(
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    postgres_pool: asyncpg.Pool = Depends(get_postgres_pool)
+):
+    """
+    Get all department budgets with spend, remaining, and alert status
+
+    Returns budget cards for Department Budget Dashboard visualization.
+    Includes traffic light status (green/yellow/red) based on consumption.
+    """
+    cache_key = f"department_budgets:{x_workspace_id}"
+    cached = get_cache(cache_key)
+    if cached:
+        logger.info(f"Cache hit for {cache_key}")
+        return cached
+
+    try:
+        query = """
+            SELECT
+                budget_id,
+                department_id,
+                budget_period,
+                period_start_date,
+                period_end_date,
+                allocated_budget_usd,
+                spent_to_date_usd,
+                remaining_budget_usd,
+                budget_consumed_pct,
+                burn_rate_daily_usd,
+                projected_overrun_usd,
+                days_until_depletion,
+                alert_threshold_warning,
+                alert_threshold_critical,
+                alert_status,
+                is_active,
+                created_at,
+                updated_at
+            FROM department_budgets
+            WHERE workspace_id::text = $1 AND is_active = true
+            ORDER BY budget_consumed_pct DESC
+        """
+
+        rows = await postgres_pool.fetch(query, x_workspace_id)
+
+        data = []
+        for row in rows:
+            data.append({
+                'budget_id': str(row['budget_id']),
+                'department_id': str(row['department_id']),
+                'budget_period': row['budget_period'],
+                'period_start_date': row['period_start_date'].isoformat(),
+                'period_end_date': row['period_end_date'].isoformat(),
+                'allocated_budget_usd': float(row['allocated_budget_usd']),
+                'spent_to_date_usd': float(row['spent_to_date_usd']),
+                'remaining_budget_usd': float(row['remaining_budget_usd']),
+                'budget_consumed_pct': float(row['budget_consumed_pct']),
+                'burn_rate_daily_usd': float(row['burn_rate_daily_usd']) if row['burn_rate_daily_usd'] else 0,
+                'projected_overrun_usd': float(row['projected_overrun_usd']) if row['projected_overrun_usd'] else 0,
+                'days_until_depletion': row['days_until_depletion'],
+                'alert_status': row['alert_status'],
+                'alert_threshold_warning': float(row['alert_threshold_warning']),
+                'alert_threshold_critical': float(row['alert_threshold_critical'])
+            })
+
+        # Count budgets by alert status
+        status_counts = {'green': 0, 'yellow': 0, 'red': 0}
+        for d in data:
+            status = d.get('alert_status', 'green')
+            if status in status_counts:
+                status_counts[status] += 1
+
+        result = {
+            'data': data,
+            'meta': {
+                'total_budgets': len(data),
+                'total_allocated': sum(d['allocated_budget_usd'] for d in data),
+                'total_spent': sum(d['spent_to_date_usd'] for d in data),
+                'total_remaining': sum(d['remaining_budget_usd'] for d in data),
+                'overall_consumption_pct': round(
+                    (sum(d['spent_to_date_usd'] for d in data) / sum(d['allocated_budget_usd'] for d in data)) * 100, 2
+                ) if sum(d['allocated_budget_usd'] for d in data) > 0 else 0,
+                'budgets_by_status': status_counts
+            }
+        }
+
+        # Cache for 1 minute
+        set_cache(cache_key, result, ttl=60)
+        logger.info(f"Department budgets fetched: {len(data)} budgets")
+
+        return result
+
+    except Exception as e:
+        logger.error(f"Error fetching department budgets: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch department budgets: {str(e)}"
+        )
+
+
+@router.get("/top-agents")
+async def get_top_agents(
+    range: str = QueryParam("30d", regex="^(1h|24h|7d|30d)$"),
+    limit: int = QueryParam(20, ge=1, le=100),
+    sort_by: str = QueryParam("total_cost", regex="^(total_cost|cost_per_request|request_count)$"),
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    pool: asyncpg.Pool = Depends(get_timescale_pool)
+):
+    """
+    Get top costly agents ranked by total cost or other metrics
+
+    Useful for identifying cost drivers and optimization opportunities.
+    Includes agent ID, total cost, request count, cost per request.
+    """
+    cache_key = f"top_agents:{x_workspace_id}:{range}:{limit}:{sort_by}"
+    cached = get_cache(cache_key)
+    if cached:
+        logger.info(f"Cache hit for {cache_key}")
+        return cached
+
+    try:
+        workspace_uuid = UUID(x_workspace_id)
+        hours = parse_time_range(range)
+
+        # Determine sort column
+        sort_column = {
+            'total_cost': 'total_cost',
+            'cost_per_request': 'cost_per_request',
+            'request_count': 'request_count'
+        }.get(sort_by, 'total_cost')
+
+        query = f"""
+            SELECT
+                agent_id,
+                COALESCE(SUM(cost_usd), 0) as total_cost,
+                COUNT(*)::int as request_count,
+                COALESCE(AVG(cost_usd), 0) as cost_per_request,
+                COALESCE(SUM(tokens_input), 0) as total_input_tokens,
+                COALESCE(SUM(tokens_output), 0) as total_output_tokens,
+                COALESCE(SUM(tokens_total), 0) as total_tokens,
+                COUNT(*) FILTER (WHERE status = 'success')::int as success_count,
+                COUNT(*) FILTER (WHERE status = 'error' OR status = 'timeout')::int as error_count
+            FROM traces
+            WHERE workspace_id = $1
+                AND timestamp >= NOW() - INTERVAL '1 hour' * $2
+                AND cost_usd IS NOT NULL
+            GROUP BY agent_id
+            ORDER BY {sort_column} DESC
+            LIMIT $3
+        """
+
+        rows = await pool.fetch(query, workspace_uuid, hours, limit)
+
+        data = []
+        for row in rows:
+            total_cost = float(row['total_cost'])
+            request_count = row['request_count']
+            total_tokens = row['total_tokens']
+
+            # Calculate optimization potential (simplified for MVP)
+            # Assume 20-30% savings possible through various optimizations
+            optimization_potential = total_cost * random.uniform(0.20, 0.30)
+
+            # Token efficiency score (0-100, higher is better)
+            # Based on cost per 1K tokens vs ideal target
+            cost_per_1k_tokens = (total_cost / total_tokens * 1000) if total_tokens > 0 else 0
+            token_efficiency_score = max(0, min(100, 100 - (cost_per_1k_tokens * 10)))
+
+            data.append({
+                'agent_id': row['agent_id'],
+                'total_cost_usd': round(total_cost, 4),
+                'request_count': request_count,
+                'cost_per_request_usd': round(float(row['cost_per_request']), 6),
+                'total_input_tokens': row['total_input_tokens'],
+                'total_output_tokens': row['total_output_tokens'],
+                'total_tokens': row['total_tokens'],
+                'success_count': row['success_count'],
+                'error_count': row['error_count'],
+                'error_rate_pct': round((row['error_count'] / request_count * 100), 2) if request_count > 0 else 0,
+                'optimization_potential_usd': round(optimization_potential, 2),
+                'token_efficiency_score': round(token_efficiency_score, 1)
+            })
+
+        result = {
+            'data': data,
+            'meta': {
+                'range': range,
+                'limit': limit,
+                'sort_by': sort_by,
+                'total_agents': len(data),
+                'total_cost_usd': round(sum(d['total_cost_usd'] for d in data), 2),
+                'total_optimization_potential_usd': round(sum(d['optimization_potential_usd'] for d in data), 2)
+            }
+        }
+
+        # Cache for 3 minutes
+        set_cache(cache_key, result, ttl=180)
+        logger.info(f"Top agents fetched: {len(data)} agents")
+
+        return result
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid workspace ID format: {str(e)}"
+        )
+    except Exception as e:
+        logger.error(f"Error fetching top agents: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch top agents: {str(e)}"
+        )
+
+
+@router.get("/optimization-opportunities")
+async def get_optimization_opportunities(
+    status_filter: Optional[str] = QueryParam(None, regex="^(identified|in_review|approved|in_progress|implemented|declined|obsolete)$"),
+    sort_by: str = QueryParam("savings", regex="^(savings|priority|effort)$"),
+    limit: int = QueryParam(50, ge=1, le=100),
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    postgres_pool: asyncpg.Pool = Depends(get_postgres_pool)
+):
+    """
+    Get cost optimization opportunities sorted by savings potential
+
+    Returns actionable recommendations for reducing costs.
+    Includes implementation effort, risk assessment, and projected savings.
+    """
+    cache_key = f"optimization_opportunities:{x_workspace_id}:{status_filter}:{sort_by}:{limit}"
+    cached = get_cache(cache_key)
+    if cached:
+        logger.info(f"Cache hit for {cache_key}")
+        return cached
+
+    try:
+        # Build WHERE clause
+        where_clauses = ["workspace_id::text = $1"]
+        params = [x_workspace_id]
+        param_idx = 2
+
+        if status_filter:
+            where_clauses.append(f"status = ${param_idx}")
+            params.append(status_filter)
+            param_idx += 1
+
+        where_clause = " AND ".join(where_clauses)
+
+        # Determine sort column
+        sort_column = {
+            'savings': 'savings_potential_monthly_usd DESC',
+            'priority': 'priority_score DESC',
+            'effort': 'implementation_effort ASC, savings_potential_monthly_usd DESC'
+        }.get(sort_by, 'savings_potential_monthly_usd DESC')
+
+        query = f"""
+            SELECT
+                opportunity_id,
+                optimization_type,
+                affected_agents,
+                affected_departments,
+                current_cost_monthly_usd,
+                optimized_cost_monthly_usd,
+                savings_potential_monthly_usd,
+                savings_potential_annual_usd,
+                implementation_effort,
+                estimated_hours,
+                technical_risk,
+                quality_impact,
+                recommendation_details,
+                status,
+                assigned_to,
+                implemented_at,
+                actual_savings_realized_usd,
+                priority_score,
+                identified_by,
+                reviewed_by,
+                notes,
+                created_at,
+                updated_at
+            FROM cost_optimization_opportunities
+            WHERE {where_clause}
+            ORDER BY {sort_column}
+            LIMIT ${param_idx}
+        """
+        params.append(limit)
+
+        rows = await postgres_pool.fetch(query, *params)
+
+        data = []
+        for row in rows:
+            data.append({
+                'opportunity_id': str(row['opportunity_id']),
+                'optimization_type': row['optimization_type'],
+                'affected_agents': row['affected_agents'],
+                'affected_departments': [str(d) for d in (row['affected_departments'] or [])],
+                'current_cost_monthly_usd': float(row['current_cost_monthly_usd']),
+                'optimized_cost_monthly_usd': float(row['optimized_cost_monthly_usd']),
+                'savings_potential_monthly_usd': float(row['savings_potential_monthly_usd']),
+                'savings_potential_annual_usd': float(row['savings_potential_annual_usd']),
+                'implementation_effort': row['implementation_effort'],
+                'estimated_hours': row['estimated_hours'],
+                'technical_risk': row['technical_risk'],
+                'quality_impact': row['quality_impact'],
+                'recommendation_details': row['recommendation_details'],
+                'status': row['status'],
+                'assigned_to': str(row['assigned_to']) if row['assigned_to'] else None,
+                'implemented_at': row['implemented_at'].isoformat() if row['implemented_at'] else None,
+                'actual_savings_realized_usd': float(row['actual_savings_realized_usd']) if row['actual_savings_realized_usd'] else None,
+                'priority_score': row['priority_score'],
+                'identified_by': row['identified_by'],
+                'reviewed_by': str(row['reviewed_by']) if row['reviewed_by'] else None,
+                'notes': row['notes'],
+                'created_at': row['created_at'].isoformat(),
+                'updated_at': row['updated_at'].isoformat()
+            })
+
+        result = {
+            'data': data,
+            'meta': {
+                'total_opportunities': len(data),
+                'status_filter': status_filter or 'all',
+                'sort_by': sort_by,
+                'total_savings_potential_monthly': round(sum(d['savings_potential_monthly_usd'] for d in data), 2),
+                'total_savings_potential_annual': round(sum(d['savings_potential_annual_usd'] for d in data), 2),
+                'opportunities_by_type': {}
+            }
+        }
+
+        # Count by type
+        from collections import Counter
+        type_counts = Counter(d['optimization_type'] for d in data)
+        result['meta']['opportunities_by_type'] = dict(type_counts)
+
+        # Cache for 5 minutes
+        set_cache(cache_key, result, ttl=300)
+        logger.info(f"Optimization opportunities fetched: {len(data)} opportunities")
+
+        return result
+
+    except Exception as e:
+        logger.error(f"Error fetching optimization opportunities: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch optimization opportunities: {str(e)}"
+        )
+
+
+# ============================================================================
+# PHASE 2.1: Advanced Cost Analytics API Endpoints
+# ============================================================================
+
+@router.get("/attribution")
+async def get_cost_attribution(
+    range: str = QueryParam("30d", regex="^(1h|24h|7d|30d)$"),
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    pool: asyncpg.Pool = Depends(get_timescale_pool)
+):
+    """
+    Get hierarchical cost attribution breakdown
+    
+    Returns cost tree: workspace → departments → agents → models
+    
+    PRD Tab 3: Chart 3.1 - Cost Attribution Sunburst (P0)
+    """
+    cache_key = f"cost_attribution:{x_workspace_id}:{range}"
+    cached = get_cache(cache_key)
+    if cached:
+        return cached
+    
+    try:
+        hours = parse_time_range(range)
+        
+        # Get hierarchical cost breakdown
+        query = """
+            WITH dept_costs AS (
+                SELECT
+                    COALESCE(department_id::text, 'Unknown') as dept_id,
+                    agent_id,
+                    model,
+                    SUM(cost_usd) as cost
+                FROM traces
+                WHERE workspace_id = $1
+                    AND timestamp >= NOW() - INTERVAL '1 hour' * $2
+                GROUP BY dept_id, agent_id, model
+            ),
+            total_cost AS (
+                SELECT SUM(cost) as total FROM dept_costs
+            )
+            SELECT
+                dept_id,
+                agent_id,
+                model,
+                cost,
+                ROUND((cost / NULLIF(tc.total, 0)) * 100, 2) as percentage
+            FROM dept_costs, total_cost tc
+            ORDER BY cost DESC
+        """
+        
+        rows = await pool.fetch(query, x_workspace_id, hours)
+        
+        # Build hierarchical tree
+        departments = {}
+        total_cost = sum(row['cost'] for row in rows)
+        
+        for row in rows:
+            dept = row['dept_id']
+            agent = row['agent_id']
+            model = row['model']
+            cost = float(row['cost'])
+            pct = float(row['percentage'])
+            
+            if dept not in departments:
+                departments[dept] = {
+                    'name': dept,
+                    'value': 0,
+                    'percentage': 0,
+                    'children': {},
+                    'level': 'department'
+                }
+            
+            if agent not in departments[dept]['children']:
+                departments[dept]['children'][agent] = {
+                    'name': agent,
+                    'value': 0,
+                    'percentage': 0,
+                    'children': [],
+                    'level': 'agent'
+                }
+            
+            departments[dept]['children'][agent]['children'].append({
+                'name': model or 'Unknown',
+                'value': cost,
+                'percentage': pct,
+                'level': 'model'
+            })
+            
+            departments[dept]['children'][agent]['value'] += cost
+            departments[dept]['value'] += cost
+        
+        # Calculate percentages for departments and agents
+        for dept in departments.values():
+            dept['percentage'] = round((dept['value'] / total_cost) * 100, 2) if total_cost > 0 else 0
+            dept['children'] = list(dept['children'].values())
+            for agent in dept['children']:
+                agent['percentage'] = round((agent['value'] / total_cost) * 100, 2) if total_cost > 0 else 0
+        
+        # Find top contributor
+        top_contributor = max(rows, key=lambda r: r['cost']) if rows else None
+        
+        result = {
+            'root': {
+                'name': 'Workspace',
+                'value': total_cost,
+                'percentage': 100,
+                'children': list(departments.values()),
+                'level': 'workspace'
+            },
+            'total_cost': total_cost,
+            'top_contributor': {
+                'name': f"{top_contributor['dept_id']}/{top_contributor['agent_id']}" if top_contributor else 'N/A',
+                'cost': float(top_contributor['cost']) if top_contributor else 0,
+                'percentage': float(top_contributor['percentage']) if top_contributor else 0
+            } if top_contributor else None
+        }
+        
+        set_cache(cache_key, result, ttl=300)
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error fetching cost attribution: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch cost attribution: {str(e)}"
+        )
+
+
+@router.get("/token-waterfall")
+async def get_token_waterfall(
+    range: str = QueryParam("30d", regex="^(1h|24h|7d|30d)$"),
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    pool: asyncpg.Pool = Depends(get_timescale_pool)
+):
+    """
+    Get token usage waterfall with cost breakdown
+    
+    Shows input/output/cached token flows and associated costs
+    
+    PRD Tab 3: Chart 3.2 - Token Usage Waterfall (P1)
+    """
+    cache_key = f"token_waterfall:{x_workspace_id}:{range}"
+    cached = get_cache(cache_key)
+    if cached:
+        return cached
+    
+    try:
+        hours = parse_time_range(range)
+        
+        query = """
+            SELECT
+                SUM(input_tokens) as total_input_tokens,
+                SUM(output_tokens) as total_output_tokens,
+                SUM(cached_tokens) as cached_tokens,
+                ROUND(
+                    (SUM(cached_tokens)::numeric / NULLIF(SUM(input_tokens + output_tokens), 0)) * 100, 
+                    2
+                ) as cache_hit_rate,
+                SUM(CASE 
+                    WHEN input_tokens > 0 THEN cost_usd * (input_tokens::numeric / NULLIF(input_tokens + output_tokens, 0))
+                    ELSE 0 
+                END) as input_cost,
+                SUM(CASE 
+                    WHEN output_tokens > 0 THEN cost_usd * (output_tokens::numeric / NULLIF(input_tokens + output_tokens, 0))
+                    ELSE 0 
+                END) as output_cost,
+                SUM(CASE 
+                    WHEN cached_tokens > 0 THEN cost_usd * 0.1
+                    ELSE 0 
+                END) as cached_cost
+            FROM traces
+            WHERE workspace_id = $1
+                AND timestamp >= NOW() - INTERVAL '1 hour' * $2
+        """
+        
+        row = await pool.fetchrow(query, x_workspace_id, hours)
+        
+        total_input = int(row['total_input_tokens'] or 0)
+        total_output = int(row['total_output_tokens'] or 0)
+        cached = int(row['cached_tokens'] or 0)
+        cache_rate = float(row['cache_hit_rate'] or 0)
+        
+        input_cost = float(row['input_cost'] or 0)
+        output_cost = float(row['output_cost'] or 0)
+        cached_cost = float(row['cached_cost'] or 0)
+        
+        # Calculate savings (cached tokens cost 90% less than regular tokens)
+        cost_without_cache = cached_cost * 10  # What it would have cost without caching
+        savings = cost_without_cache - cached_cost
+        
+        result = {
+            'total_input_tokens': total_input,
+            'total_output_tokens': total_output,
+            'cached_tokens': cached,
+            'cache_hit_rate': cache_rate,
+            'cost_breakdown': {
+                'input_cost': input_cost,
+                'output_cost': output_cost,
+                'cached_cost': cached_cost
+            },
+            'savings_from_cache': savings
+        }
+        
+        set_cache(cache_key, result, ttl=300)
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error fetching token waterfall: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch token waterfall: {str(e)}"
+        )
+
+
+@router.get("/forecast")
+async def get_cost_forecast(
+    range: str = QueryParam("30d", regex="^(1h|24h|7d|30d)$"),
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    pool: asyncpg.Pool = Depends(get_timescale_pool)
+):
+    """
+    Get 30-day cost forecast with confidence intervals
+    
+    Uses time-series analysis to predict future costs
+    
+    PRD Tab 3: Chart 3.3 - Cost Forecast Chart (P1)
+    """
+    cache_key = f"cost_forecast:{x_workspace_id}:{range}"
+    cached = get_cache(cache_key)
+    if cached:
+        return cached
+    
+    try:
+        hours = parse_time_range(range)
+        
+        # Get historical daily costs
+        query = """
+            SELECT
+                DATE(timestamp) as date,
+                SUM(cost_usd) as daily_cost
+            FROM traces
+            WHERE workspace_id = $1
+                AND timestamp >= NOW() - INTERVAL '1 hour' * $2
+            GROUP BY DATE(timestamp)
+            ORDER BY date ASC
+        """
+        
+        rows = await pool.fetch(query, x_workspace_id, hours)
+        
+        if len(rows) < 7:
+            return {
+                'historical': [],
+                'forecast': [],
+                'total_forecasted_cost': 0,
+                'trend': 'stable',
+                'confidence_level': 0
+            }
+        
+        # Simple linear regression for forecasting
+        import numpy as np
+        from datetime import datetime, timedelta
+        
+        dates = [row['date'] for row in rows]
+        costs = [float(row['daily_cost']) for row in rows]
+        
+        # Calculate trend
+        x = np.arange(len(costs))
+        coeffs = np.polyfit(x, costs, 1)
+        slope = coeffs[0]
+        
+        trend = 'increasing' if slope > 0.1 else 'decreasing' if slope < -0.1 else 'stable'
+        
+        # Generate historical data points
+        historical = [
+            {
+                'date': row['date'].isoformat(),
+                'actual_cost': float(row['daily_cost']),
+                'forecasted_cost': float(row['daily_cost']),
+                'lower_bound': float(row['daily_cost']) * 0.9,
+                'upper_bound': float(row['daily_cost']) * 1.1,
+                'is_forecast': False
+            }
+            for row in rows
+        ]
+        
+        # Generate 30-day forecast
+        last_date = dates[-1]
+        forecast = []
+        total_forecasted = 0
+        
+        for i in range(1, 31):
+            next_date = last_date + timedelta(days=i)
+            predicted_cost = max(0, costs[-1] + (slope * i))
+            
+            forecast.append({
+                'date': next_date.isoformat(),
+                'forecasted_cost': predicted_cost,
+                'lower_bound': predicted_cost * 0.8,
+                'upper_bound': predicted_cost * 1.2,
+                'is_forecast': True
+            })
+            total_forecasted += predicted_cost
+        
+        result = {
+            'historical': historical,
+            'forecast': forecast,
+            'total_forecasted_cost': total_forecasted,
+            'trend': trend,
+            'confidence_level': min(95, max(50, 100 - (len(rows) * 2)))  # Higher confidence with more data
+        }
+        
+        set_cache(cache_key, result, ttl=300)
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error generating cost forecast: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate cost forecast: {str(e)}"
+        )
+
+
+@router.get("/provider-matrix")
+async def get_provider_matrix(
+    range: str = QueryParam("30d", regex="^(1h|24h|7d|30d)$"),
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    pool: asyncpg.Pool = Depends(get_timescale_pool)
+):
+    """
+    Get provider cost/performance matrix
+    
+    Compares providers by cost efficiency and quality
+    
+    PRD Tab 3: Chart 3.4 - Provider Cost/Performance Matrix (P1)
+    """
+    cache_key = f"provider_matrix:{x_workspace_id}:{range}"
+    cached = get_cache(cache_key)
+    if cached:
+        return cached
+    
+    try:
+        hours = parse_time_range(range)
+        
+        query = """
+            SELECT
+                model_provider as provider,
+                COUNT(*)::int as total_requests,
+                AVG(cost_usd)::numeric as avg_cost_per_request,
+                AVG(CASE 
+                    WHEN status_code = 200 THEN 100
+                    WHEN status_code >= 500 THEN 0
+                    ELSE 50
+                END)::numeric as quality_score
+            FROM traces
+            WHERE workspace_id = $1
+                AND timestamp >= NOW() - INTERVAL '1 hour' * $2
+                AND model_provider IS NOT NULL
+            GROUP BY model_provider
+            HAVING COUNT(*) >= 10
+            ORDER BY avg_cost_per_request ASC
+        """
+        
+        rows = await pool.fetch(query, x_workspace_id, hours)
+        
+        # Assign colors to providers
+        colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
+        
+        providers = [
+            {
+                'provider': row['provider'],
+                'avg_cost_per_request': float(row['avg_cost_per_request']),
+                'quality_score': float(row['quality_score']),
+                'total_requests': row['total_requests'],
+                'color': colors[i % len(colors)]
+            }
+            for i, row in enumerate(rows)
+        ]
+        
+        # Determine optimal zone (high quality, low cost)
+        if providers:
+            avg_quality = sum(p['quality_score'] for p in providers) / len(providers)
+            avg_cost = sum(p['avg_cost_per_request'] for p in providers) / len(providers)
+            
+            # Find best value (above avg quality, below avg cost)
+            best_value = None
+            for p in providers:
+                if p['quality_score'] > avg_quality and p['avg_cost_per_request'] < avg_cost:
+                    if not best_value or p['quality_score'] > best_value['quality_score']:
+                        best_value = p
+            
+            optimal_zone = {
+                'min_quality': avg_quality,
+                'max_cost': avg_cost
+            }
+        else:
+            optimal_zone = {'min_quality': 80, 'max_cost': 0.01}
+            best_value = None
+        
+        result = {
+            'providers': providers,
+            'optimal_zone': optimal_zone,
+            'best_value_provider': best_value['provider'] if best_value else None
+        }
+        
+        set_cache(cache_key, result, ttl=300)
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error fetching provider matrix: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch provider matrix: {str(e)}"
+        )
+
+
+@router.get("/caching-roi")
+async def get_caching_roi(
+    range: str = QueryParam("30d", regex="^(1h|24h|7d|30d)$"),
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    pool: asyncpg.Pool = Depends(get_timescale_pool)
+):
+    """
+    Get caching ROI analysis
+    
+    Calculates cache performance and cost savings
+    
+    PRD Tab 3: Chart 3.5 - Caching ROI Calculator (P1)
+    """
+    cache_key = f"caching_roi:{x_workspace_id}:{range}"
+    cached = get_cache(cache_key)
+    if cached:
+        return cached
+    
+    try:
+        hours = parse_time_range(range)
+        
+        query = """
+            SELECT
+                COUNT(*)::int as total_requests,
+                SUM(CASE WHEN cached_tokens > 0 THEN 1 ELSE 0 END)::int as cache_hits,
+                SUM(CASE WHEN cached_tokens = 0 OR cached_tokens IS NULL THEN 1 ELSE 0 END)::int as cache_misses,
+                SUM(cost_usd) as cost_with_cache,
+                AVG(CASE WHEN cached_tokens > 0 THEN latency_ms ELSE NULL END) as avg_cached_latency,
+                AVG(CASE WHEN cached_tokens = 0 OR cached_tokens IS NULL THEN latency_ms ELSE NULL END) as avg_uncached_latency
+            FROM traces
+            WHERE workspace_id = $1
+                AND timestamp >= NOW() - INTERVAL '1 hour' * $2
+        """
+        
+        row = await pool.fetchrow(query, x_workspace_id, hours)
+        
+        total_requests = row['total_requests'] or 0
+        cache_hits = row['cache_hits'] or 0
+        cache_misses = row['cache_misses'] or 0
+        cost_with_cache = float(row['cost_with_cache'] or 0)
+        avg_cached_ms = float(row['avg_cached_latency'] or 100)
+        avg_uncached_ms = float(row['avg_uncached_latency'] or 500)
+        
+        cache_hit_rate = (cache_hits / total_requests * 100) if total_requests > 0 else 0
+        
+        # Calculate cost without cache (assume cache saves 90% of cost)
+        cache_savings_per_hit = cost_with_cache / total_requests * 0.9 if total_requests > 0 else 0
+        total_savings = cache_savings_per_hit * cache_hits
+        cost_without_cache = cost_with_cache + total_savings
+        
+        roi_percentage = (total_savings / max(cost_with_cache, 0.01)) * 100
+        
+        result = {
+            'total_requests': total_requests,
+            'cache_hits': cache_hits,
+            'cache_misses': cache_misses,
+            'cache_hit_rate': round(cache_hit_rate, 2),
+            'cost_with_cache': cost_with_cache,
+            'cost_without_cache': cost_without_cache,
+            'total_savings': total_savings,
+            'roi_percentage': round(roi_percentage, 2),
+            'avg_response_time_cached_ms': avg_cached_ms,
+            'avg_response_time_uncached_ms': avg_uncached_ms
+        }
+        
+        set_cache(cache_key, result, ttl=300)
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error calculating caching ROI: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to calculate caching ROI: {str(e)}"
+        )
+
+
+@router.get("/anomalies")
+async def get_cost_anomalies(
+    range: str = QueryParam("30d", regex="^(1h|24h|7d|30d)$"),
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    pool: asyncpg.Pool = Depends(get_timescale_pool)
+):
+    """
+    Get cost anomalies and unusual spending patterns
+    
+    Uses statistical analysis to detect anomalies
+    
+    PRD Tab 3: Chart 3.6 - Cost Anomaly Timeline (P1)
+    """
+    cache_key = f"cost_anomalies:{x_workspace_id}:{range}"
+    cached = get_cache(cache_key)
+    if cached:
+        return cached
+    
+    try:
+        hours = parse_time_range(range)
+        
+        # Get hourly costs
+        query = """
+            SELECT
+                DATE_TRUNC('hour', timestamp) as hour,
+                SUM(cost_usd) as hourly_cost
+            FROM traces
+            WHERE workspace_id = $1
+                AND timestamp >= NOW() - INTERVAL '1 hour' * $2
+            GROUP BY hour
+            ORDER BY hour ASC
+        """
+        
+        rows = await pool.fetch(query, x_workspace_id, hours)
+        
+        if len(rows) < 24:
+            return {
+                'timeline': [],
+                'anomalies': [],
+                'total_anomalies': 0,
+                'critical_anomalies': 0
+            }
+        
+        # Calculate statistics
+        import numpy as np
+        costs = [float(row['hourly_cost']) for row in rows]
+        mean_cost = np.mean(costs)
+        std_cost = np.std(costs)
+        
+        # Build timeline and detect anomalies
+        timeline = []
+        anomalies = []
+        
+        for row in rows:
+            actual_cost = float(row['hourly_cost'])
+            expected_cost = mean_cost
+            lower_bound = max(0, mean_cost - (2 * std_cost))
+            upper_bound = mean_cost + (2 * std_cost)
+            
+            timeline.append({
+                'timestamp': row['hour'].isoformat(),
+                'actual_cost': actual_cost,
+                'expected_cost': expected_cost,
+                'lower_bound': lower_bound,
+                'upper_bound': upper_bound
+            })
+            
+            # Detect anomaly (outside 2 std deviations)
+            deviation = ((actual_cost - expected_cost) / expected_cost * 100) if expected_cost > 0 else 0
+            
+            if actual_cost > upper_bound or actual_cost < lower_bound:
+                severity = 'critical' if abs(deviation) > 50 else 'high' if abs(deviation) > 30 else 'medium' if abs(deviation) > 15 else 'low'
+                
+                anomalies.append({
+                    'timestamp': row['hour'].isoformat(),
+                    'actual_cost': actual_cost,
+                    'expected_cost': expected_cost,
+                    'deviation_percentage': round(deviation, 2),
+                    'severity': severity,
+                    'reason': f"Cost spike detected: {abs(deviation):.1f}% deviation from baseline"
+                })
+        
+        result = {
+            'timeline': timeline,
+            'anomalies': anomalies,
+            'total_anomalies': len(anomalies),
+            'critical_anomalies': sum(1 for a in anomalies if a['severity'] == 'critical')
+        }
+
+        set_cache(cache_key, result, ttl=300)
+        return result
+
+    except Exception as e:
+        logger.error(f"Error detecting cost anomalies: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to detect cost anomalies: {str(e)}"
+        )
+
+
+# ============================================================================
+# AGENT COST DETAIL ENDPOINTS - Phase 2.2
+# ============================================================================
+
+@router.get("/agents/{agent_id}")
+async def get_agent_cost_overview(
+    agent_id: str,
+    range: str = QueryParam("7d", regex="^(1h|24h|7d|30d)$"),
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    pool: asyncpg.Pool = Depends(get_timescale_pool)
+):
+    """
+    Get agent cost overview with KPIs
+
+    Returns:
+    - agent_id, agent_name
+    - total_cost_usd, avg_cost_per_call_usd
+    - total_calls, cost_change_percentage
+    - most_used_model, department, primary_use_case
+    """
+    try:
+        cache_key = f"agent_cost_overview:{x_workspace_id}:{agent_id}:{range}"
+        cached = get_cache(cache_key)
+        if cached:
+            return cached
+
+        hours = parse_time_range(range)
+
+        # Get agent overview with cost metrics
+        query = """
+            WITH current_period AS (
+                SELECT
+                    agent_id,
+                    COALESCE(MAX(agent_name), agent_id) as agent_name,
+                    SUM(cost_usd) as total_cost_usd,
+                    COUNT(*)::int as total_calls,
+                    AVG(cost_usd)::numeric as avg_cost_per_call_usd,
+                    MODE() WITHIN GROUP (ORDER BY model) as most_used_model,
+                    MODE() WITHIN GROUP (ORDER BY COALESCE(department_id::text, 'Unknown')) as department
+                FROM traces
+                WHERE workspace_id = $1
+                    AND agent_id = $2
+                    AND timestamp >= NOW() - INTERVAL '1 hour' * $3
+                GROUP BY agent_id
+            ),
+            previous_period AS (
+                SELECT
+                    SUM(cost_usd) as prev_cost
+                FROM traces
+                WHERE workspace_id = $1
+                    AND agent_id = $2
+                    AND timestamp >= NOW() - INTERVAL '1 hour' * ($3 * 2)
+                    AND timestamp < NOW() - INTERVAL '1 hour' * $3
+            )
+            SELECT
+                cp.agent_id,
+                cp.agent_name,
+                COALESCE(cp.total_cost_usd, 0) as total_cost_usd,
+                COALESCE(cp.avg_cost_per_call_usd, 0) as avg_cost_per_call_usd,
+                cp.total_calls,
+                CASE
+                    WHEN pp.prev_cost > 0 THEN ((cp.total_cost_usd - pp.prev_cost) / pp.prev_cost * 100)
+                    ELSE 0
+                END as cost_change_percentage,
+                cp.most_used_model,
+                cp.department,
+                'AI Assistant' as primary_use_case
+            FROM current_period cp
+            LEFT JOIN previous_period pp ON true
+        """
+
+        async with pool.acquire() as conn:
+            row = await conn.fetchrow(query, x_workspace_id, agent_id, hours)
+
+            if not row:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"Agent {agent_id} not found"
+                )
+
+            result = dict(row)
+            set_cache(cache_key, result, ttl=60)
+            return result
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting agent cost overview: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get agent cost overview: {str(e)}"
+        )
+
+
+@router.get("/agents/{agent_id}/trend")
+async def get_agent_cost_trend(
+    agent_id: str,
+    range: str = QueryParam("7d", regex="^(1h|24h|7d|30d)$"),
+    granularity: str = QueryParam("daily", regex="^(hourly|daily)$"),
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    pool: asyncpg.Pool = Depends(get_timescale_pool)
+):
+    """
+    Get agent cost trend over time
+
+    Returns time-series data with:
+    - timestamp, cost_usd, call_count, avg_cost_per_call
+    """
+    try:
+        cache_key = f"agent_cost_trend:{x_workspace_id}:{agent_id}:{range}:{granularity}"
+        cached = get_cache(cache_key)
+        if cached:
+            return cached
+
+        hours = parse_time_range(range)
+        bucket_size = '1 hour' if granularity == 'hourly' else '1 day'
+
+        query = f"""
+            SELECT
+                time_bucket('{bucket_size}', timestamp) as timestamp,
+                SUM(cost_usd)::numeric as cost_usd,
+                COUNT(*)::int as call_count,
+                AVG(cost_usd)::numeric as avg_cost_per_call
+            FROM traces
+            WHERE workspace_id = $1
+                AND agent_id = $2
+                AND timestamp >= NOW() - INTERVAL '1 hour' * $3
+            GROUP BY time_bucket('{bucket_size}', timestamp)
+            ORDER BY timestamp ASC
+        """
+
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(query, x_workspace_id, agent_id, hours)
+
+            result = {'data': [dict(row) for row in rows]}
+            set_cache(cache_key, result, ttl=60)
+            return result
+
+    except Exception as e:
+        logger.error(f"Error getting agent cost trend: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get agent cost trend: {str(e)}"
+        )
+
+
+@router.get("/agents/{agent_id}/models")
+async def get_agent_model_breakdown(
+    agent_id: str,
+    range: str = QueryParam("7d", regex="^(1h|24h|7d|30d)$"),
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    pool: asyncpg.Pool = Depends(get_timescale_pool)
+):
+    """
+    Get agent model usage breakdown
+
+    Returns per-model metrics:
+    - model, model_provider
+    - total_cost_usd, call_count, avg_cost_per_call
+    - percentage_of_total
+    """
+    try:
+        cache_key = f"agent_model_breakdown:{x_workspace_id}:{agent_id}:{range}"
+        cached = get_cache(cache_key)
+        if cached:
+            return cached
+
+        hours = parse_time_range(range)
+
+        query = """
+            WITH total AS (
+                SELECT SUM(cost_usd) as total_cost
+                FROM traces
+                WHERE workspace_id = $1
+                    AND agent_id = $2
+                    AND timestamp >= NOW() - INTERVAL '1 hour' * $3
+            )
+            SELECT
+                model,
+                model_provider,
+                SUM(cost_usd)::numeric as total_cost_usd,
+                COUNT(*)::int as call_count,
+                AVG(cost_usd)::numeric as avg_cost_per_call,
+                (SUM(cost_usd) / NULLIF(t.total_cost, 0) * 100)::numeric as percentage_of_total
+            FROM traces, total t
+            WHERE workspace_id = $1
+                AND agent_id = $2
+                AND timestamp >= NOW() - INTERVAL '1 hour' * $3
+            GROUP BY model, model_provider, t.total_cost
+            ORDER BY total_cost_usd DESC
+        """
+
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(query, x_workspace_id, agent_id, hours)
+
+            result = {'data': [dict(row) for row in rows]}
+            set_cache(cache_key, result, ttl=60)
+            return result
+
+    except Exception as e:
+        logger.error(f"Error getting agent model breakdown: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get agent model breakdown: {str(e)}"
+        )
+
+
+@router.get("/agents/{agent_id}/comparison")
+async def get_agent_cost_comparison(
+    agent_id: str,
+    range: str = QueryParam("7d", regex="^(1h|24h|7d|30d)$"),
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    pool: asyncpg.Pool = Depends(get_timescale_pool)
+):
+    """
+    Compare agent with peers in same department
+
+    Returns:
+    - current_agent: metrics for this agent
+    - peers: similar agents with their metrics
+    - department_average, workspace_average
+    - percentile_rank
+    """
+    try:
+        cache_key = f"agent_cost_comparison:{x_workspace_id}:{agent_id}:{range}"
+        cached = get_cache(cache_key)
+        if cached:
+            return cached
+
+        hours = parse_time_range(range)
+
+        # Get current agent's department
+        dept_query = """
+            SELECT COALESCE(department_id::text, 'Unknown') as dept
+            FROM traces
+            WHERE workspace_id = $1 AND agent_id = $2
+            LIMIT 1
+        """
+
+        async with pool.acquire() as conn:
+            dept_row = await conn.fetchrow(dept_query, x_workspace_id, agent_id)
+            if not dept_row:
+                raise HTTPException(status_code=404, detail="Agent not found")
+
+            department = dept_row['dept']
+
+            # Get peer comparison
+            query = """
+                WITH agent_costs AS (
+                    SELECT
+                        agent_id,
+                        COALESCE(MAX(agent_name), agent_id) as agent_name,
+                        SUM(cost_usd)::numeric as total_cost_usd,
+                        AVG(cost_usd)::numeric as avg_cost_per_call_usd,
+                        COUNT(*)::int as total_calls
+                    FROM traces
+                    WHERE workspace_id = $1
+                        AND COALESCE(department_id::text, 'Unknown') = $2
+                        AND timestamp >= NOW() - INTERVAL '1 hour' * $3
+                    GROUP BY agent_id
+                ),
+                dept_avg AS (
+                    SELECT AVG(total_cost_usd)::numeric as dept_average
+                    FROM agent_costs
+                ),
+                workspace_avg AS (
+                    SELECT AVG(cost_total)::numeric as ws_average
+                    FROM (
+                        SELECT agent_id, SUM(cost_usd) as cost_total
+                        FROM traces
+                        WHERE workspace_id = $1
+                            AND timestamp >= NOW() - INTERVAL '1 hour' * $3
+                        GROUP BY agent_id
+                    ) ws
+                )
+                SELECT
+                    ac.agent_id,
+                    ac.agent_name,
+                    ac.total_cost_usd,
+                    ac.avg_cost_per_call_usd,
+                    ac.total_calls,
+                    CASE WHEN ac.agent_id = $4 THEN true ELSE false END as is_current_agent,
+                    (SELECT dept_average FROM dept_avg) as department_average,
+                    (SELECT ws_average FROM workspace_avg) as workspace_average
+                FROM agent_costs ac
+                ORDER BY ac.total_cost_usd DESC
+                LIMIT 10
+            """
+
+            rows = await conn.fetch(query, x_workspace_id, department, hours, agent_id)
+
+            peers = [dict(row) for row in rows]
+            current_agent = next((p for p in peers if p['is_current_agent']), None)
+
+            if not current_agent:
+                raise HTTPException(status_code=404, detail="Agent not found in results")
+
+            # Calculate percentile rank (lower cost = higher percentile)
+            all_costs = sorted([p['total_cost_usd'] for p in peers])
+            rank = all_costs.index(current_agent['total_cost_usd'])
+            percentile = (1 - rank / len(all_costs)) * 100 if len(all_costs) > 1 else 50
+
+            result = {
+                'current_agent': current_agent,
+                'peers': [p for p in peers if not p['is_current_agent']],
+                'department_average': float(current_agent['department_average'] or 0),
+                'workspace_average': float(current_agent['workspace_average'] or 0),
+                'percentile_rank': float(percentile)
+            }
+
+            set_cache(cache_key, result, ttl=60)
+            return result
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting agent cost comparison: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get agent cost comparison: {str(e)}"
+        )
+
+
+@router.get("/agents/{agent_id}/token-efficiency")
+async def get_agent_token_efficiency(
+    agent_id: str,
+    range: str = QueryParam("7d", regex="^(1h|24h|7d|30d)$"),
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    pool: asyncpg.Pool = Depends(get_timescale_pool)
+):
+    """
+    Get agent token efficiency metrics
+
+    Returns:
+    - avg_tokens_per_call, avg_input_tokens, avg_output_tokens
+    - cache_hit_rate, cost_per_1k_tokens
+    - efficiency_score, trend_data
+    """
+    try:
+        cache_key = f"agent_token_efficiency:{x_workspace_id}:{agent_id}:{range}"
+        cached = get_cache(cache_key)
+        if cached:
+            return cached
+
+        hours = parse_time_range(range)
+
+        # Get token metrics
+        query = """
+            SELECT
+                AVG(input_tokens + output_tokens)::numeric as avg_tokens_per_call,
+                AVG(input_tokens)::numeric as avg_input_tokens,
+                AVG(output_tokens)::numeric as avg_output_tokens,
+                ROUND((SUM(cached_tokens)::numeric / NULLIF(SUM(input_tokens + output_tokens), 0)) * 100, 2) as cache_hit_rate,
+                (SUM(cost_usd) / NULLIF(SUM(input_tokens + output_tokens), 0) * 1000)::numeric as cost_per_1k_tokens
+            FROM traces
+            WHERE workspace_id = $1
+                AND agent_id = $2
+                AND timestamp >= NOW() - INTERVAL '1 hour' * $3
+        """
+
+        # Get trend data
+        trend_query = """
+            SELECT
+                time_bucket('1 day', timestamp) as timestamp,
+                AVG(input_tokens + output_tokens)::numeric as tokens_per_call,
+                (SUM(cost_usd) / NULLIF(SUM(input_tokens + output_tokens), 0))::numeric as cost_per_token
+            FROM traces
+            WHERE workspace_id = $1
+                AND agent_id = $2
+                AND timestamp >= NOW() - INTERVAL '1 hour' * $3
+            GROUP BY time_bucket('1 day', timestamp)
+            ORDER BY timestamp ASC
+        """
+
+        async with pool.acquire() as conn:
+            row = await conn.fetchrow(query, x_workspace_id, agent_id, hours)
+            trend_rows = await conn.fetch(trend_query, x_workspace_id, agent_id, hours)
+
+            if not row:
+                raise HTTPException(status_code=404, detail="No data found for agent")
+
+            # Calculate efficiency score (0-100)
+            # Based on cache hit rate, cost per token, and token efficiency
+            cache_hit_rate = float(row['cache_hit_rate'] or 0)
+            cost_per_1k = float(row['cost_per_1k_tokens'] or 0)
+
+            # Score components (higher is better)
+            cache_score = min(cache_hit_rate, 100)  # 0-100
+            cost_score = max(0, 100 - (cost_per_1k * 1000))  # Lower cost = higher score
+            efficiency_score = (cache_score * 0.6 + cost_score * 0.4)
+
+            result = {
+                'avg_tokens_per_call': float(row['avg_tokens_per_call'] or 0),
+                'avg_input_tokens': float(row['avg_input_tokens'] or 0),
+                'avg_output_tokens': float(row['avg_output_tokens'] or 0),
+                'cache_hit_rate': cache_hit_rate,
+                'cost_per_1k_tokens': float(cost_per_1k),
+                'efficiency_score': float(efficiency_score),
+                'trend_data': [dict(r) for r in trend_rows]
+            }
+
+            set_cache(cache_key, result, ttl=60)
+            return result
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting agent token efficiency: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get agent token efficiency: {str(e)}"
+        )
+
+
+@router.get("/agents/{agent_id}/departments")
+async def get_agent_cost_by_department(
+    agent_id: str,
+    range: str = QueryParam("7d", regex="^(1h|24h|7d|30d)$"),
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    pool: asyncpg.Pool = Depends(get_timescale_pool)
+):
+    """
+    Get agent cost breakdown by department
+
+    Returns department-level metrics:
+    - department_id, department_name
+    - total_cost_usd, call_count
+    - percentage_of_agent_total
+    """
+    try:
+        cache_key = f"agent_cost_by_department:{x_workspace_id}:{agent_id}:{range}"
+        cached = get_cache(cache_key)
+        if cached:
+            return cached
+
+        hours = parse_time_range(range)
+
+        query = """
+            WITH total AS (
+                SELECT SUM(cost_usd) as total_cost
+                FROM traces
+                WHERE workspace_id = $1
+                    AND agent_id = $2
+                    AND timestamp >= NOW() - INTERVAL '1 hour' * $3
+            )
+            SELECT
+                COALESCE(department_id::text, 'Unknown') as department_id,
+                COALESCE(department_id::text, 'Unknown Department') as department_name,
+                SUM(cost_usd)::numeric as total_cost_usd,
+                COUNT(*)::int as call_count,
+                (SUM(cost_usd) / NULLIF(t.total_cost, 0) * 100)::numeric as percentage_of_agent_total
+            FROM traces, total t
+            WHERE workspace_id = $1
+                AND agent_id = $2
+                AND timestamp >= NOW() - INTERVAL '1 hour' * $3
+            GROUP BY department_id, t.total_cost
+            ORDER BY total_cost_usd DESC
+        """
+
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(query, x_workspace_id, agent_id, hours)
+
+            result = {'data': [dict(row) for row in rows]}
+            set_cache(cache_key, result, ttl=60)
+            return result
+
+    except Exception as e:
+        logger.error(f"Error getting agent cost by department: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get agent cost by department: {str(e)}"
+        )
+

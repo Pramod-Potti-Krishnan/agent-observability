@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safety & Compliance - Enhanced Charts</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .chart-container {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .chart-title {
+            font-size: 13px;
+            color: #1f2937;
+            font-weight: 700;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+        .chart-purpose {
+            font-size: 10px;
+            color: #6b7280;
+            font-style: italic;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .kpi-banner {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .kpi-item {
+            text-align: center;
+        }
+        .kpi-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+        .kpi-label {
+            font-size: 10px;
+            opacity: 0.9;
+        }
+        .kpi-target {
+            font-size: 9px;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <div class="slide-header">
+            <h2>Pillar 3: Safety & Compliance - Enhanced Analytics</h2>
+            <p class="subtitle">Your AI Agent is Your Newest, Most Vulnerable Endpoint</p>
+        </div>
+
+        <div class="slide-content" style="padding: 20px;">
+            <!-- Top 3 KPIs Banner -->
+            <div class="kpi-banner">
+                <div class="kpi-item">
+                    <div class="kpi-value">98.2</div>
+                    <div class="kpi-label">Safety Score</div>
+                    <div class="kpi-target">Target: >98.0/100</div>
+                </div>
+                <div class="kpi-item">
+                    <div class="kpi-value">100%</div>
+                    <div class="kpi-label">PII Redaction Rate</div>
+                    <div class="kpi-target">Target: 100%</div>
+                </div>
+                <div class="kpi-item">
+                    <div class="kpi-value">0</div>
+                    <div class="kpi-label">Unblocked Threats</div>
+                    <div class="kpi-target">Target: 0</div>
+                </div>
+            </div>
+
+            <!-- Chart 1: Risk Heatmap by Department -->
+            <div class="chart-container">
+                <div class="chart-title">1. Risk Heatmap by Department & Violation Type</div>
+                <div class="chart-purpose">Purpose: Identify high-risk areas requiring immediate attention across organization</div>
+                <svg width="100%" height="220" style="overflow: visible;">
+                    <!-- Y-axis labels (Departments) -->
+                    <text x="10" y="45" font-size="10" fill="#374151" text-anchor="start">Sales</text>
+                    <text x="10" y="85" font-size="10" fill="#374151" text-anchor="start">Support</text>
+                    <text x="10" y="125" font-size="10" fill="#374151" text-anchor="start">Marketing</text>
+                    <text x="10" y="165" font-size="10" fill="#374151" text-anchor="start">Engineering</text>
+                    <text x="10" y="205" font-size="10" fill="#374151" text-anchor="start">Finance</text>
+
+                    <!-- X-axis labels (Violation Types) -->
+                    <text x="120" y="20" font-size="9" fill="#6b7280" text-anchor="middle">PII Leak</text>
+                    <text x="240" y="20" font-size="9" fill="#6b7280" text-anchor="middle">Toxicity</text>
+                    <text x="360" y="20" font-size="9" fill="#6b7280" text-anchor="middle">Injection</text>
+                    <text x="480" y="20" font-size="9" fill="#6b7280" text-anchor="middle">Jailbreak</text>
+                    <text x="600" y="20" font-size="9" fill="#6b7280" text-anchor="middle">Policy</text>
+
+                    <!-- Heatmap cells (5 departments x 5 violation types) -->
+                    <!-- Sales Department -->
+                    <rect x="80" y="30" width="80" height="30" fill="#ef4444" opacity="0.7"/>
+                    <text x="120" y="50" font-size="11" fill="white" font-weight="700" text-anchor="middle">23</text>
+                    <rect x="200" y="30" width="80" height="30" fill="#f59e0b" opacity="0.5"/>
+                    <text x="240" y="50" font-size="11" fill="white" font-weight="600" text-anchor="middle">12</text>
+                    <rect x="320" y="30" width="80" height="30" fill="#10b981" opacity="0.4"/>
+                    <text x="360" y="50" font-size="11" fill="white" font-weight="600" text-anchor="middle">3</text>
+                    <rect x="440" y="30" width="80" height="30" fill="#10b981" opacity="0.3"/>
+                    <text x="480" y="50" font-size="11" fill="white" font-weight="600" text-anchor="middle">1</text>
+                    <rect x="560" y="30" width="80" height="30" fill="#f59e0b" opacity="0.6"/>
+                    <text x="600" y="50" font-size="11" fill="white" font-weight="600" text-anchor="middle">15</text>
+
+                    <!-- Support Department -->
+                    <rect x="80" y="70" width="80" height="30" fill="#f59e0b" opacity="0.6"/>
+                    <text x="120" y="90" font-size="11" fill="white" font-weight="600" text-anchor="middle">14</text>
+                    <rect x="200" y="70" width="80" height="30" fill="#f59e0b" opacity="0.7"/>
+                    <text x="240" y="90" font-size="11" fill="white" font-weight="600" text-anchor="middle">18</text>
+                    <rect x="320" y="70" width="80" height="30" fill="#10b981" opacity="0.5"/>
+                    <text x="360" y="90" font-size="11" fill="white" font-weight="600" text-anchor="middle">5</text>
+                    <rect x="440" y="70" width="80" height="30" fill="#10b981" opacity="0.4"/>
+                    <text x="480" y="90" font-size="11" fill="white" font-weight="600" text-anchor="middle">2</text>
+                    <rect x="560" y="70" width="80" height="30" fill="#10b981" opacity="0.5"/>
+                    <text x="600" y="90" font-size="11" fill="white" font-weight="600" text-anchor="middle">7</text>
+
+                    <!-- Marketing Department -->
+                    <rect x="80" y="110" width="80" height="30" fill="#10b981" opacity="0.4"/>
+                    <text x="120" y="130" font-size="11" fill="white" font-weight="600" text-anchor="middle">4</text>
+                    <rect x="200" y="110" width="80" height="30" fill="#ef4444" opacity="0.6"/>
+                    <text x="240" y="130" font-size="11" fill="white" font-weight="700" text-anchor="middle">21</text>
+                    <rect x="320" y="110" width="80" height="30" fill="#10b981" opacity="0.3"/>
+                    <text x="360" y="130" font-size="11" fill="white" font-weight="600" text-anchor="middle">1</text>
+                    <rect x="440" y="110" width="80" height="30" fill="#10b981" opacity="0.3"/>
+                    <text x="480" y="130" font-size="11" fill="white" font-weight="600" text-anchor="middle">1</text>
+                    <rect x="560" y="110" width="80" height="30" fill="#f59e0b" opacity="0.5"/>
+                    <text x="600" y="130" font-size="11" fill="white" font-weight="600" text-anchor="middle">9</text>
+
+                    <!-- Engineering Department -->
+                    <rect x="80" y="150" width="80" height="30" fill="#10b981" opacity="0.5"/>
+                    <text x="120" y="170" font-size="11" fill="white" font-weight="600" text-anchor="middle">6</text>
+                    <rect x="200" y="150" width="80" height="30" fill="#10b981" opacity="0.3"/>
+                    <text x="240" y="170" font-size="11" fill="white" font-weight="600" text-anchor="middle">2</text>
+                    <rect x="320" y="150" width="80" height="30" fill="#f59e0b" opacity="0.6"/>
+                    <text x="360" y="170" font-size="11" fill="white" font-weight="600" text-anchor="middle">11</text>
+                    <rect x="440" y="150" width="80" height="30" fill="#f59e0b" opacity="0.5"/>
+                    <text x="480" y="170" font-size="11" fill="white" font-weight="600" text-anchor="middle">8</text>
+                    <rect x="560" y="150" width="80" height="30" fill="#10b981" opacity="0.4"/>
+                    <text x="600" y="170" font-size="11" fill="white" font-weight="600" text-anchor="middle">3</text>
+
+                    <!-- Finance Department -->
+                    <rect x="80" y="190" width="80" height="30" fill="#ef4444" opacity="0.8"/>
+                    <text x="120" y="210" font-size="11" fill="white" font-weight="700" text-anchor="middle">28</text>
+                    <rect x="200" y="190" width="80" height="30" fill="#10b981" opacity="0.4"/>
+                    <text x="240" y="210" font-size="11" fill="white" font-weight="600" text-anchor="middle">3</text>
+                    <rect x="320" y="190" width="80" height="30" fill="#10b981" opacity="0.3"/>
+                    <text x="360" y="210" font-size="11" fill="white" font-weight="600" text-anchor="middle">1</text>
+                    <rect x="440" y="190" width="80" height="30" fill="#10b981" opacity="0.2"/>
+                    <text x="480" y="210" font-size="11" fill="white" font-weight="600" text-anchor="middle">0</text>
+                    <rect x="560" y="190" width="80" height="30" fill="#f59e0b" opacity="0.7"/>
+                    <text x="600" y="210" font-size="11" fill="white" font-weight="600" text-anchor="middle">17</text>
+                </svg>
+                <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 10px;">
+                    <div style="display: flex; gap: 15px;">
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <div style="width: 15px; height: 15px; background: #10b981; border-radius: 3px;"></div>
+                            <span>Low (0-10)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <div style="width: 15px; height: 15px; background: #f59e0b; border-radius: 3px;"></div>
+                            <span>Medium (11-20)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <div style="width: 15px; height: 15px; background: #ef4444; border-radius: 3px;"></div>
+                            <span>High (>20)</span>
+                        </div>
+                    </div>
+                    <div><strong>Critical:</strong> Finance PII (28), Marketing Toxicity (21), Sales PII (23)</div>
+                </div>
+            </div>
+
+            <!-- Chart 2: PII Detection Funnel -->
+            <div class="chart-container">
+                <div class="chart-title">2. PII Protection Funnel - End-to-End Data Safety</div>
+                <div class="chart-purpose">Purpose: Demonstrate effectiveness of PII detection and redaction pipeline</div>
+                <svg width="100%" height="200" style="overflow: visible;">
+                    <!-- Funnel stages -->
+                    <!-- Stage 1: Total Requests -->
+                    <polygon points="200,20 550,20 520,55 230,55" fill="#3b82f6" opacity="0.7"/>
+                    <text x="375" y="43" font-size="12" fill="white" font-weight="700" text-anchor="middle">1,247,892 Total Requests</text>
+                    <text x="575" y="40" font-size="10" fill="#3b82f6" font-weight="600">100%</text>
+
+                    <!-- Stage 2: PII Detected -->
+                    <polygon points="230,55 520,55 490,90 260,90" fill="#f59e0b" opacity="0.7"/>
+                    <text x="375" y="78" font-size="12" fill="white" font-weight="700" text-anchor="middle">18,432 PII Instances Detected</text>
+                    <text x="575" y="75" font-size="10" fill="#f59e0b" font-weight="600">1.48%</text>
+
+                    <!-- Stage 3: Auto-Redacted -->
+                    <polygon points="260,90 490,90 465,125 285,125" fill="#10b981" opacity="0.7"/>
+                    <text x="375" y="113" font-size="12" fill="white" font-weight="700" text-anchor="middle">18,279 Auto-Redacted</text>
+                    <text x="575" y="110" font-size="10" fill="#10b981" font-weight="600">99.17%</text>
+
+                    <!-- Stage 4: Human Review -->
+                    <polygon points="285,125 465,125 445,160 305,160" fill="#3b82f6" opacity="0.6"/>
+                    <text x="375" y="148" font-size="11" fill="white" font-weight="700" text-anchor="middle">153 Human Review</text>
+                    <text x="575" y="145" font-size="10" fill="#3b82f6" font-weight="600">0.83%</text>
+
+                    <!-- Stage 5: Fully Compliant -->
+                    <polygon points="305,160 445,160 430,190 320,190" fill="#10b981" opacity="0.8"/>
+                    <text x="375" y="180" font-size="11" fill="white" font-weight="700" text-anchor="middle">18,432 Fully Protected</text>
+                    <text x="575" y="177" font-size="10" fill="#10b981" font-weight="700">100%</text>
+
+                    <!-- Labels on left side -->
+                    <text x="10" y="40" font-size="10" fill="#374151" font-weight="600">Stage 1:</text>
+                    <text x="10" y="75" font-size="10" fill="#374151" font-weight="600">Stage 2:</text>
+                    <text x="10" y="110" font-size="10" fill="#374151" font-weight="600">Stage 3:</text>
+                    <text x="10" y="145" font-size="10" fill="#374151" font-weight="600">Stage 4:</text>
+                    <text x="10" y="177" font-size="10" fill="#374151" font-weight="600">Stage 5:</text>
+
+                    <text x="80" y="40" font-size="9" fill="#6b7280">All Traffic</text>
+                    <text x="80" y="75" font-size="9" fill="#6b7280">Detection</text>
+                    <text x="80" y="110" font-size="9" fill="#6b7280">Redaction</text>
+                    <text x="80" y="145" font-size="9" fill="#6b7280">Review</text>
+                    <text x="80" y="177" font-size="9" fill="#6b7280">Compliant</text>
+                </svg>
+                <div style="font-size: 10px; color: #6b7280; margin-top: 10px; text-align: center;">
+                    <strong>PII Types Detected:</strong> SSN (4,231), Email (8,942), Phone (3,127), Credit Card (1,823), Address (309) |
+                    <strong>Redaction Rate:</strong> <span style="color: #10b981; font-weight: 700;">100%</span> |
+                    <strong>Avg Detection Time:</strong> 12ms
+                </div>
+            </div>
+
+            <!-- Chart 3: Compliance Radar Chart -->
+            <div class="chart-container">
+                <div class="chart-title">3. Compliance Radar - 360° Regulatory Readiness</div>
+                <div class="chart-purpose">Purpose: Multi-dimensional view of compliance status across all regulatory frameworks</div>
+                <svg width="100%" height="280" style="overflow: visible;">
+                    <!-- Center point -->
+                    <circle cx="375" cy="140" r="3" fill="#374151"/>
+
+                    <!-- Axes (5 regulatory frameworks) -->
+                    <!-- GDPR (top) -->
+                    <line x1="375" y1="140" x2="375" y2="30" stroke="#e5e7eb" stroke-width="2"/>
+                    <text x="375" y="20" font-size="11" fill="#374151" font-weight="700" text-anchor="middle">GDPR</text>
+
+                    <!-- HIPAA (top right) -->
+                    <line x1="375" y1="140" x2="540" y2="65" stroke="#e5e7eb" stroke-width="2"/>
+                    <text x="560" y="60" font-size="11" fill="#374151" font-weight="700" text-anchor="start">HIPAA</text>
+
+                    <!-- SOC 2 (bottom right) -->
+                    <line x1="375" y1="140" x2="540" y2="215" stroke="#e5e7eb" stroke-width="2"/>
+                    <text x="560" y="220" font-size="11" fill="#374151" font-weight="700" text-anchor="start">SOC 2</text>
+
+                    <!-- CCPA (bottom left) -->
+                    <line x1="375" y1="140" x2="210" y2="215" stroke="#e5e7eb" stroke-width="2"/>
+                    <text x="190" y="220" font-size="11" fill="#374151" font-weight="700" text-anchor="end">CCPA</text>
+
+                    <!-- ISO 27001 (top left) -->
+                    <line x1="375" y1="140" x2="210" y2="65" stroke="#e5e7eb" stroke-width="2"/>
+                    <text x="190" y="60" font-size="11" fill="#374151" font-weight="700" text-anchor="end">ISO 27001</text>
+
+                    <!-- Concentric circles for scale (25%, 50%, 75%, 100%) -->
+                    <circle cx="375" cy="140" r="27.5" fill="none" stroke="#e5e7eb" stroke-width="1" opacity="0.5"/>
+                    <circle cx="375" cy="140" r="55" fill="none" stroke="#e5e7eb" stroke-width="1" opacity="0.5"/>
+                    <circle cx="375" cy="140" r="82.5" fill="none" stroke="#e5e7eb" stroke-width="1" opacity="0.5"/>
+                    <circle cx="375" cy="140" r="110" fill="none" stroke="#e5e7eb" stroke-width="1" opacity="0.5"/>
+
+                    <!-- Scale labels -->
+                    <text x="380" y="57" font-size="8" fill="#9ca3af">75%</text>
+                    <text x="380" y="84" font-size="8" fill="#9ca3af">50%</text>
+                    <text x="380" y="111" font-size="8" fill="#9ca3af">25%</text>
+
+                    <!-- Data polygon (compliance scores) -->
+                    <!-- GDPR: 98% (top) -->
+                    <!-- HIPAA: 95% (top right) -->
+                    <!-- SOC 2: 100% (bottom right) -->
+                    <!-- CCPA: 97% (bottom left) -->
+                    <!-- ISO 27001: 92% (top left) -->
+                    <polygon points="375,32 525,72 525,140 235,200 225,75"
+                             fill="#10b981" opacity="0.3" stroke="#10b981" stroke-width="3"/>
+
+                    <!-- Data points with values -->
+                    <circle cx="375" cy="32" r="5" fill="#10b981" stroke="white" stroke-width="2"/>
+                    <text x="375" y="25" font-size="9" fill="#10b981" font-weight="700" text-anchor="middle">98%</text>
+
+                    <circle cx="525" cy="72" r="5" fill="#10b981" stroke="white" stroke-width="2"/>
+                    <text x="535" y="77" font-size="9" fill="#10b981" font-weight="700" text-anchor="start">95%</text>
+
+                    <circle cx="525" cy="140" r="5" fill="#10b981" stroke="white" stroke-width="2"/>
+                    <text x="535" y="145" font-size="9" fill="#10b981" font-weight="700" text-anchor="start">100%</text>
+
+                    <circle cx="235" cy="200" r="5" fill="#10b981" stroke="white" stroke-width="2"/>
+                    <text x="225" y="205" font-size="9" fill="#10b981" font-weight="700" text-anchor="end">97%</text>
+
+                    <circle cx="225" cy="75" r="5" fill="#f59e0b" stroke="white" stroke-width="2"/>
+                    <text x="215" y="80" font-size="9" fill="#f59e0b" font-weight="700" text-anchor="end">92%</text>
+
+                    <!-- Legend -->
+                    <rect x="150" y="250" width="450" height="25" fill="#f0f9ff" stroke="#3b82f6" stroke-width="1" rx="5"/>
+                    <text x="375" y="265" font-size="10" fill="#374151" text-anchor="middle">
+                        <tspan font-weight="700">Overall Compliance Score: 96.4%</tspan> |
+                        <tspan fill="#10b981">4/5 Frameworks: Excellent</tspan> |
+                        <tspan fill="#f59e0b">ISO 27001: Needs Attention</tspan>
+                    </text>
+                </svg>
+                <div style="font-size: 10px; color: #6b7280; margin-top: 10px; text-align: center;">
+                    <strong>Next Audit:</strong> HIPAA in 45 days, SOC 2 in 90 days |
+                    <strong>Evidence Collection:</strong> 2,341 documents ready |
+                    <strong>Open Gaps:</strong> <span style="color: #f59e0b; font-weight: 600;">3 (ISO 27001 controls)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-footer">
+            <div class="slide-number">Slide 6 Enhanced</div>
+            <div class="nav-buttons">
+                <a href="slide-05-enhanced.html" class="nav-button">← Previous</a>
+                <a href="slide-07-enhanced.html" class="nav-button">Next →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight') {
+                window.location.href = 'slide-07-enhanced.html';
+            } else if (event.key === 'ArrowLeft') {
+                window.location.href = 'slide-05-enhanced.html';
+            }
+        });
+    </script>
+</body>
+</html>

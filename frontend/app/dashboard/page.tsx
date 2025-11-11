@@ -1,13 +1,20 @@
 'use client'
 
-import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { KPICard } from '@/components/dashboard/KPICard'
 import { AlertsFeed } from '@/components/dashboard/AlertsFeed'
 import { ActivityStream } from '@/components/dashboard/ActivityStream'
-import { TimeRangeSelector } from '@/components/dashboard/TimeRangeSelector'
+import { FilterBar } from '@/components/filters/FilterBar'
+import { DepartmentBreakdown } from '@/components/dashboard/DepartmentBreakdown'
+import { LatencyTrends } from '@/components/dashboard/LatencyTrends'
+import { CostBreakdown } from '@/components/dashboard/CostBreakdown'
+import { ErrorAnalysis } from '@/components/dashboard/ErrorAnalysis'
 import apiClient from '@/lib/api-client'
 import { useAuth } from '@/lib/auth-context'
+import { useFilters, useFilterQueryString } from '@/lib/filter-context'
+
+// Disable static optimization due to useSearchParams in FilterBar
+export const dynamic = 'force-dynamic'
 
 interface HomeKPIs {
   total_requests: {
@@ -44,12 +51,13 @@ interface HomeKPIs {
 
 export default function DashboardPage() {
   const { user } = useAuth()
-  const [timeRange, setTimeRange] = useState('7d')
+  const { filters } = useFilters()
+  const filterQueryString = useFilterQueryString()
 
   const { data: kpis, isLoading } = useQuery({
-    queryKey: ['home-kpis', timeRange],
+    queryKey: ['home-kpis', filterQueryString],
     queryFn: async () => {
-      const response = await apiClient.get(`/api/v1/metrics/home-kpis?range=${timeRange}`, {
+      const response = await apiClient.get(`/api/v1/metrics/home-kpis?${filterQueryString}`, {
         headers: { 'X-Workspace-ID': user?.workspace_id }
       })
       return response.data as HomeKPIs
@@ -59,17 +67,27 @@ export default function DashboardPage() {
   })
 
   return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Welcome back, {user?.full_name || 'User'}
-          </p>
+    <div>
+      {/* Filter Bar */}
+      <FilterBar />
+
+      <div className="p-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold">Fleet Dashboard</h1>
+            <p className="text-muted-foreground">
+              {filters.department || filters.environment
+                ? `Filtered view - ${[
+                    filters.department,
+                    filters.environment,
+                    filters.version
+                  ].filter(Boolean).join(' • ')}`
+                : `All agents across all departments - ${filters.range}`
+              }
+            </p>
+          </div>
         </div>
-        <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
-      </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4 mb-6">
@@ -115,10 +133,26 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* Alerts and Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <AlertsFeed />
-        <ActivityStream />
+        {/* Department Breakdown */}
+        <div className="mb-6">
+          <DepartmentBreakdown />
+        </div>
+
+        {/* Phase 4: Advanced Analytics Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <LatencyTrends />
+          <CostBreakdown />
+        </div>
+
+        <div className="mb-6">
+          <ErrorAnalysis />
+        </div>
+
+        {/* Alerts and Activity */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <AlertsFeed />
+          <ActivityStream />
+        </div>
       </div>
     </div>
   )

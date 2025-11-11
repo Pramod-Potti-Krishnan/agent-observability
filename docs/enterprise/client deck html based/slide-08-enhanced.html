@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Impact & ROI - Enhanced Charts</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .chart-container {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .chart-title {
+            font-size: 13px;
+            color: #1f2937;
+            font-weight: 700;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+        .chart-purpose {
+            font-size: 10px;
+            color: #6b7280;
+            font-style: italic;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .kpi-banner {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .kpi-item {
+            text-align: center;
+        }
+        .kpi-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+        .kpi-label {
+            font-size: 10px;
+            opacity: 0.9;
+        }
+        .kpi-target {
+            font-size: 9px;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide">
+        <div class="slide-header">
+            <h2>Pillar 5: Business Impact & ROI - Enhanced Analytics</h2>
+            <p class="subtitle">Prove Value or Perish - From Cost Center to Growth Engine</p>
+        </div>
+
+        <div class="slide-content" style="padding: 20px;">
+            <!-- Top 3 KPIs Banner -->
+            <div class="kpi-banner">
+                <div class="kpi-item">
+                    <div class="kpi-value">342%</div>
+                    <div class="kpi-label">Realized ROI</div>
+                    <div class="kpi-target">Target: >300%</div>
+                </div>
+                <div class="kpi-item">
+                    <div class="kpi-value">4.2 mo</div>
+                    <div class="kpi-label">Payback Period</div>
+                    <div class="kpi-target">Target: <6 months</div>
+                </div>
+                <div class="kpi-item">
+                    <div class="kpi-value">+0.4</div>
+                    <div class="kpi-label">CSAT Impact</div>
+                    <div class="kpi-target">Target: +0.3 pts</div>
+                </div>
+            </div>
+
+            <!-- Chart 1: Value Realization Waterfall -->
+            <div class="chart-container">
+                <div class="chart-title">1. Value Realization Waterfall - ROI Journey</div>
+                <div class="chart-purpose">Purpose: Transparent breakdown from gross savings to net value created</div>
+                <svg width="100%" height="250" style="overflow: visible;">
+                    <!-- Y-axis -->
+                    <line x1="60" y1="220" x2="60" y2="20" stroke="#374151" stroke-width="2"/>
+                    <text x="50" y="224" font-size="9" fill="#6b7280" text-anchor="end">$0</text>
+                    <text x="50" y="178" font-size="9" fill="#6b7280" text-anchor="end">$500K</text>
+                    <text x="50" y="132" font-size="9" fill="#6b7280" text-anchor="end">$1M</text>
+                    <text x="50" y="86" font-size="9" fill="#6b7280" text-anchor="end">$1.5M</text>
+                    <text x="50" y="40" font-size="9" fill="#6b7280" text-anchor="end">$2M</text>
+                    <text x="10" y="125" font-size="11" fill="#374151" font-weight="600" transform="rotate(-90 10 125)">Cumulative Value ($)</text>
+
+                    <!-- X-axis baseline -->
+                    <line x1="60" y1="220" x2="720" y2="220" stroke="#374151" stroke-width="2"/>
+
+                    <!-- Scale: 180px height = $2M, so 90px = $1M, 45px = $500K, etc. -->
+                    <!-- 1. Labor Savings: $1.2M = 108px from baseline -->
+                    <rect x="85" y="112" width="75" height="108" fill="#10b981" opacity="0.8" stroke="white" stroke-width="2"/>
+                    <text x="122" y="163" font-size="12" fill="white" font-weight="700" text-anchor="middle">$1.2M</text>
+                    <text x="122" y="178" font-size="9" fill="white" font-weight="600" text-anchor="middle">Labor</text>
+                    <text x="122" y="238" font-size="9" fill="#374151" font-weight="600" text-anchor="middle">Labor Savings</text>
+
+                    <!-- Connector line at $1.2M -->
+                    <line x1="160" y1="112" x2="180" y2="112" stroke="#6b7280" stroke-width="2" stroke-dasharray="4,4"/>
+                    <text x="172" y="107" font-size="8" fill="#10b981" font-weight="700">$1.2M</text>
+
+                    <!-- 2. Efficiency: +$520K = 47px height, starting at y=112 -->
+                    <rect x="180" y="65" width="75" height="47" fill="#10b981" opacity="0.7" stroke="white" stroke-width="2"/>
+                    <text x="217" y="91" font-size="11" fill="white" font-weight="700" text-anchor="middle">+$520K</text>
+                    <text x="217" y="103" font-size="8" fill="white" font-weight="600" text-anchor="middle">Efficiency</text>
+                    <!-- Floating base to show stack -->
+                    <line x1="180" y1="112" x2="255" y2="112" stroke="#6b7280" stroke-width="1" stroke-dasharray="2,2" opacity="0.3"/>
+                    <text x="217" y="238" font-size="9" fill="#374151" font-weight="600" text-anchor="middle">Efficiency</text>
+
+                    <!-- Connector line at $1.72M -->
+                    <line x1="255" y1="65" x2="275" y2="65" stroke="#6b7280" stroke-width="2" stroke-dasharray="4,4"/>
+                    <text x="267" y="60" font-size="8" fill="#10b981" font-weight="700">$1.72M</text>
+
+                    <!-- 3. Quality: +$280K = 25px height, starting at y=65 -->
+                    <rect x="275" y="40" width="75" height="25" fill="#10b981" opacity="0.6" stroke="white" stroke-width="2"/>
+                    <text x="312" y="55" font-size="10" fill="white" font-weight="700" text-anchor="middle">+$280K</text>
+                    <!-- Floating base -->
+                    <line x1="275" y1="65" x2="350" y2="65" stroke="#6b7280" stroke-width="1" stroke-dasharray="2,2" opacity="0.3"/>
+                    <text x="312" y="238" font-size="9" fill="#374151" font-weight="600" text-anchor="middle">Quality</text>
+
+                    <!-- Connector line at $2M -->
+                    <line x1="350" y1="40" x2="370" y2="40" stroke="#6b7280" stroke-width="2" stroke-dasharray="4,4"/>
+                    <text x="362" y="35" font-size="8" fill="#10b981" font-weight="700">$2.0M</text>
+
+                    <!-- 4. Platform Cost: -$450K = 40px height, starting at y=40, going down -->
+                    <rect x="370" y="40" width="75" height="40" fill="#ef4444" opacity="0.7" stroke="white" stroke-width="2"/>
+                    <text x="407" y="63" font-size="10" fill="white" font-weight="700" text-anchor="middle">-$450K</text>
+                    <!-- Floating base -->
+                    <line x1="370" y1="40" x2="445" y2="40" stroke="#6b7280" stroke-width="1" stroke-dasharray="2,2" opacity="0.3"/>
+                    <text x="407" y="238" font-size="9" fill="#374151" font-weight="600" text-anchor="middle">Platform Cost</text>
+
+                    <!-- Connector line at $1.55M -->
+                    <line x1="445" y1="80" x2="465" y2="80" stroke="#6b7280" stroke-width="2" stroke-dasharray="4,4"/>
+                    <text x="457" y="75" font-size="8" fill="#ef4444" font-weight="700">$1.55M</text>
+
+                    <!-- 5. Implementation: -$100K = 9px height, starting at y=80 -->
+                    <rect x="465" y="80" width="75" height="9" fill="#ef4444" opacity="0.7" stroke="white" stroke-width="2"/>
+                    <text x="502" y="87" font-size="9" fill="white" font-weight="700" text-anchor="middle">-$100K</text>
+                    <!-- Floating base -->
+                    <line x1="465" y1="80" x2="540" y2="80" stroke="#6b7280" stroke-width="1" stroke-dasharray="2,2" opacity="0.3"/>
+                    <text x="502" y="238" font-size="9" fill="#374151" font-weight="600" text-anchor="middle">Implementation</text>
+
+                    <!-- Connector line at $1.45M -->
+                    <line x1="540" y1="89" x2="560" y2="89" stroke="#6b7280" stroke-width="2" stroke-dasharray="4,4"/>
+                    <text x="552" y="84" font-size="8" fill="#3b82f6" font-weight="700">$1.45M</text>
+
+                    <!-- 6. Net Value: $1.45M = 130px from baseline -->
+                    <rect x="560" y="90" width="75" height="130" fill="#3b82f6" opacity="0.9" stroke="white" stroke-width="2"/>
+                    <text x="597" y="150" font-size="14" fill="white" font-weight="700" text-anchor="middle">NET</text>
+                    <text x="597" y="168" font-size="14" fill="white" font-weight="700" text-anchor="middle">$1.45M</text>
+                    <text x="597" y="238" font-size="9" fill="#374151" font-weight="700" text-anchor="middle">Net Value</text>
+
+                    <!-- Total value banner -->
+                    <rect x="560" y="60" width="75" height="20" fill="#10b981" rx="5"/>
+                    <text x="597" y="73" font-size="9" fill="white" font-weight="700" text-anchor="middle">Annual Value</text>
+                </svg>
+                <div style="font-size: 10px; color: #6b7280; margin-top: 5px; text-align: center;">
+                    <strong>Calculation:</strong> ($1.2M + $520K + $280K) - ($450K + $100K) = $1.45M net value |
+                    <strong>ROI:</strong> ($1.45M / $550K investment) × 100 = <span style="color: #10b981; font-weight: 700;">264% first year</span>
+                </div>
+            </div>
+
+            <!-- Chart 2: Goal Progress Tree -->
+            <div class="chart-container">
+                <div class="chart-title">2. Goal Progress Tree - Strategy to Execution Alignment</div>
+                <div class="chart-purpose">Purpose: Connect organizational goals → department targets → agent contributions</div>
+                <svg width="100%" height="240" style="overflow: visible;">
+                    <!-- Level 1: Org Goal (top) -->
+                    <rect x="280" y="10" width="200" height="40" fill="#3b82f6" opacity="0.9" stroke="#2563eb" stroke-width="2" rx="8"/>
+                    <text x="380" y="25" font-size="11" fill="white" font-weight="700" text-anchor="middle">Improve Customer CSAT</text>
+                    <text x="380" y="40" font-size="12" fill="white" font-weight="700" text-anchor="middle">Target: +0.5 pts</text>
+
+                    <!-- Progress bar inside -->
+                    <rect x="290" y="44" width="180" height="4" fill="white" opacity="0.3" rx="2"/>
+                    <rect x="290" y="44" width="144" height="4" fill="#10b981" rx="2"/>
+                    <text x="470" y="48" font-size="8" fill="white" font-weight="600">80% ✓</text>
+
+                    <!-- Connector lines to Level 2 -->
+                    <line x1="330" y1="50" x2="180" y2="75" stroke="#6b7280" stroke-width="2"/>
+                    <line x1="380" y1="50" x2="380" y2="75" stroke="#6b7280" stroke-width="2"/>
+                    <line x1="430" y1="50" x2="580" y2="75" stroke="#6b7280" stroke-width="2"/>
+
+                    <!-- Level 2: Department Goals -->
+                    <!-- Support Dept -->
+                    <rect x="80" y="75" width="200" height="38" fill="#10b981" opacity="0.8" stroke="#059669" stroke-width="2" rx="6"/>
+                    <text x="180" y="88" font-size="10" fill="white" font-weight="700" text-anchor="middle">Support: Reduce MTTR</text>
+                    <text x="180" y="101" font-size="10" fill="white" font-weight="600" text-anchor="middle">Target: -25%</text>
+                    <rect x="90" y="105" width="180" height="3" fill="white" opacity="0.3" rx="1.5"/>
+                    <rect x="90" y="105" width="162" height="3" fill="#dcfce7" rx="1.5"/>
+                    <text x="270" y="110" font-size="7" fill="white" font-weight="600">90%</text>
+
+                    <!-- Sales Dept -->
+                    <rect x="300" y="75" width="160" height="38" fill="#10b981" opacity="0.7" stroke="#059669" stroke-width="2" rx="6"/>
+                    <text x="380" y="88" font-size="10" fill="white" font-weight="700" text-anchor="middle">Sales: Faster Quotes</text>
+                    <text x="380" y="101" font-size="10" fill="white" font-weight="600" text-anchor="middle">-40% time</text>
+                    <rect x="310" y="105" width="140" height="3" fill="white" opacity="0.3" rx="1.5"/>
+                    <rect x="310" y="105" width="112" height="3" fill="#dcfce7" rx="1.5"/>
+                    <text x="450" y="110" font-size="7" fill="white" font-weight="600">80%</text>
+
+                    <!-- Marketing Dept -->
+                    <rect x="480" y="75" width="200" height="38" fill="#f59e0b" opacity="0.7" stroke="#d97706" stroke-width="2" rx="6"/>
+                    <text x="580" y="88" font-size="10" fill="white" font-weight="700" text-anchor="middle">Marketing: Engagement</text>
+                    <text x="580" y="101" font-size="10" fill="white" font-weight="600" text-anchor="middle">+15% CTR</text>
+                    <rect x="490" y="105" width="180" height="3" fill="white" opacity="0.3" rx="1.5"/>
+                    <rect x="490" y="105" width="108" height="3" fill="#fef3c7" rx="1.5"/>
+                    <text x="670" y="110" font-size="7" fill="white" font-weight="600">60%</text>
+
+                    <!-- Connector lines to Level 3 (Agents) -->
+                    <line x1="130" y1="113" x2="100" y2="145" stroke="#6b7280" stroke-width="1.5"/>
+                    <line x1="180" y1="113" x2="180" y2="145" stroke="#6b7280" stroke-width="1.5"/>
+                    <line x1="230" y1="113" x2="260" y2="145" stroke="#6b7280" stroke-width="1.5"/>
+                    <line x1="350" y1="113" x2="350" y2="145" stroke="#6b7280" stroke-width="1.5"/>
+                    <line x1="410" y1="113" x2="440" y2="145" stroke="#6b7280" stroke-width="1.5"/>
+                    <line x1="530" y1="113" x2="530" y2="145" stroke="#6b7280" stroke-width="1.5"/>
+                    <line x1="630" y1="113" x2="630" y2="145" stroke="#6b7280" stroke-width="1.5"/>
+
+                    <!-- Level 3: Agent Contributions -->
+                    <!-- Support agents -->
+                    <rect x="50" y="145" width="80" height="30" fill="#10b981" opacity="0.6" rx="5"/>
+                    <text x="90" y="160" font-size="8" fill="white" font-weight="600" text-anchor="middle">Troubleshoot</text>
+                    <text x="90" y="170" font-size="8" fill="white" font-weight="600" text-anchor="middle">Bot</text>
+                    <circle cx="125" cy="160" r="8" fill="#10b981"/>
+                    <text x="125" y="163" font-size="7" fill="white" font-weight="700" text-anchor="middle">45%</text>
+
+                    <rect x="145" y="145" width="70" height="30" fill="#10b981" opacity="0.6" rx="5"/>
+                    <text x="180" y="160" font-size="8" fill="white" font-weight="600" text-anchor="middle">Ticket</text>
+                    <text x="180" y="170" font-size="8" fill="white" font-weight="600" text-anchor="middle">Router</text>
+                    <circle cx="210" cy="160" r="8" fill="#10b981"/>
+                    <text x="210" y="163" font-size="7" fill="white" font-weight="700" text-anchor="middle">35%</text>
+
+                    <rect x="225" y="145" width="70" height="30" fill="#10b981" opacity="0.6" rx="5"/>
+                    <text x="260" y="160" font-size="8" fill="white" font-weight="600" text-anchor="middle">Knowledge</text>
+                    <text x="260" y="170" font-size="8" fill="white" font-weight="600" text-anchor="middle">Finder</text>
+                    <circle cx="290" cy="160" r="8" fill="#10b981"/>
+                    <text x="290" y="163" font-size="7" fill="white" font-weight="700" text-anchor="middle">20%</text>
+
+                    <!-- Sales agents -->
+                    <rect x="315" y="145" width="70" height="30" fill="#10b981" opacity="0.5" rx="5"/>
+                    <text x="350" y="160" font-size="8" fill="white" font-weight="600" text-anchor="middle">Quote</text>
+                    <text x="350" y="170" font-size="8" fill="white" font-weight="600" text-anchor="middle">Generator</text>
+                    <circle cx="380" cy="160" r="8" fill="#10b981"/>
+                    <text x="380" y="163" font-size="7" fill="white" font-weight="700" text-anchor="middle">50%</text>
+
+                    <rect x="405" y="145" width="70" height="30" fill="#10b981" opacity="0.5" rx="5"/>
+                    <text x="440" y="160" font-size="8" fill="white" font-weight="600" text-anchor="middle">Lead</text>
+                    <text x="440" y="170" font-size="8" fill="white" font-weight="600" text-anchor="middle">Scorer</text>
+                    <circle cx="470" cy="160" r="8" fill="#10b981"/>
+                    <text x="470" y="163" font-size="7" fill="white" font-weight="700" text-anchor="middle">30%</text>
+
+                    <!-- Marketing agents -->
+                    <rect x="495" y="145" width="70" height="30" fill="#f59e0b" opacity="0.5" rx="5"/>
+                    <text x="530" y="160" font-size="8" fill="white" font-weight="600" text-anchor="middle">Content</text>
+                    <text x="530" y="170" font-size="8" fill="white" font-weight="600" text-anchor="middle">Writer</text>
+                    <circle cx="560" cy="160" r="8" fill="#f59e0b"/>
+                    <text x="560" y="163" font-size="7" fill="white" font-weight="700" text-anchor="middle">35%</text>
+
+                    <rect x="595" y="145" width="70" height="30" fill="#f59e0b" opacity="0.5" rx="5"/>
+                    <text x="630" y="160" font-size="8" fill="white" font-weight="600" text-anchor="middle">A/B Test</text>
+                    <text x="630" y="170" font-size="8" fill="white" font-weight="600" text-anchor="middle">Engine</text>
+                    <circle cx="660" cy="160" r="8" fill="#f59e0b"/>
+                    <text x="660" y="163" font-size="7" fill="white" font-weight="700" text-anchor="middle">25%</text>
+
+                    <!-- Legend -->
+                    <rect x="50" y="190" width="670" height="40" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1" rx="6"/>
+                    <text x="385" y="205" font-size="10" fill="#374151" text-anchor="middle" font-weight="600">
+                        Agent Contribution % = Impact on departmental goal achievement
+                    </text>
+                    <text x="385" y="220" font-size="9" fill="#6b7280" text-anchor="middle">
+                        <tspan fill="#10b981" font-weight="700">Green</tspan> = On track |
+                        <tspan fill="#f59e0b" font-weight="700">Orange</tspan> = At risk |
+                        Circle shows agent's % contribution to department goal
+                    </text>
+                </svg>
+            </div>
+
+            <!-- Chart 3: Impact Attribution Sunburst -->
+            <div class="chart-container">
+                <div class="chart-title">3. Impact Attribution - Which Agents Drive Most Value?</div>
+                <div class="chart-purpose">Purpose: Data-driven investment decisions - focus on highest-value agents</div>
+                <svg width="100%" height="260" style="overflow: visible;">
+                    <!-- Center: Total Business Value -->
+                    <circle cx="375" cy="130" r="40" fill="#10b981" opacity="0.9"/>
+                    <text x="375" y="125" font-size="12" fill="white" font-weight="700" text-anchor="middle">$1.45M</text>
+                    <text x="375" y="140" font-size="9" fill="white" text-anchor="middle">Total Value</text>
+
+                    <!-- Ring 1: Value Categories (4 segments) -->
+                    <!-- Labor Savings: 55% -->
+                    <path d="M 375 90 A 40 40 0 0 1 415 130 L 460 130 A 85 85 0 0 0 375 45 Z" fill="#10b981" opacity="0.8"/>
+                    <text x="420" y="80" font-size="11" fill="#1f2937" font-weight="700">Labor</text>
+                    <text x="420" y="93" font-size="9" fill="#6b7280">$800K (55%)</text>
+
+                    <!-- Efficiency: 25% -->
+                    <path d="M 415 130 A 40 40 0 0 1 375 170 L 375 215 A 85 85 0 0 0 460 130 Z" fill="#3b82f6" opacity="0.7"/>
+                    <text x="420" y="175" font-size="11" fill="#1f2937" font-weight="700">Efficiency</text>
+                    <text x="420" y="188" font-size="9" fill="#6b7280">$360K (25%)</text>
+
+                    <!-- Quality: 15% -->
+                    <path d="M 375 170 A 40 40 0 0 1 335 130 L 290 130 A 85 85 0 0 0 375 215 Z" fill="#8b5cf6" opacity="0.7"/>
+                    <text x="280" y="175" font-size="11" fill="#1f2937" font-weight="700" text-anchor="end">Quality</text>
+                    <text x="280" y="188" font-size="9" fill="#6b7280" text-anchor="end">$220K (15%)</text>
+
+                    <!-- Revenue: 5% -->
+                    <path d="M 335 130 A 40 40 0 0 1 375 90 L 375 45 A 85 85 0 0 0 290 130 Z" fill="#f59e0b" opacity="0.7"/>
+                    <text x="290" y="80" font-size="11" fill="#1f2937" font-weight="700" text-anchor="end">Revenue</text>
+                    <text x="290" y="93" font-size="9" fill="#6b7280" text-anchor="end">$70K (5%)</text>
+
+                    <!-- Ring 2: Top Contributing Agents (showing top 5) -->
+                    <!-- Customer Support Bot (largest contributor) -->
+                    <path d="M 460 130 A 85 85 0 0 1 487 150 L 522 163 A 120 120 0 0 0 500 107 Z" fill="#0ea5e9" opacity="0.8"/>
+                    <text x="510" y="135" font-size="9" fill="#1f2937" font-weight="700">Support Bot</text>
+                    <text x="510" y="147" font-size="8" fill="#6b7280">$320K</text>
+
+                    <!-- Quote Generator -->
+                    <path d="M 487 150 A 85 85 0 0 1 460 130" fill="none" stroke="white" stroke-width="1"/>
+                    <path d="M 487 150 A 85 85 0 0 1 450 180 L 470 215 A 120 120 0 0 0 522 163 Z" fill="#06b6d4" opacity="0.7"/>
+                    <text x="490" y="195" font-size="9" fill="#1f2937" font-weight="700">Quote Gen</text>
+                    <text x="490" y="207" font-size="8" fill="#6b7280">$240K</text>
+
+                    <!-- Additional agents shown with smaller segments -->
+                    <text x="375" y="255" font-size="10" fill="#6b7280" text-anchor="middle" font-style="italic">
+                        Top 3 agents drive 48% of total value ($700K of $1.45M)
+                    </text>
+                </svg>
+                <div style="font-size: 10px; color: #6b7280; margin-top: 10px; text-align: center;">
+                    <strong>Investment Recommendation:</strong> Double down on Support Bot and Quote Generator (highest ROI) |
+                    <strong>Action:</strong> Allocate 60% of optimization budget to top 3 value drivers
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-footer">
+            <div class="slide-number">Slide 8 Enhanced</div>
+            <div class="nav-buttons">
+                <a href="slide-07-enhanced.html" class="nav-button">← Previous</a>
+                <a href="slide-09.html" class="nav-button">Next →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight') {
+                window.location.href = 'slide-09.html';
+            } else if (event.key === 'ArrowLeft') {
+                window.location.href = 'slide-07-enhanced.html';
+            }
+        });
+    </script>
+</body>
+</html>

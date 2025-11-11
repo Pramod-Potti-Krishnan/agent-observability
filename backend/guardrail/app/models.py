@@ -144,3 +144,24 @@ class HealthResponse(BaseModel):
     status: str
     service: str
     version: str
+
+
+class AgentSafetyMetrics(BaseModel):
+    """Safety metrics for a single agent"""
+    agent_id: str
+    total_violations: int = 0
+    critical_count: int = 0
+    high_count: int = 0
+    medium_count: int = 0
+    pii_count: int = 0
+    toxicity_count: int = 0
+    injection_count: int = 0
+    risk_score: float = 0.0  # 0-100 calculated risk score
+    recent_trend: str = "stable"  # improving, stable, degrading
+    last_violation: Optional[datetime] = None
+
+
+class TopRiskyAgentsResponse(BaseModel):
+    """Response for top risky agents"""
+    agents: List[AgentSafetyMetrics]
+    total_agents: int

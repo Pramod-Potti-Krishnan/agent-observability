@@ -1,10 +1,17 @@
 'use client'
+export const dynamic = 'force-dynamic'
 
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { KPICard } from '@/components/dashboard/KPICard'
-import { TimeRangeSelector } from '@/components/dashboard/TimeRangeSelector'
+import { FilterBar } from '@/components/filters/FilterBar'
+import { useFilters } from '@/lib/filter-context'
+import { EnvironmentParity } from '@/components/performance/EnvironmentParity'
+import { VersionPerformance } from '@/components/performance/VersionPerformance'
+import { SLOComplianceTracker } from '@/components/performance/SLOComplianceTracker'
+import { LatencyHeatmap } from '@/components/performance/LatencyHeatmap'
+import { DependencyWaterfall } from '@/components/performance/DependencyWaterfall'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
@@ -53,13 +60,13 @@ interface ErrorAnalysisItem {
 
 export default function PerformancePage() {
   const { user } = useAuth()
-  const [timeRange, setTimeRange] = useState('7d')
+  const { filters } = useFilters()
 
   // Fetch performance overview
   const { data: overview, isLoading: overviewLoading, error: overviewError } = useQuery({
-    queryKey: ['performance-overview', timeRange],
+    queryKey: ['performance-overview', filters.range],
     queryFn: async () => {
-      const response = await apiClient.get(`/api/v1/performance/overview?range=${timeRange}`, {
+      const response = await apiClient.get(`/api/v1/performance/overview?range=${filters.range}`, {
         headers: { 'X-Workspace-ID': user?.workspace_id }
       })
       return response.data as PerformanceOverview
@@ -70,11 +77,11 @@ export default function PerformancePage() {
 
   // Fetch latency percentiles
   const { data: latencyData, isLoading: latencyLoading } = useQuery({
-    queryKey: ['latency-percentiles', timeRange],
+    queryKey: ['latency-percentiles', filters.range],
     queryFn: async () => {
-      const granularity = timeRange === '1h' ? 'hourly' : timeRange === '24h' ? 'hourly' : 'daily'
+      const granularity = filters.range === '1h' ? 'hourly' : filters.range === '24h' ? 'hourly' : 'daily'
       const response = await apiClient.get(
-        `/api/v1/performance/latency?range=${timeRange}&granularity=${granularity}`,
+        `/api/v1/performance/latency?range=${filters.range}&granularity=${granularity}`,
         { headers: { 'X-Workspace-ID': user?.workspace_id } }
       )
       return response.data.data as LatencyPercentilesItem[]
@@ -85,11 +92,11 @@ export default function PerformancePage() {
 
   // Fetch throughput
   const { data: throughputData, isLoading: throughputLoading } = useQuery({
-    queryKey: ['throughput', timeRange],
+    queryKey: ['throughput', filters.range],
     queryFn: async () => {
-      const granularity = timeRange === '1h' ? 'hourly' : timeRange === '24h' ? 'hourly' : 'daily'
+      const granularity = filters.range === '1h' ? 'hourly' : filters.range === '24h' ? 'hourly' : 'daily'
       const response = await apiClient.get(
-        `/api/v1/performance/throughput?range=${timeRange}&granularity=${granularity}`,
+        `/api/v1/performance/throughput?range=${filters.range}&granularity=${granularity}`,
         { headers: { 'X-Workspace-ID': user?.workspace_id } }
       )
       return response.data.data as ThroughputItem[]
@@ -100,10 +107,10 @@ export default function PerformancePage() {
 
   // Fetch error analysis
   const { data: errorData, isLoading: errorLoading } = useQuery({
-    queryKey: ['error-analysis', timeRange],
+    queryKey: ['error-analysis', filters.range],
     queryFn: async () => {
       const response = await apiClient.get(
-        `/api/v1/performance/errors?range=${timeRange}&limit=10`,
+        `/api/v1/performance/errors?range=${filters.range}&limit=10`,
         { headers: { 'X-Workspace-ID': user?.workspace_id } }
       )
       return response.data as { data: ErrorAnalysisItem[]; total_errors: number; overall_error_rate: number }
@@ -135,19 +142,22 @@ export default function PerformancePage() {
   }
 
   return (
-    <div className="p-8 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Performance Monitoring</h1>
-          <p className="text-muted-foreground">
-            Track latency, throughput, and error rates across your agents
-          </p>
-        </div>
-        <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
-      </div>
+    <div>
+      {/* Enterprise Multi-Dimensional FilterBar */}
+      <FilterBar />
 
-      {/* KPI Cards */}
+      <div className="p-8 space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Performance Monitoring</h1>
+            <p className="text-muted-foreground">
+              Track latency, throughput, error rates, and environment parity across your agent fleet
+            </p>
+          </div>
+        </div>
+
+        {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
           title="P50 Latency"
@@ -182,6 +192,18 @@ export default function PerformancePage() {
           loading={overviewLoading}
         />
       </div>
+
+      {/* P0: SLO Compliance Tracker (PRD 4.3) */}
+      <SLOComplianceTracker />
+
+      {/* P0: Latency Percentile Heatmap (PRD 4.4) */}
+      <LatencyHeatmap />
+
+      {/* P0: Dependency Waterfall (PRD 4.5) */}
+      <DependencyWaterfall />
+
+      {/* Enterprise: Environment Parity Analysis (PRD 4.7) */}
+      <EnvironmentParity />
 
       {/* Latency Percentiles Over Time */}
       <Card>
@@ -241,6 +263,9 @@ export default function PerformancePage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Enterprise: Version Performance Comparison (PRD 4.8) */}
+      <VersionPerformance />
 
       {/* Throughput Over Time */}
       <Card>
@@ -395,6 +420,7 @@ export default function PerformancePage() {
           </CardContent>
         </Card>
       )}
+      </div>
     </div>
   )
 }

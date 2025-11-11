@@ -12,6 +12,7 @@ class Settings(BaseSettings):
 
     # Database
     postgres_url: str
+    timescale_url: str
 
     # Redis
     redis_url: str

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quality Observability - Slide 4</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="slide compact">
+        <div class="slide-header">
+            <h2>Pillar 1: Quality Observability</h2>
+            <p class="subtitle">Eliminate Silent Failures & Protect Your Brand</p>
+        </div>
+
+        <div class="slide-content">
+            <div style="display: grid; grid-template-columns: 75% 25%; gap: 25px; height: 100%;">
+                <!-- LEFT COLUMN: Text Content -->
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <div class="text-block">
+                        <h3 style="color: #ef4444;">Why 'Silent Failure' is Your Biggest Risk</h3>
+                        <p><strong>How do you know if your agents are giving good, accurate, and on-brand answers?</strong></p>
+                        <p>"Silent failure" is the most significant risk in AI operations—where your agent confidently provides subtly wrong answers for months. This erodes user trust, corrupts downstream data, and damages your brand, all without triggering a single traditional alarm. A simple "pass/fail" check is insufficient to protect your investment.</p>
+                    </div>
+
+                    <div class="text-block">
+                        <h3 style="color: #10b981;">Our Managed Service for Quality Assurance</h3>
+                        <p style="font-weight: 600; margin-bottom: 6px;">Our AI Operations team provides multi-layered quality assurance:</p>
+                        <ul style="font-size: 11px;">
+                            <li><strong>Continuous Quality Scoring:</strong> 0-10 rubric customized to your use cases, moving beyond pass/fail</li>
+                            <li><strong>Proactive Drift Detection:</strong> We don't just report drift; we fix it via fine-tuning, prompt engineering, or model-switching</li>
+                            <li><strong>Automated Evaluation-as-a-Service:</strong> LLM-as-Judge evaluators that scale quality control for every interaction</li>
+                            <li><strong>Human-in-the-Loop Curation:</strong> Expert validation creating "golden sets" to ensure automated judges stay accurate</li>
+                            <li><strong>Cost-vs-Quality Optimization:</strong> Quarterly reports identifying "cost-per-quality-point" for data-driven model selection</li>
+                        </ul>
+                    </div>
+
+                    <div class="text-block">
+                        <h3>Tangible Benefits & Core KPIs</h3>
+                        <ul style="font-size: 11px;">
+                            <li><strong>Avg. Quality Score (Target: >8.5):</strong> Your top-line measure of user trust and brand protection, monitored in real-time</li>
+                            <li><strong>Quality Distribution (Target: <5% 'Poor/Fail'):</strong> Tracks consistency of user experience, eliminating the long tail of bad interactions</li>
+                            <li><strong>Failure Rate (Target: <2.5%):</strong> Bottom-line metric for unacceptable outputs, driven as close to zero as possible</li>
+                            <li><strong>Drift Detection Alerts:</strong> Your early warning system—not noisy alerts, but actionable tickets for investigation before user impact</li>
+                        </ul>
+                    </div>
+
+                    <div class="highlight-box" style="padding: 10px; margin-top: auto;">
+                        <p style="font-size: 11px;"><strong>Impact:</strong> Early drift detection prevents 90% of quality issues before they reach users, enabling prompt optimization and model selection decisions that protect your brand and user trust.</p>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: Metrics & Dashboards -->
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <!-- Top 1/3: Metrics Grid -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 10px;">
+                        <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 8px; padding: 15px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white;">
+                            <div style="font-size: 32px; font-weight: 700; margin-bottom: 5px;">8.5</div>
+                            <div style="font-size: 11px; opacity: 0.95; text-align: center;">Quality Score</div>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-radius: 8px; padding: 15px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white;">
+                            <div style="font-size: 32px; font-weight: 700; margin-bottom: 5px;">12.4K</div>
+                            <div style="font-size: 11px; opacity: 0.95; text-align: center;">Evaluations</div>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 8px; padding: 15px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white;">
+                            <div style="font-size: 32px; font-weight: 700; margin-bottom: 5px;">2.3%</div>
+                            <div style="font-size: 11px; opacity: 0.95; text-align: center;">Failure Rate</div>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 8px; padding: 15px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white;">
+                            <div style="font-size: 32px; font-weight: 700; margin-bottom: 5px;">0</div>
+                            <div style="font-size: 11px; opacity: 0.95; text-align: center;">Drift Events</div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom 2/3: Dashboards -->
+                    <div style="flex: 2; display: flex; flex-direction: column; gap: 10px;">
+                        <!-- Quality Trend Dashboard -->
+                        <div style="background: white; border: 2px solid #e5e7eb; border-radius: 8px; padding: 12px; flex: 1;">
+                            <div style="font-size: 11px; color: #6b7280; font-weight: 600; margin-bottom: 8px; text-align: center;">QUALITY TREND (30 DAYS)</div>
+                            <div style="position: relative; height: calc(100% - 30px);">
+                                <!-- Target line -->
+                                <div style="position: absolute; top: 20%; left: 0; right: 0; height: 1px; background: #10b981; opacity: 0.5; border-top: 2px dashed #10b981;"></div>
+                                <div style="position: absolute; top: 18%; right: 5px; font-size: 9px; color: #10b981;">Target: 8.5</div>
+
+                                <!-- Chart area -->
+                                <svg width="100%" height="100%" style="overflow: visible;">
+                                    <!-- Grid lines -->
+                                    <line x1="0%" y1="0%" x2="100%" y2="0%" stroke="#e5e7eb" stroke-width="1"/>
+                                    <line x1="0%" y1="33%" x2="100%" y2="33%" stroke="#e5e7eb" stroke-width="1"/>
+                                    <line x1="0%" y1="66%" x2="100%" y2="66%" stroke="#e5e7eb" stroke-width="1"/>
+                                    <line x1="0%" y1="100%" x2="100%" y2="100%" stroke="#e5e7eb" stroke-width="1"/>
+
+                                    <!-- Quality trend line (improving) -->
+                                    <polyline points="0,85 10,80 20,75 30,70 40,68 50,60 60,50 70,40 80,30 90,25 100,20"
+                                              fill="none" stroke="#3b82f6" stroke-width="2.5"/>
+
+                                    <!-- Fill area under curve -->
+                                    <polygon points="0,85 10,80 20,75 30,70 40,68 50,60 60,50 70,40 80,30 90,25 100,20 100,100 0,100"
+                                             fill="#3b82f6" opacity="0.1"/>
+
+                                    <!-- Y-axis labels -->
+                                    <text x="-5" y="5" font-size="8" fill="#6b7280" text-anchor="end">10</text>
+                                    <text x="-5" y="38" font-size="8" fill="#6b7280" text-anchor="end">8</text>
+                                    <text x="-5" y="71" font-size="8" fill="#6b7280" text-anchor="end">6</text>
+                                    <text x="-5" y="104" font-size="8" fill="#6b7280" text-anchor="end">4</text>
+                                </svg>
+
+                                <!-- Good/Bad indicator -->
+                                <div style="position: absolute; bottom: -5px; right: 5px; display: flex; align-items: center; gap: 3px;">
+                                    <div style="width: 8px; height: 8px; background: #10b981; border-radius: 2px;"></div>
+                                    <span style="font-size: 9px; color: #10b981; font-weight: 600;">Above Target</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quality Distribution Dashboard -->
+                        <div style="background: white; border: 2px solid #e5e7eb; border-radius: 8px; padding: 12px; flex: 1;">
+                            <div style="font-size: 11px; color: #6b7280; font-weight: 600; margin-bottom: 8px; text-align: center;">QUALITY DISTRIBUTION</div>
+                            <div style="display: flex; align-items: end; gap: 6px; height: calc(100% - 45px);">
+                                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%;">
+                                    <div style="width: 100%; background: #10b981; border-radius: 4px 4px 0 0; height: 85%; display: flex; align-items: center; justify-content: center;">
+                                        <span style="color: white; font-weight: 700; font-size: 11px;">42%</span>
+                                    </div>
+                                    <span style="font-size: 9px; color: #6b7280; margin-top: 4px;">Excellent</span>
+                                </div>
+                                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%;">
+                                    <div style="width: 100%; background: #10b981; border-radius: 4px 4px 0 0; height: 95%; display: flex; align-items: center; justify-content: center;">
+                                        <span style="color: white; font-weight: 700; font-size: 11px;">48%</span>
+                                    </div>
+                                    <span style="font-size: 9px; color: #6b7280; margin-top: 4px;">Good</span>
+                                </div>
+                                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%;">
+                                    <div style="width: 100%; background: #f59e0b; border-radius: 4px 4px 0 0; height: 30%; display: flex; align-items: center; justify-content: center;">
+                                        <span style="color: white; font-weight: 700; font-size: 11px;">7%</span>
+                                    </div>
+                                    <span style="font-size: 9px; color: #6b7280; margin-top: 4px;">Fair</span>
+                                </div>
+                                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%;">
+                                    <div style="width: 100%; background: #ef4444; border-radius: 4px 4px 0 0; height: 15%; display: flex; align-items: center; justify-content: center;">
+                                        <span style="color: white; font-weight: 700; font-size: 10px;">2%</span>
+                                    </div>
+                                    <span style="font-size: 9px; color: #6b7280; margin-top: 4px;">Poor</span>
+                                </div>
+                                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%;">
+                                    <div style="width: 100%; background: #ef4444; border-radius: 4px 4px 0 0; height: 8%; display: flex; align-items: center; justify-content: center;">
+                                        <span style="color: white; font-weight: 700; font-size: 10px;">1%</span>
+                                    </div>
+                                    <span style="font-size: 9px; color: #6b7280; margin-top: 4px;">Fail</span>
+                                </div>
+                            </div>
+                            <!-- Good/Bad indicator -->
+                            <div style="display: flex; justify-content: center; gap: 10px; margin-top: 5px;">
+                                <div style="display: flex; align-items: center; gap: 3px;">
+                                    <div style="width: 8px; height: 8px; background: #10b981; border-radius: 2px;"></div>
+                                    <span style="font-size: 9px; color: #10b981; font-weight: 600;">Good (90%)</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 3px;">
+                                    <div style="width: 8px; height: 8px; background: #ef4444; border-radius: 2px;"></div>
+                                    <span style="font-size: 9px; color: #ef4444; font-weight: 600;">Bad (3%)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-footer">
+            <div class="slide-number">Slide 4 of 9</div>
+            <div class="nav-buttons">
+                <a href="slide-03.html" class="nav-button">← Previous</a>
+                <a href="slide-05.html" class="nav-button">Next →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight') {
+                window.location.href = 'slide-05.html';
+            } else if (event.key === 'ArrowLeft') {
+                window.location.href = 'slide-03.html';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge'
 import apiClient from '@/lib/api-client'
 import { useQuery } from '@tanstack/react-query'
+import { useAuth } from '@/lib/auth-context'
 
 interface Activity {
   trace_id: string
@@ -20,12 +21,15 @@ interface Activity {
 }
 
 export function ActivityStream() {
+  const { user } = useAuth()
+
   const { data, isLoading } = useQuery({
     queryKey: ['activity', 'stream'],
     queryFn: async () => {
       const response = await apiClient.get('/api/v1/activity/stream?limit=50')
       return response.data.items as Activity[]
     },
+    enabled: !!user?.workspace_id,
     refetchInterval: 30000,
   })
 

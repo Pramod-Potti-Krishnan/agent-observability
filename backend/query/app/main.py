@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import logging
 from .config import get_settings
 from .database import db_manager
-from .routes import home, alerts, activity, traces, usage, cost, performance
+from .routes import home, alerts, activity, traces, usage, cost, performance, filters, analytics, quality, actions, impact
 
 # Configure logging
 logging.basicConfig(
@@ -34,12 +34,17 @@ app.add_middleware(
 
 # Include routers
 app.include_router(home.router)
+app.include_router(filters.router)  # Filter options endpoints
+app.include_router(analytics.router)  # Advanced analytics endpoints (Phase 4)
 app.include_router(alerts.router)
 app.include_router(activity.router)
 app.include_router(traces.router)
 app.include_router(usage.router)
 app.include_router(cost.router)
 app.include_router(performance.router)
+app.include_router(quality.router)  # Quality monitoring endpoints
+app.include_router(impact.router)  # Business impact endpoints (Tab 7)
+app.include_router(actions.router)  # Admin action endpoints (Phase 1.4 & 2.3)
 
 
 @app.on_event("startup")

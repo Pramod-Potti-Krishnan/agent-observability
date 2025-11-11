@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Overview - Slide 3</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="slide">
+        <div class="slide-header">
+            <h2>Multi-Agent Observability Platform</h2>
+            <p class="subtitle">Three-Level Architecture for Complete Visibility</p>
+        </div>
+
+        <div class="slide-content">
+            <div class="two-column">
+                <div class="column">
+                    <div class="architecture-diagram">
+                        <div class="level-box">
+                            <h4>Level 1: Fleet View</h4>
+                            <p><strong>Organization-wide</strong> metrics across all agents, departments, and environments. Executive KPIs, cross-department benchmarks, and anomaly detection.</p>
+                        </div>
+                        <div class="level-arrow">↓ Filter & Drill Down</div>
+                        <div class="level-box">
+                            <h4>Level 2: Filtered Subset</h4>
+                            <p><strong>Team/Department</strong> specific views with filtering by version, provider, environment, intent. Comparative analysis and segment-focused insights.</p>
+                        </div>
+                        <div class="level-arrow">↓ Select Agent</div>
+                        <div class="level-box">
+                            <h4>Level 3: Agent Detail</h4>
+                            <p><strong>Individual agent</strong> performance with request-level traces, step-by-step execution breakdown, and root cause analysis.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column">
+                    <div class="text-block">
+                        <h3>5 Operational Pillars</h3>
+                    </div>
+
+                    <div class="pillar-grid" style="grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="pillar-card">
+                            <div class="pillar-icon">✓</div>
+                            <h4>Quality</h4>
+                            <p>Output accuracy, drift detection, evaluation scoring</p>
+                        </div>
+                        <div class="pillar-card">
+                            <div class="pillar-icon">⚡</div>
+                            <h4>Performance</h4>
+                            <p>Latency, throughput, SLO compliance, bottlenecks</p>
+                        </div>
+                        <div class="pillar-card">
+                            <div class="pillar-icon">🛡️</div>
+                            <h4>Safety</h4>
+                            <p>Guardrails, PII protection, compliance, risk mitigation</p>
+                        </div>
+                        <div class="pillar-card">
+                            <div class="pillar-icon">💰</div>
+                            <h4>Cost</h4>
+                            <p>Budget tracking, optimization, provider comparison</p>
+                        </div>
+                    </div>
+
+                    <div class="pillar-card" style="margin-top: 15px;">
+                        <div class="pillar-icon">📊</div>
+                        <h4>Business Impact</h4>
+                        <p>ROI tracking, goal achievement, customer satisfaction, value realization</p>
+                    </div>
+
+                    <div class="highlight-box" style="margin-top: 20px;">
+                        <p style="font-size: 16px;"><strong>All pillars integrate seamlessly</strong> - changes in one area automatically reflect across the platform for complete situational awareness</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-footer">
+            <div class="slide-number">Slide 3 of 9</div>
+            <div class="nav-buttons">
+                <a href="slide-02.html" class="nav-button">← Previous</a>
+                <a href="slide-04.html" class="nav-button">Next →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight') {
+                window.location.href = 'slide-04.html';
+            } else if (event.key === 'ArrowLeft') {
+                window.location.href = 'slide-02.html';
+            }
+        });
+    </script>
+</body>
+</html>

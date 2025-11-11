@@ -31,7 +31,11 @@ async def get_home_kpis(
     timescale_pool: asyncpg.Pool,
     postgres_pool: asyncpg.Pool,
     workspace_id: str,
-    range_hours: int
+    range_hours: int,
+    department: Optional[str] = None,
+    environment: Optional[str] = None,
+    version: Optional[str] = None,
+    agent_id: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Get home dashboard KPIs from both TimescaleDB (traces) and PostgreSQL (evaluations).
@@ -40,9 +44,57 @@ async def get_home_kpis(
     JOIN across database instances.
 
     Returns KPIs with percentage change from previous period.
+
+    Args:
+        timescale_pool: TimescaleDB connection pool
+        postgres_pool: PostgreSQL connection pool
+        workspace_id: Workspace UUID
+        range_hours: Time range in hours
+        department: Optional department code filter
+        environment: Optional environment code filter
+        version: Optional version filter
+        agent_id: Optional agent_id filter
     """
+    # Build dynamic WHERE clause for filters
+    def build_filter_clause(param_offset: int = 2) -> tuple[str, list]:
+        """Build WHERE clause and params for filters"""
+        filters = []
+        params = []
+        idx = param_offset + 1
+
+        if department:
+            filters.append(f"""
+                department_id = (SELECT id FROM departments
+                                WHERE workspace_id = $1 AND department_code = ${idx})
+            """)
+            params.append(department)
+            idx += 1
+
+        if environment:
+            filters.append(f"""
+                environment_id = (SELECT id FROM environments
+                                 WHERE workspace_id = $1 AND environment_code = ${idx})
+            """)
+            params.append(environment)
+            idx += 1
+
+        if version:
+            filters.append(f"version = ${idx}")
+            params.append(version)
+            idx += 1
+
+        if agent_id:
+            filters.append(f"agent_id = ${idx}")
+            params.append(agent_id)
+            idx += 1
+
+        filter_clause = " AND " + " AND ".join(filters) if filters else ""
+        return filter_clause, params
+
+    filter_clause, filter_params = build_filter_clause()
+
     # Query traces metrics from TimescaleDB
-    traces_query = """
+    traces_query = f"""
     WITH current_period AS (
         SELECT
             COUNT(DISTINCT id) as total_requests,
@@ -53,6 +105,7 @@ async def get_home_kpis(
         FROM traces
         WHERE workspace_id = $1
           AND timestamp >= NOW() - INTERVAL '1 hour' * $2
+          {filter_clause}
     ),
     previous_period AS (
         SELECT
@@ -65,6 +118,7 @@ async def get_home_kpis(
         WHERE workspace_id = $1
           AND timestamp >= NOW() - INTERVAL '1 hour' * ($2 * 2)
           AND timestamp < NOW() - INTERVAL '1 hour' * $2
+          {filter_clause}
     )
     SELECT
         COALESCE(c.total_requests, 0) as curr_requests,
@@ -102,7 +156,9 @@ async def get_home_kpis(
     try:
         # Query both databases in parallel
         async with timescale_pool.acquire() as traces_conn, postgres_pool.acquire() as eval_conn:
-            traces_row = await traces_conn.fetchrow(traces_query, workspace_id, range_hours)
+            # Combine workspace_id, range_hours, and filter params
+            all_params = [workspace_id, range_hours] + filter_params
+            traces_row = await traces_conn.fetchrow(traces_query, *all_params)
             quality_row = await eval_conn.fetchrow(quality_query, workspace_id, range_hours)
 
             if not traces_row:

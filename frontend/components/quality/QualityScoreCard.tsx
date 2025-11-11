@@ -18,6 +18,10 @@ export function QualityScoreCard({
   timeRange,
   loading = false
 }: QualityScoreCardProps) {
+  // Ensure values are numbers with null safety
+  const safeScore = score || 0
+  const safeTrend = trend || 0
+
   // Color coding: green if >8, yellow if 6-8, red if <6
   const getScoreColor = (score: number) => {
     if (score >= 8) return 'text-green-600'
@@ -38,16 +42,16 @@ export function QualityScoreCard({
   }
 
   return (
-    <Card className={`hover:shadow-lg transition-shadow ${getScoreBgColor(score)}`}>
+    <Card className={`hover:shadow-lg transition-shadow ${getScoreBgColor(safeScore)}`}>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           Overall Quality Score
         </CardTitle>
         <Badge
-          variant={trend > 0 ? "default" : trend < 0 ? "destructive" : "secondary"}
+          variant={safeTrend > 0 ? "default" : safeTrend < 0 ? "destructive" : "secondary"}
           className="text-xs"
         >
-          {trend > 0 ? '+' : ''}{trend.toFixed(1)}%
+          {safeTrend > 0 ? '+' : ''}{safeTrend.toFixed(1)}%
         </Badge>
       </CardHeader>
       <CardContent>
@@ -58,13 +62,13 @@ export function QualityScoreCard({
           </div>
         ) : (
           <>
-            <div className={`text-5xl font-bold ${getScoreColor(score)}`}>
-              {score.toFixed(1)}
+            <div className={`text-5xl font-bold ${getScoreColor(safeScore)}`}>
+              {safeScore.toFixed(1)}
             </div>
             <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
-              <TrendIcon change={trend} />
-              <span className={trend > 0 ? 'text-green-600' : trend < 0 ? 'text-red-600' : 'text-gray-500'}>
-                {Math.abs(trend).toFixed(1)}%
+              <TrendIcon change={safeTrend} />
+              <span className={safeTrend > 0 ? 'text-green-600' : safeTrend < 0 ? 'text-red-600' : 'text-gray-500'}>
+                {Math.abs(safeTrend).toFixed(1)}%
               </span>
               <span>vs last {timeRange}</span>
             </p>

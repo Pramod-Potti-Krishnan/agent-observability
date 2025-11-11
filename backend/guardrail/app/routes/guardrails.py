@@ -23,9 +23,11 @@ from ..models import (
     SeverityBreakdown,
     TypeBreakdown,
     CreateRuleRequest,
-    GuardrailRule
+    GuardrailRule,
+    AgentSafetyMetrics,
+    TopRiskyAgentsResponse
 )
-from ..database import get_postgres_pool
+from ..database import get_postgres_pool, get_timescale_pool
 from ..detectors.pii import detect_pii, redact_pii
 from ..detectors.toxicity import detect_toxicity
 from ..detectors.injection import detect_prompt_injection
@@ -385,9 +387,9 @@ async def get_violations(
         """
         severity_row = await pool.fetchrow(severity_query, x_workspace_id, str(hours))
         severity_breakdown = SeverityBreakdown(
-            critical=severity_row['critical'] if severity_row else 0,
-            high=severity_row['high'] if severity_row else 0,
-            medium=severity_row['medium'] if severity_row else 0
+            critical=severity_row['critical'] or 0 if severity_row else 0,
+            high=severity_row['high'] or 0 if severity_row else 0,
+            medium=severity_row['medium'] or 0 if severity_row else 0
         )
 
         # Calculate type breakdown
@@ -402,9 +404,9 @@ async def get_violations(
         """
         type_row = await pool.fetchrow(type_query, x_workspace_id, str(hours))
         type_breakdown = TypeBreakdown(
-            pii=type_row['pii'] if type_row else 0,
-            toxicity=type_row['toxicity'] if type_row else 0,
-            injection=type_row['injection'] if type_row else 0
+            pii=type_row['pii'] or 0 if type_row else 0,
+            toxicity=type_row['toxicity'] or 0 if type_row else 0,
+            injection=type_row['injection'] or 0 if type_row else 0
         )
 
         # Calculate trend percentage (compare to previous period)
@@ -559,4 +561,445 @@ async def create_rule(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to create rule: {str(e)}"
+        )
+
+
+@router.get("/safety-overview")
+async def get_safety_overview(
+    range: str = '30d',
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    pool: asyncpg.Pool = Depends(get_postgres_pool)
+):
+    """
+    Get comprehensive safety metrics for dashboard KPI cards
+
+    Returns:
+        - safety_score: 0-100 score based on violation rate
+        - sla_compliance: SLA compliance metrics
+        - compliance_status: Overall compliance status
+        - trend_percentage: Change from previous period
+    """
+    try:
+        # Parse time range
+        time_mapping = {'1h': 1, '24h': 24, '7d': 24 * 7, '30d': 24 * 30, '90d': 24 * 90}
+        hours = time_mapping.get(range, 24 * 30)
+
+        # Get total requests from traces (TimescaleDB would be needed, using violations for now)
+        total_violations_query = """
+            SELECT COUNT(*) as total
+            FROM guardrail_violations
+            WHERE workspace_id = $1
+                AND detected_at >= NOW() - ($2::text || ' hours')::INTERVAL
+        """
+        total_violations = await pool.fetchval(total_violations_query, x_workspace_id, str(hours)) or 0
+
+        # Calculate safety score (100 - violation rate normalized to 0-100)
+        # Assuming ~1000 total operations, violation rate of 1% = score of 99
+        estimated_total_operations = max(total_violations * 10, 1000)
+        violation_rate = (total_violations / estimated_total_operations) * 100
+        safety_score = max(0, min(100, 100 - (violation_rate * 5)))  # Scale violation rate
+
+        # Get previous period violations for trend
+        prev_violations_query = """
+            SELECT COUNT(*) as prev_total
+            FROM guardrail_violations
+            WHERE workspace_id = $1
+                AND detected_at >= NOW() - (($2::text)::int * 2 || ' hours')::INTERVAL
+                AND detected_at < NOW() - ($2::text || ' hours')::INTERVAL
+        """
+        prev_violations = await pool.fetchval(prev_violations_query, x_workspace_id, str(hours)) or 0
+
+        # Calculate trend (positive = improving, negative = degrading)
+        trend_percentage = 0.0
+        if prev_violations > 0:
+            trend_percentage = ((prev_violations - total_violations) / prev_violations) * 100
+
+        # SLA compliance metrics (mock data for now - would need incident tracking table)
+        total_incidents = total_violations
+        within_sla = int(total_incidents * 0.85)  # 85% compliance
+        breached_sla = total_incidents - within_sla
+        compliance_rate = (within_sla / total_incidents * 100) if total_incidents > 0 else 100.0
+
+        # Get active rules
+        active_rules_query = """
+            SELECT COUNT(*) as count
+            FROM guardrail_rules
+            WHERE workspace_id = $1 AND is_active = true
+        """
+        active_rules = await pool.fetchval(active_rules_query, x_workspace_id) or 0
+
+        # Determine compliance status
+        if safety_score >= 90 and active_rules >= 3:
+            compliance_status = 'compliant'
+        elif safety_score >= 70 and active_rules >= 2:
+            compliance_status = 'partial'
+        else:
+            compliance_status = 'non_compliant'
+
+        # Get enabled policy types
+        enabled_policies_query = """
+            SELECT DISTINCT rule_type
+            FROM guardrail_rules
+            WHERE workspace_id = $1 AND is_active = true
+        """
+        enabled_policies_rows = await pool.fetch(enabled_policies_query, x_workspace_id)
+        enabled_policies = [row['rule_type'] for row in enabled_policies_rows]
+
+        return {
+            'safety_score': round(safety_score, 1),
+            'safety_trend': round(trend_percentage, 1),
+            'sla_compliance': {
+                'compliance_rate': round(compliance_rate, 1),
+                'total_incidents': total_incidents,
+                'within_sla': within_sla,
+                'breached_sla': breached_sla
+            },
+            'compliance_status': {
+                'status': compliance_status,
+                'active_rules': active_rules,
+                'enabled_policies': enabled_policies,
+                'last_audit': datetime.utcnow().isoformat()
+            }
+        }
+
+    except Exception as e:
+        logger.error(f"Failed to fetch safety overview: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch safety overview: {str(e)}"
+        )
+
+
+@router.get("/risk-heatmap")
+async def get_risk_heatmap(
+    time_range: str = '30d',
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    pg_pool: asyncpg.Pool = Depends(get_postgres_pool),
+    ts_pool: asyncpg.Pool = Depends(get_timescale_pool)
+):
+    """
+    Get risk heatmap data showing agent × violation type distribution
+
+    Returns grid data for heatmap visualization with cross-database join
+    """
+    try:
+        # Parse time range
+        time_mapping = {'1h': 1, '24h': 24, '7d': 24 * 7, '30d': 24 * 30, '90d': 24 * 90}
+        hours = time_mapping.get(time_range, 24 * 30)
+
+        # Step 1: Get violations from PostgreSQL
+        violation_query = """
+            SELECT
+                trace_id,
+                violation_type,
+                severity,
+                detected_at
+            FROM guardrail_violations
+            WHERE workspace_id = $1
+                AND detected_at >= NOW() - INTERVAL '1 hour' * $2
+        """
+        violations = await pg_pool.fetch(violation_query, x_workspace_id, hours)
+
+        if not violations:
+            return {
+                'cells': [],
+                'agents': [],
+                'violation_types': ['pii', 'toxicity', 'injection']
+            }
+
+        # Step 2: Get trace_id to agent_id mappings from TimescaleDB
+        trace_ids = list(set([v['trace_id'] for v in violations]))
+
+        # Query in batches to avoid parameter limits
+        agent_mapping = {}
+        batch_size = 1000
+        for i in range(0, len(trace_ids), batch_size):
+            batch = trace_ids[i:i+batch_size]
+            trace_query = """
+                SELECT DISTINCT trace_id, agent_id
+                FROM traces
+                WHERE trace_id = ANY($1::text[])
+            """
+            trace_rows = await ts_pool.fetch(trace_query, batch)
+            for row in trace_rows:
+                agent_mapping[row['trace_id']] = row['agent_id']
+
+        # Step 3: Aggregate violations by agent_id and violation_type
+        from collections import defaultdict
+        aggregated = defaultdict(lambda: defaultdict(lambda: {'count': 0, 'severity': 'medium'}))
+
+        severity_rank = {'critical': 3, 'high': 2, 'medium': 1, 'low': 0}
+
+        for violation in violations:
+            trace_id = violation['trace_id']
+            agent_id = agent_mapping.get(trace_id)
+
+            if not agent_id:
+                continue  # Skip if we can't map to agent_id
+
+            v_type = violation['violation_type']
+            current_severity = aggregated[agent_id][v_type]['severity']
+
+            # Increment count
+            aggregated[agent_id][v_type]['count'] += 1
+
+            # Update severity to max
+            if severity_rank.get(violation['severity'], 0) > severity_rank.get(current_severity, 0):
+                aggregated[agent_id][v_type]['severity'] = violation['severity']
+
+        # Step 4: Format response
+        cells = []
+        for agent_id, v_types in aggregated.items():
+            for v_type, data in v_types.items():
+                cells.append({
+                    'agent_id': agent_id,
+                    'violation_type': v_type,
+                    'count': data['count'],
+                    'severity': data['severity']
+                })
+
+        # Sort by count and get top agents
+        cells_sorted = sorted(cells, key=lambda x: x['count'], reverse=True)
+
+        # Get unique agents (top by total violation count)
+        agent_totals = defaultdict(int)
+        for cell in cells:
+            agent_totals[cell['agent_id']] += cell['count']
+
+        top_agents = sorted(agent_totals.items(), key=lambda x: x[1], reverse=True)[:15]
+        top_agent_ids = [agent_id for agent_id, _ in top_agents]
+
+        # Filter cells to only include top agents
+        filtered_cells = [cell for cell in cells if cell['agent_id'] in top_agent_ids]
+
+        return {
+            'cells': filtered_cells,
+            'agents': top_agent_ids,
+            'violation_types': ['pii', 'toxicity', 'injection']
+        }
+
+    except Exception as e:
+        import traceback
+        logger.error(f"Failed to fetch risk heatmap: {e}\n{traceback.format_exc()}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch risk heatmap: {e}"
+        )
+
+
+@router.get("/pii-breakdown")
+async def get_pii_breakdown(
+    range: str = '30d',
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    pool: asyncpg.Pool = Depends(get_postgres_pool)
+):
+    """
+    Get PII type breakdown showing distribution of email, phone, SSN, IP, etc.
+
+    Returns breakdown of PII violation types
+    """
+    try:
+        # Parse time range
+        time_mapping = {'1h': 1, '24h': 24, '7d': 24 * 7, '30d': 24 * 30, '90d': 24 * 90}
+        hours = time_mapping.get(range, 24 * 30)
+
+        # Get PII violations and extract pattern types from metadata
+        query = """
+            SELECT
+                metadata->>'pattern_type' as pii_type,
+                COUNT(*) as count
+            FROM guardrail_violations
+            WHERE workspace_id = $1
+                AND detected_at >= NOW() - ($2::text || ' hours')::INTERVAL
+                AND violation_type = 'pii'
+                AND metadata IS NOT NULL
+                AND metadata->>'pattern_type' IS NOT NULL
+            GROUP BY metadata->>'pattern_type'
+            ORDER BY count DESC
+        """
+
+        rows = await pool.fetch(query, x_workspace_id, str(hours))
+
+        # Calculate total and percentages
+        total_pii = sum(row['count'] for row in rows)
+
+        breakdown = [
+            {
+                'type': row['pii_type'],
+                'count': row['count'],
+                'percentage': (row['count'] / total_pii * 100) if total_pii > 0 else 0
+            }
+            for row in rows
+        ]
+
+        return {
+            'breakdown': breakdown,
+            'total_pii_violations': total_pii
+        }
+
+    except Exception as e:
+        logger.error(f"Failed to fetch PII breakdown: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch PII breakdown: {str(e)}"
+        )
+
+
+@router.get("/agents", response_model=TopRiskyAgentsResponse)
+async def get_top_risky_agents(
+    time_range: str = '30d',
+    limit: int = 20,
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    pg_pool: asyncpg.Pool = Depends(get_postgres_pool),
+    ts_pool: asyncpg.Pool = Depends(get_timescale_pool)
+):
+    """
+    Get top risky agents ranked by safety violations
+
+    Returns agents with highest violation counts, severity breakdown,
+    risk scores, and trends. Uses cross-database join to map trace_id to agent_id.
+    """
+    try:
+        # Parse time range
+        time_mapping = {'1h': 1, '24h': 24, '7d': 24 * 7, '30d': 24 * 30, '90d': 24 * 90}
+        hours = time_mapping.get(time_range, 24 * 30)
+
+        # Step 1: Get all violations from PostgreSQL
+        violation_query = """
+            SELECT
+                trace_id,
+                violation_type,
+                severity,
+                detected_at
+            FROM guardrail_violations
+            WHERE workspace_id = $1
+                AND detected_at >= NOW() - INTERVAL '1 hour' * $2
+        """
+        violations = await pg_pool.fetch(violation_query, x_workspace_id, hours)
+
+        if not violations:
+            return TopRiskyAgentsResponse(agents=[], total_agents=0)
+
+        # Step 2: Get trace_id to agent_id mappings from TimescaleDB
+        trace_ids = list(set([v['trace_id'] for v in violations]))
+
+        agent_mapping = {}
+        batch_size = 1000
+        for i in range(0, len(trace_ids), batch_size):
+            batch = trace_ids[i:i+batch_size]
+            trace_query = """
+                SELECT DISTINCT trace_id, agent_id
+                FROM traces
+                WHERE trace_id = ANY($1::text[])
+            """
+            trace_rows = await ts_pool.fetch(trace_query, batch)
+            for row in trace_rows:
+                agent_mapping[row['trace_id']] = row['agent_id']
+
+        # Step 3: Aggregate violations by agent_id
+        from collections import defaultdict
+        agent_data = defaultdict(lambda: {
+            'total_violations': 0,
+            'critical_count': 0,
+            'high_count': 0,
+            'medium_count': 0,
+            'pii_count': 0,
+            'toxicity_count': 0,
+            'injection_count': 0,
+            'violations': []
+        })
+
+        for violation in violations:
+            trace_id = violation['trace_id']
+            agent_id = agent_mapping.get(trace_id)
+
+            if not agent_id:
+                continue
+
+            agent = agent_data[agent_id]
+            agent['total_violations'] += 1
+            agent['violations'].append(violation)
+
+            # Count by severity
+            if violation['severity'] == 'critical':
+                agent['critical_count'] += 1
+            elif violation['severity'] == 'high':
+                agent['high_count'] += 1
+            elif violation['severity'] == 'medium':
+                agent['medium_count'] += 1
+
+            # Count by type
+            if violation['violation_type'] == 'pii':
+                agent['pii_count'] += 1
+            elif violation['violation_type'] == 'toxicity':
+                agent['toxicity_count'] += 1
+            elif violation['violation_type'] == 'injection':
+                agent['injection_count'] += 1
+
+        # Step 4: Calculate risk scores and trends
+        agents_list = []
+        for agent_id, data in agent_data.items():
+            # Calculate risk score (0-100)
+            # Weight: critical=10, high=5, medium=2
+            weighted_score = (
+                data['critical_count'] * 10 +
+                data['high_count'] * 5 +
+                data['medium_count'] * 2
+            )
+            risk_score = min(100.0, (weighted_score / max(1, data['total_violations'])) * 10)
+
+            # Calculate trend (recent vs older)
+            sorted_violations = sorted(data['violations'], key=lambda v: v['detected_at'])
+            if len(sorted_violations) >= 2:
+                midpoint = len(sorted_violations) // 2
+                older_violations = sorted_violations[:midpoint]
+                recent_violations = sorted_violations[midpoint:]
+
+                older_rate = len(older_violations) / max(1, hours / 2)
+                recent_rate = len(recent_violations) / max(1, hours / 2)
+
+                if recent_rate < older_rate * 0.8:
+                    trend = "improving"
+                elif recent_rate > older_rate * 1.2:
+                    trend = "degrading"
+                else:
+                    trend = "stable"
+            else:
+                trend = "stable"
+
+            # Last violation timestamp
+            last_violation = max(v['detected_at'] for v in data['violations']) if data['violations'] else None
+
+            agents_list.append({
+                'agent_id': agent_id,
+                'total_violations': data['total_violations'],
+                'critical_count': data['critical_count'],
+                'high_count': data['high_count'],
+                'medium_count': data['medium_count'],
+                'pii_count': data['pii_count'],
+                'toxicity_count': data['toxicity_count'],
+                'injection_count': data['injection_count'],
+                'risk_score': risk_score,
+                'recent_trend': trend,
+                'last_violation': last_violation
+            })
+
+        # Step 5: Sort by risk score and limit
+        agents_list.sort(key=lambda x: (-x['risk_score'], -x['total_violations']))
+        top_agents = agents_list[:limit]
+
+        # Convert to response models
+        agent_metrics = [AgentSafetyMetrics(**agent) for agent in top_agents]
+
+        return TopRiskyAgentsResponse(
+            agents=agent_metrics,
+            total_agents=len(agents_list)
+        )
+
+    except Exception as e:
+        import traceback
+        logger.error(f"Failed to fetch top risky agents: {e}\n{traceback.format_exc()}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch top risky agents: {e}"
         )

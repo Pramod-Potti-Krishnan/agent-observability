@@ -110,6 +110,51 @@ async def proxy_performance(request: Request, path: str):
     return await proxy_request(request, QUERY_SERVICE_URL)
 
 
+@router.api_route(
+    "/api/v1/filters/{path:path}",
+    methods=["GET", "POST", "PUT", "DELETE", "PATCH"]
+)
+async def proxy_filters(request: Request, path: str):
+    """Proxy filter requests to query service"""
+    return await proxy_request(request, QUERY_SERVICE_URL)
+
+
+@router.api_route(
+    "/api/v1/analytics/{path:path}",
+    methods=["GET", "POST", "PUT", "DELETE", "PATCH"]
+)
+async def proxy_analytics(request: Request, path: str):
+    """Proxy analytics requests to query service"""
+    return await proxy_request(request, QUERY_SERVICE_URL)
+
+
+@router.api_route(
+    "/api/v1/activity/{path:path}",
+    methods=["GET", "POST", "PUT", "DELETE", "PATCH"]
+)
+async def proxy_activity(request: Request, path: str):
+    """Proxy activity stream requests to query service"""
+    return await proxy_request(request, QUERY_SERVICE_URL)
+
+
+@router.api_route(
+    "/api/v1/quality/{path:path}",
+    methods=["GET", "POST", "PUT", "DELETE", "PATCH"]
+)
+async def proxy_quality(request: Request, path: str):
+    """Proxy quality monitoring requests to query service"""
+    return await proxy_request(request, QUERY_SERVICE_URL)
+
+
+@router.api_route(
+    "/api/v1/impact/{path:path}",
+    methods=["GET", "POST", "PUT", "DELETE", "PATCH"]
+)
+async def proxy_impact(request: Request, path: str):
+    """Proxy business impact requests to query service"""
+    return await proxy_request(request, QUERY_SERVICE_URL)
+
+
 # Ingestion Service Proxy Routes
 @router.api_route(
     "/api/v1/traces/{path:path}",

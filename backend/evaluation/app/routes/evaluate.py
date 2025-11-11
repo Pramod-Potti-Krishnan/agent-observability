@@ -15,7 +15,8 @@ from ..models import (
     EvaluationHistory,
     CreateCriteriaRequest,
     CriteriaResponse,
-    EvaluationCriteria
+    EvaluationCriteria,
+    AgentEvaluationRequest
 )
 from ..database import (
     get_postgres_pool,
@@ -125,7 +126,7 @@ async def evaluate_trace(
             custom_criteria
         )
 
-        # Save evaluation to database
+        # Save evaluation to database with agent_id from trace
         evaluation_id = await save_evaluation(
             pool,
             x_workspace_id,
@@ -142,7 +143,8 @@ async def evaluate_trace(
             {
                 'model': settings.gemini_model,
                 'has_custom_criteria': custom_criteria is not None
-            }
+            },
+            agent_id=trace.get('agent_id')  # Pass agent_id from trace
         )
 
         # Fetch saved evaluation
@@ -212,9 +214,9 @@ async def evaluate_batch(
                 detail=f"Batch size exceeds maximum of {settings.max_batch_size}"
             )
 
-        # Fetch all traces
+        # Fetch all traces with agent_id
         query = """
-            SELECT trace_id, input, output, status
+            SELECT trace_id, agent_id, input, output, status
             FROM traces
             WHERE workspace_id = $1 AND trace_id = ANY($2) AND status = 'success'
         """
@@ -223,6 +225,7 @@ async def evaluate_batch(
         traces = [
             {
                 'trace_id': row['trace_id'],
+                'agent_id': row['agent_id'],
                 'input': row['input'],
                 'output': row['output']
             }
@@ -244,13 +247,20 @@ async def evaluate_batch(
         successful = 0
         failed = 0
 
+        # Create a trace_id to agent_id mapping for quick lookup
+        trace_agent_map = {t['trace_id']: t.get('agent_id') for t in traces}
+
         for eval_data in evaluations:
             if eval_data.get('success'):
                 try:
+                    # Get agent_id for this trace
+                    trace_id = eval_data['trace_id']
+                    agent_id = trace_agent_map.get(trace_id)
+
                     eval_id = await save_evaluation(
                         pool,
                         x_workspace_id,
-                        eval_data['trace_id'],
+                        trace_id,
                         'gemini',
                         {
                             'accuracy_score': eval_data['accuracy_score'],
@@ -260,7 +270,8 @@ async def evaluate_batch(
                             'overall_score': eval_data['overall_score']
                         },
                         eval_data['reasoning'],
-                        {'model': settings.gemini_model, 'batch': True}
+                        {'model': settings.gemini_model, 'batch': True},
+                        agent_id=agent_id  # Pass agent_id from trace
                     )
 
                     # Fetch saved evaluation
@@ -488,4 +499,198 @@ async def list_criteria(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to list criteria: {str(e)}"
+        )
+
+
+@router.post("/agent/{agent_id}", response_model=BatchEvaluationResult)
+async def evaluate_agent(
+    agent_id: str,
+    request: AgentEvaluationRequest,
+    x_workspace_id: str = Header(..., alias="X-Workspace-ID"),
+    pool: asyncpg.Pool = Depends(get_postgres_pool)
+):
+    """
+    Evaluate traces for a specific agent
+
+    Supports two modes:
+    - manual: Evaluate specific trace_ids provided in request
+    - auto: Evaluate N most recent un-evaluated traces for this agent
+
+    Args:
+        agent_id: Agent ID to evaluate traces for
+        request: Evaluation request with mode and parameters
+        x_workspace_id: Workspace ID from header
+
+    Returns:
+        Batch evaluation results
+    """
+
+    try:
+        workspace_uuid = UUID(x_workspace_id)
+        trace_ids = []
+
+        # Mode: Manual - use provided trace IDs
+        if request.mode == 'manual':
+            if not request.trace_ids or len(request.trace_ids) == 0:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Manual mode requires trace_ids to be provided"
+                )
+            trace_ids = request.trace_ids
+
+        # Mode: Auto - fetch recent un-evaluated traces
+        elif request.mode == 'auto':
+            count = request.count or 10
+
+            # Query to get recent un-evaluated traces for this agent
+            # A trace is "un-evaluated" if it doesn't have a corresponding evaluation record
+            query = """
+                SELECT t.trace_id, t.input, t.output, t.status, t.created_at
+                FROM traces t
+                LEFT JOIN evaluations e ON t.trace_id = e.trace_id AND e.workspace_id = $1
+                WHERE t.workspace_id = $1
+                    AND t.agent_id = $2
+                    AND t.status = 'success'
+                    AND t.output IS NOT NULL
+                    AND e.id IS NULL
+                ORDER BY t.created_at DESC
+                LIMIT $3
+            """
+
+            rows = await pool.fetch(query, workspace_uuid, agent_id, count)
+
+            if not rows:
+                # No un-evaluated traces found - return empty result
+                return BatchEvaluationResult(
+                    evaluations=[],
+                    total=0,
+                    successful=0,
+                    failed=0
+                )
+
+            trace_ids = [row['trace_id'] for row in rows]
+            logger.info(f"Auto mode: Found {len(trace_ids)} un-evaluated traces for agent {agent_id}")
+
+        # Validate we have traces to evaluate
+        if not trace_ids:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No traces to evaluate"
+            )
+
+        if len(trace_ids) > settings.max_batch_size:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Too many traces. Maximum batch size is {settings.max_batch_size}"
+            )
+
+        # Fetch trace data with agent_id
+        query = """
+            SELECT trace_id, input, output, status, agent_id
+            FROM traces
+            WHERE workspace_id = $1 AND trace_id = ANY($2) AND status = 'success' AND agent_id = $3
+        """
+        rows = await pool.fetch(query, workspace_uuid, trace_ids, agent_id)
+
+        traces = [
+            {
+                'trace_id': row['trace_id'],
+                'agent_id': row['agent_id'],
+                'input': row['input'],
+                'output': row['output']
+            }
+            for row in rows
+        ]
+
+        if not traces:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"No valid traces found for agent {agent_id}"
+            )
+
+        # Batch evaluate with Gemini
+        logger.info(f"Evaluating {len(traces)} traces for agent {agent_id}")
+        evaluations = await batch_evaluate_with_gemini(traces, request.custom_criteria)
+
+        # Save successful evaluations
+        results = []
+        successful = 0
+        failed = 0
+
+        for eval_data in evaluations:
+            if eval_data.get('success'):
+                try:
+                    eval_id = await save_evaluation(
+                        pool,
+                        x_workspace_id,
+                        eval_data['trace_id'],
+                        'gemini',
+                        {
+                            'accuracy_score': eval_data['accuracy_score'],
+                            'relevance_score': eval_data['relevance_score'],
+                            'helpfulness_score': eval_data['helpfulness_score'],
+                            'coherence_score': eval_data['coherence_score'],
+                            'overall_score': eval_data['overall_score']
+                        },
+                        eval_data['reasoning'],
+                        {
+                            'model': settings.gemini_model,
+                            'batch': True,
+                            'agent_id': agent_id,
+                            'mode': request.mode,
+                            'has_custom_criteria': request.custom_criteria is not None
+                        },
+                        agent_id=agent_id  # Pass agent_id directly
+                    )
+
+                    # Fetch saved evaluation
+                    query = """
+                        SELECT
+                            id, workspace_id, trace_id, created_at, evaluator,
+                            accuracy_score, relevance_score, helpfulness_score,
+                            coherence_score, overall_score, reasoning, metadata
+                        FROM evaluations
+                        WHERE id = $1
+                    """
+                    row = await pool.fetchrow(query, UUID(eval_id))
+
+                    results.append(EvaluationResult(
+                        id=row['id'],
+                        workspace_id=row['workspace_id'],
+                        trace_id=row['trace_id'],
+                        created_at=row['created_at'],
+                        evaluator=row['evaluator'],
+                        accuracy_score=float(row['accuracy_score']),
+                        relevance_score=float(row['relevance_score']),
+                        helpfulness_score=float(row['helpfulness_score']),
+                        coherence_score=float(row['coherence_score']),
+                        overall_score=float(row['overall_score']),
+                        reasoning=row['reasoning'],
+                        metadata=json.loads(row['metadata']) if isinstance(row['metadata'], str) else row['metadata']
+                    ))
+
+                    successful += 1
+
+                except Exception as e:
+                    logger.error(f"Failed to save evaluation for {eval_data['trace_id']}: {e}")
+                    failed += 1
+            else:
+                failed += 1
+
+        logger.info(f"Agent evaluation complete: {successful} successful, {failed} failed")
+
+        return BatchEvaluationResult(
+            evaluations=results,
+            total=len(trace_ids),
+            successful=successful,
+            failed=failed
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Agent evaluation failed for {agent_id}: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Agent evaluation failed: {str(e)}"
         )

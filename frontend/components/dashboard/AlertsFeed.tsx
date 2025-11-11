@@ -5,6 +5,7 @@ import { Alert } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import apiClient from '@/lib/api-client'
 import { useQuery } from '@tanstack/react-query'
+import { useAuth } from '@/lib/auth-context'
 
 interface AlertItem {
   id: string
@@ -16,12 +17,15 @@ interface AlertItem {
 }
 
 export function AlertsFeed() {
+  const { user } = useAuth()
+
   const { data, isLoading } = useQuery({
     queryKey: ['alerts', 'recent'],
     queryFn: async () => {
       const response = await apiClient.get('/api/v1/alerts/recent?limit=10')
       return response.data.items as AlertItem[]
     },
+    enabled: !!user?.workspace_id,
     refetchInterval: 60000,
   })
 

@@ -36,7 +36,7 @@ async def close_postgres_pool():
 async def get_trace_by_id(pool: asyncpg.Pool, workspace_id: str, trace_id: str) -> Optional[dict]:
     """Get trace data by ID"""
     query = """
-        SELECT trace_id, input, output, status, timestamp
+        SELECT trace_id, agent_id, input, output, status, timestamp
         FROM traces
         WHERE workspace_id = $1 AND trace_id = $2
         ORDER BY timestamp DESC
@@ -48,6 +48,7 @@ async def get_trace_by_id(pool: asyncpg.Pool, workspace_id: str, trace_id: str) 
     if row:
         return {
             'trace_id': row['trace_id'],
+            'agent_id': row['agent_id'],
             'input': row['input'],
             'output': row['output'],
             'status': row['status'],
@@ -64,14 +65,16 @@ async def save_evaluation(
     evaluator: str,
     scores: dict,
     reasoning: str,
-    metadata: dict
+    metadata: dict,
+    agent_id: Optional[str] = None
 ) -> str:
-    """Save evaluation to database"""
+    """Save evaluation to database with agent_id"""
     query = """
         INSERT INTO evaluations (
             id,
             workspace_id,
             trace_id,
+            agent_id,
             created_at,
             evaluator,
             accuracy_score,
@@ -83,7 +86,7 @@ async def save_evaluation(
             metadata
         ) VALUES (
             uuid_generate_v4(),
-            $1, $2, NOW(), $3, $4, $5, $6, $7, $8, $9, $10
+            $1, $2, $3, NOW(), $4, $5, $6, $7, $8, $9, $10, $11
         )
         RETURNING id
     """
@@ -92,6 +95,7 @@ async def save_evaluation(
         query,
         workspace_id,
         trace_id,
+        agent_id,
         evaluator,
         scores['accuracy_score'],
         scores['relevance_score'],

@@ -78,8 +78,8 @@ export function EvaluationTable({ evaluations, loading = false }: EvaluationTabl
                       </Link>
                     </TableCell>
                     <TableCell className="text-center">
-                      <Badge variant={getScoreBadgeVariant(evaluation.overall_score)}>
-                        {evaluation.overall_score.toFixed(1)}
+                      <Badge variant={getScoreBadgeVariant(evaluation.overall_score || 0)}>
+                        {(evaluation.overall_score || 0).toFixed(1)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-center text-sm">
