@@ -1,338 +1,389 @@
-# Agent Observability Platform
+# GARUDAI 🦅
+**Global Agent Runtime Unified Dashboard AI**
 
-AI Agent and LLM Observability Solution for monitoring, analyzing, and optimizing AI agent performance.
+The all-seeing guardian for your AI agents - comprehensive observability, intelligent guardrails, and actionable insights.
+
+![GARUDAI](https://img.shields.io/badge/GARUDAI-Production%20Ready-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Next.js](https://img.shields.io/badge/Next.js-14-black)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.104-009688)
+
+---
+
+## 🦅 What is GARUDAI?
+
+Like the mythical Garuda—the divine eagle with all-seeing vision—GARUDAI watches over your AI agent infrastructure with unmatched visibility and protection.
+
+GARUDAI is a production-ready observability platform for AI agents and LLMs that provides:
+
+### Core Capabilities
+
+- 📊 **Usage Analytics** - Track API calls, token usage, model distribution, user adoption
+- 💰 **Cost Management** - Real-time spending, budget alerts, optimization recommendations
+- ⚡ **Performance Monitoring** - Latency percentiles, throughput, error rates, SLO tracking
+- 🏆 **Quality Evaluation** - AI-powered response quality scoring with rubric-based assessments
+- 🛡️ **Safety & Guardrails** - PII detection, toxicity filtering, prompt injection prevention
+- 📈 **Business Impact** - ROI tracking, goal management, KPI dashboards, revenue attribution
+
+---
 
 ## 🚀 Quick Start
 
+### Local Development
+
 ```bash
-# 1. Clone and setup
+# 1. Clone the repository
+git clone https://github.com/Pramod-Potti-Krishnan/agent-observability.git
+cd agent-observability
+
+# 2. Setup environment
 cp .env.example .env
-chmod +x setup.sh
-./setup.sh
+# Edit .env with your configuration
 
-# 2. Start the frontend
-cd frontend
-npm run dev
+# 3. Start all services with Docker Compose
+docker-compose up -d
 
-# 3. Visit http://localhost:3000
+# 4. Access the dashboard
+open http://localhost:3000
 ```
 
-**That's it!** The defaults work for local development.
+**That's it!** All services (frontend, backend, databases) start automatically.
 
-**macOS Users:** If you encounter "pg_config executable not found", see [MACOS_SETUP.md](MACOS_SETUP.md) (already fixed in latest setup.sh).
+### Production Deployment
 
-## 📋 What is This?
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete deployment guide to Vercel + Railway.
 
-A comprehensive observability platform for AI agents and LLMs that provides:
+**Quick Deploy:**
+- **Frontend** → [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/your-repo/garudai-frontend)
+- **Backend** → [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template)
 
-- **Usage Analytics** - Track API calls, token usage, model distribution
-- **Cost Management** - Monitor spending, budget tracking, cost optimization
-- **Performance Metrics** - Latency percentiles, throughput, error rates
-- **Quality Evaluation** - AI-powered response quality scoring with Gemini
-- **Safety & Guardrails** - PII detection, toxicity filtering, prompt injection detection
-- **Business Impact** - ROI tracking, goal management, KPI dashboards
-
-## 🏗️ Project Status
-
-**✅ Phase 0 Complete** - Foundation & Infrastructure (Week 1-2)
-
-- Docker Compose with TimescaleDB, PostgreSQL, Redis
-- Database schemas with retention policies
-- Synthetic data generator (10,000+ traces)
-- Next.js 14 frontend with shadcn/ui
-- 8 dashboard pages with navigation
-- 8 passing tests
-
-**➡️ Next: Phase 1** - Core Backend Services (Week 3-5)
+---
 
 ## 📚 Documentation
 
-### Getting Started
-- **[ENV_QUICKSTART.md](ENV_QUICKSTART.md)** - Environment setup (TL;DR version)
-- **[PHASE_0_COMPLETE.md](PHASE_0_COMPLETE.md)** - What was built in Phase 0
-- **[setup.sh](setup.sh)** - Automated setup script
+### Core Documentation
+- [**Setup Guide**](./docs/mvp/SETUP_GUIDE.md) - Detailed installation and configuration
+- [**Deployment Guide**](./DEPLOYMENT.md) - Production deployment to Vercel + Railway
+- [**API Reference**](./docs/mvp/API_REFERENCE.md) - Complete API documentation
+- [**Architecture**](./docs/mvp/ARCHITECTURE.md) - System design and components
 
-### Comprehensive Guides
-- **[docs/ENVIRONMENT_SETUP.md](docs/ENVIRONMENT_SETUP.md)** - Complete environment configuration
-- **[docs/frontend-architecture.md](docs/frontend-architecture.md)** - Frontend architecture
-- **[docs/backend-services-architecture.md](docs/backend-services-architecture.md)** - Backend services
-- **[docs/database-schema-design.md](docs/database-schema-design.md)** - Database design
-- **[docs/integration-strategies.md](docs/integration-strategies.md)** - Integration patterns
+### Product Requirements
+- [**MVP Features**](./docs/mvp/README.md) - Core functionality (Phase 0-5)
+- [**Enterprise PRD**](./docs/enterprise/prd/overall.md) - Complete feature set (Tabs 1-11)
+- [**Current State**](./docs/CURRENT_STATE_2025-11-11.md) - Implementation status report
 
-### Reference
-- **[.env.example](.env.example)** - Environment variables template (heavily commented)
+### Additional Guides
+- [**Database Reference**](./docs/mvp/DATABASE_REFERENCE.md) - Schema and queries
+- [**Troubleshooting**](./docs/mvp/TROUBLESHOOTING.md) - Common issues and solutions
+- [**Environment Setup**](./docs/mvp/other-references/summaries/ENVIRONMENT_SETUP.md) - Environment variables guide
 
-## 🔧 Environment Configuration
+---
 
-### Is .env Required?
+## 🏗️ Architecture
 
-| Phase | Required? | What's Needed |
-|-------|-----------|---------------|
-| **Phase 0** (Current) | Optional | Defaults work fine |
-| **Phase 1+** (Backend) | Yes | JWT secrets required |
-| **Phase 4** (AI Features) | Yes | Gemini API key needed |
-| **Production** | Critical | All values must be secure |
+### Technology Stack
 
-### Quick Setup
+**Frontend:**
+- Next.js 14 (App Router)
+- React 18 + TypeScript
+- Tailwind CSS + shadcn/ui
+- Recharts for visualizations
+
+**Backend:**
+- FastAPI (Python 3.11+)
+- Microservices architecture (8 services)
+- Docker containerization
+- Async I/O with asyncpg
+
+**Databases:**
+- PostgreSQL (metadata, configuration)
+- TimescaleDB (time-series metrics)
+- Redis (caching, rate limiting)
+
+**Deployment:**
+- Vercel (frontend hosting)
+- Railway (backend + databases)
+- GitHub Actions (CI/CD)
+
+### Microservices
+
+```
+┌─────────────────────────────────────────────────┐
+│               GARUDAI Platform                  │
+├─────────────────────────────────────────────────┤
+│                                                 │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐     │
+│  │ Gateway  │  │  Query   │  │ Evaluation│     │
+│  │  (8000)  │  │  (8001)  │  │   (8002)  │     │
+│  └──────────┘  └──────────┘  └──────────┘     │
+│                                                 │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐     │
+│  │Guardrail │  │  Alert   │  │  Gemini  │     │
+│  │  (8003)  │  │  (8004)  │  │  (8005)  │     │
+│  └──────────┘  └──────────┘  └──────────┘     │
+│                                                 │
+│  ┌──────────┐  ┌──────────┐                   │
+│  │Ingestion │  │Processing│                   │
+│  │  (8006)  │  │  (8007)  │                   │
+│  └──────────┘  └──────────┘                   │
+│                                                 │
+├─────────────────────────────────────────────────┤
+│             Data Layer                          │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐     │
+│  │PostgreSQL│  │TimeScale │  │  Redis   │     │
+│  │  (5432)  │  │  (5433)  │  │  (6379)  │     │
+│  └──────────┘  └──────────┘  └──────────┘     │
+└─────────────────────────────────────────────────┘
+```
+
+---
+
+## 🎯 Features
+
+### 📊 Tab 1: Fleet Dashboard (Home)
+- Real-time agent fleet overview
+- Total requests, active agents, error rates
+- Request timeline, department breakdown
+- Activity feed, alerts
+
+### 📈 Tab 2: Usage Analytics
+- API call volume trends
+- User adoption curves
+- Intent distribution
+- Time-of-day heatmaps
+- Top users and agents
+
+### 💰 Tab 3: Cost Management
+- Real-time cost tracking
+- Provider comparison (OpenAI, Anthropic, Gemini)
+- Cost forecasting and anomaly detection
+- Department budgets
+- Optimization recommendations
+
+### ⚡ Tab 4: Performance
+- Latency percentiles (p50, p95, p99)
+- Throughput monitoring
+- Error rate tracking
+- SLO compliance
+- Version performance comparison
+- Dependency waterfalls
+
+### 🏆 Tab 5: Quality
+- AI-powered quality scoring
+- Rubric-based evaluation
+- Drift detection timeline
+- Quality vs cost tradeoffs
+- Top failing agents
+- Prompt optimization suggestions
+
+### 🛡️ Tab 6: Safety & Compliance
+- Guardrail enforcement
+- PII detection and redaction
+- Toxicity filtering
+- Prompt injection prevention
+- Compliance status
+- Risk heatmaps
+
+### 📊 Tab 7: Business Impact
+- ROI tracking
+- Goal achievement
+- Revenue attribution
+- KPI dashboards
+- Custom metric tracking
+
+---
+
+## 🚦 Project Status
+
+### ✅ Completed (MVP - Phase 0-5)
+
+- Docker Compose infrastructure
+- All 8 microservices operational
+- PostgreSQL + TimescaleDB + Redis
+- Complete database schema
+- Next.js frontend with 7 dashboard tabs
+- 80+ React components
+- Synthetic data generation
+- GARUDAI branding and UI redesign
+- Collapsible sidebar navigation
+- User profile management
+
+### 🎯 Production Ready
+
+**Current Implementation**: ~70% of Enterprise PRD features
+
+- ✅ Core observability (Usage, Cost, Performance)
+- ✅ Quality evaluation system
+- ✅ Safety guardrails
+- ✅ Business impact tracking
+- ✅ Real-time dashboards
+- ⏳ Advanced features (experiments, automations) - planned
+
+See [CURRENT_STATE_2025-11-11.md](./docs/CURRENT_STATE_2025-11-11.md) for detailed status.
+
+---
+
+## 🛠️ Development
+
+### Prerequisites
+
+- Docker Desktop 4.20+
+- Node.js 18+ and npm 9+
+- Python 3.11+ (for backend development)
+- PostgreSQL client tools (psql)
+
+### Local Setup
 
 ```bash
-# For Phase 0 (now)
+# 1. Clone repository
+git clone https://github.com/Pramod-Potti-Krishnan/agent-observability.git
+cd agent-observability
+
+# 2. Environment configuration
 cp .env.example .env
-# Defaults work! No changes needed.
+cp frontend/.env.example frontend/.env.local
 
-# Verify configuration
-cd backend
-python check_env.py
-
-# Test database connections
-python test_connections.py
-```
-
-### For Phase 1+ (later)
-
-```bash
-# Generate secure secrets
-echo "JWT_SECRET=$(openssl rand -base64 32)" >> .env
-echo "API_KEY_SALT=$(openssl rand -base64 32)" >> .env
-```
-
-### For Phase 4 (AI features)
-
-```bash
-# Get Gemini API key from: https://makersuite.google.com/app/apikey
-echo "GEMINI_API_KEY=your-key-here" >> .env
-```
-
-**See [ENV_QUICKSTART.md](ENV_QUICKSTART.md) for detailed instructions.**
-
-## 🛠️ Tech Stack
-
-### Frontend
-- **Framework:** Next.js 14 (App Router)
-- **UI Library:** shadcn/ui (all components, no plain HTML)
-- **Styling:** Tailwind CSS
-- **State:** TanStack Query + Zustand
-- **Charts:** Recharts
-- **Language:** TypeScript (strict mode)
-
-### Backend (Phase 1+)
-- **Framework:** FastAPI (Python 3.11+)
-- **Architecture:** Microservices (7 services)
-- **Message Queue:** Redis Streams
-- **Real-time:** Redis Pub/Sub + WebSockets
-
-### Databases
-- **TimescaleDB** - Time-series metrics
-- **PostgreSQL** - Relational data
-- **Redis** - Caching & queues
-
-### AI/ML (Phase 4+)
-- **Google Gemini** - Quality evaluation
-- **Custom Models** - Guardrails & detection
-
-## 📁 Project Structure
-
-```
-Agent Monitoring/
-├── backend/
-│   ├── db/                      # Database init scripts
-│   ├── alembic/                 # Database migrations
-│   ├── synthetic_data/          # Data generator
-│   ├── tests/                   # Test suite
-│   ├── check_env.py            # Config checker
-│   └── test_connections.py     # Connection tester
-├── frontend/
-│   ├── app/
-│   │   └── (dashboard)/        # Dashboard pages
-│   ├── components/
-│   │   ├── ui/                 # shadcn/ui components
-│   │   └── layout/             # Layout components
-│   └── lib/                    # Utilities
-├── docs/                       # Documentation
-├── docker-compose.yml          # Docker services
-├── .env.example               # Config template
-└── setup.sh                   # Setup script
-```
-
-## 🧪 Testing
-
-```bash
-cd backend
-source venv/bin/activate
-pytest
-
-# Expected output:
-# ✅ 8 tests passing
-#    - 3 database connection tests
-#    - 3 schema validation tests
-#    - 2 synthetic data tests
-```
-
-## 🚦 Verification Checklist
-
-Before moving to Phase 1, verify:
-
-```bash
-# 1. Check Docker
-docker-compose ps
-# All services should be "Up"
-
-# 2. Check environment
-cd backend
-python check_env.py
-# Should show ✅ for required variables
-
-# 3. Test connections
-python test_connections.py
-# Should show ✅ for all databases
-
-# 4. Run tests
-pytest
-# Should show 8 passing tests
-
-# 5. Check frontend
-cd ../frontend
-npm run dev
-# Should start without errors
-```
-
-## 🎯 Development Phases
-
-### Phase 0: Foundation ✅ (Week 1-2) - COMPLETE
-- Docker infrastructure
-- Database schemas
-- Synthetic data generator
-- Frontend scaffolding
-- 8 tests
-
-### Phase 1: Core Backend (Week 3-5)
-- API Gateway
-- Ingestion Service
-- Processing Service
-- 30 tests
-
-### Phase 2: Query + Basic UI (Week 6-8)
-- Query Service
-- Home page with real data
-- 21 tests
-
-### Phase 3: Core Pages (Week 9-11)
-- Usage, Cost, Performance pages
-- Charts with Recharts
-- 27 tests
-
-### Phase 4: Advanced Features (Week 12-14)
-- Quality, Safety, Impact pages
-- Gemini evaluation
-- Guardrails
-- 30 tests
-
-### Phase 5: Settings + SDKs (Week 15-16)
-- Settings page
-- Python SDK
-- TypeScript SDK
-- 12 tests
-
-### Phase 6: Production Ready (Week 17-20)
-- WebSocket real-time
-- Performance optimization
-- E2E tests
-- Deployment
-
-**Total Timeline:** 16-20 weeks | **Total Tests:** 133
-
-## 🔒 Security
-
-### Development
-- Simple passwords OK for local
-- `.env` file (gitignored)
-- Debug mode enabled
-
-### Production
-- Strong secrets (32+ chars)
-- Environment variables (not files)
-- SSL/TLS everywhere
-- Managed databases
-- No default passwords
-- Debug mode disabled
-
-## 🤝 Contributing
-
-This is a development project following a phased implementation plan. Each phase builds on the previous with comprehensive testing.
-
-## 📊 Features by Phase
-
-| Feature | Phase | Status |
-|---------|-------|--------|
-| Docker Infrastructure | 0 | ✅ |
-| Database Schemas | 0 | ✅ |
-| Synthetic Data | 0 | ✅ |
-| Frontend Scaffolding | 0 | ✅ |
-| API Gateway | 1 | ⏳ |
-| Trace Ingestion | 1 | ⏳ |
-| Metrics Processing | 1 | ⏳ |
-| Query API | 2 | ⏳ |
-| Home Dashboard | 2 | ⏳ |
-| Usage Analytics | 3 | ⏳ |
-| Cost Management | 3 | ⏳ |
-| Performance Metrics | 3 | ⏳ |
-| Quality Evaluation | 4 | ⏳ |
-| Safety Guardrails | 4 | ⏳ |
-| Business Impact | 4 | ⏳ |
-| Settings | 5 | ⏳ |
-| Python SDK | 5 | ⏳ |
-| TypeScript SDK | 5 | ⏳ |
-| Real-time Updates | 6 | ⏳ |
-
-## 🛟 Getting Help
-
-### Troubleshooting
-
-**Docker containers not starting:**
-```bash
-docker-compose down
+# 3. Start infrastructure
 docker-compose up -d
-docker-compose logs -f
-```
 
-**Database connection errors:**
-```bash
-python backend/test_connections.py
-```
+# 4. Generate synthetic data (optional)
+python scripts/generate_synthetic_data.py
 
-**Frontend build errors:**
-```bash
+# 5. Start frontend development server
 cd frontend
-rm -rf .next node_modules
 npm install
 npm run dev
 ```
 
-**Environment issues:**
+### Running Tests
+
 ```bash
-python backend/check_env.py
+# Frontend tests
+cd frontend
+npm test
+
+# Backend tests (for each service)
+cd backend/query
+pytest
+
+# Integration tests
+docker-compose exec query pytest tests/
 ```
 
-### Documentation
-- Environment: [ENV_QUICKSTART.md](ENV_QUICKSTART.md)
-- Phase 0: [PHASE_0_COMPLETE.md](PHASE_0_COMPLETE.md)
-- Full docs: [docs/](docs/)
+### Database Migrations
 
-## 📝 License
+```bash
+# Apply migrations
+psql $DATABASE_URL < database/migrations/*.sql
 
-MIT License - See LICENSE file for details
-
-## 🙏 Acknowledgments
-
-- Built with Next.js, FastAPI, TimescaleDB
-- UI components from shadcn/ui
-- Charts with Recharts
-- AI features powered by Google Gemini
+# Or use Alembic
+cd backend/query
+alembic upgrade head
+```
 
 ---
 
-**Current Status:** Phase 0 Complete ✅
-**Next Step:** Phase 1 - Core Backend Services
-**Timeline:** 16-20 weeks total
+## 📖 API Usage
 
-For detailed setup instructions, see [ENV_QUICKSTART.md](ENV_QUICKSTART.md)
+### Quick Example
+
+```python
+import requests
+
+# Send trace to GARUDAI
+trace = {
+    "trace_id": "trace-123",
+    "agent_id": "customer-support-bot",
+    "model": "gpt-4",
+    "prompt_tokens": 150,
+    "completion_tokens": 80,
+    "latency_ms": 1200,
+    "input_text": "How do I reset my password?",
+    "output_text": "To reset your password...",
+}
+
+response = requests.post(
+    "http://localhost:8000/api/v1/traces",
+    json=trace
+)
+```
+
+See [API Reference](./docs/mvp/API_REFERENCE.md) for complete documentation.
+
+---
+
+## 🔧 Configuration
+
+### Environment Variables
+
+Key configuration options:
+
+```bash
+# Backend API URL (for frontend)
+NEXT_PUBLIC_API_URL=http://localhost:8000
+
+# Database connections
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/agent_obs
+TIMESCALEDB_URL=postgresql://postgres:postgres@localhost:5433/agent_obs_metrics
+REDIS_URL=redis://localhost:6379
+
+# LLM API Keys (for quality evaluation)
+GEMINI_API_KEY=your_key_here
+OPENAI_API_KEY=your_key_here
+
+# Security
+JWT_SECRET=your_secret_32_chars_minimum
+CORS_ORIGINS=http://localhost:3000
+```
+
+See [.env.example](./.env.example) for all options.
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our contributing guidelines (coming soon).
+
+### Development Workflow
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- Built with [Claude Code](https://claude.com/claude-code)
+- Inspired by the mythological Garuda - the all-seeing divine eagle
+- UI components from [shadcn/ui](https://ui.shadcn.com/)
+- Charts powered by [Recharts](https://recharts.org/)
+
+---
+
+## 📞 Support
+
+- **Documentation**: [docs/](./docs/)
+- **Issues**: [GitHub Issues](https://github.com/Pramod-Potti-Krishnan/agent-observability/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Pramod-Potti-Krishnan/agent-observability/discussions)
+
+---
+
+<div align="center">
+
+**GARUDAI** - The All-Seeing Guardian for Your AI Agents 🦅
+
+*Global Agent Runtime Unified Dashboard AI*
+
+[![Deploy Frontend](https://vercel.com/button)](https://vercel.com/new)
+[![Deploy Backend](https://railway.app/button.svg)](https://railway.app/new)
+
+</div>
