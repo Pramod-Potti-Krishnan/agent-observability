@@ -190,7 +190,7 @@ export default function ImpactPage() {
       <div>
         <FilterBar />
         <div className="p-8">
-          <h1 className="text-3xl font-bold mb-6">Business Impact</h1>
+          <h1 className="text-2xl font-semibold mb-6">Business Impact</h1>
           <Alert variant="destructive">
             <AlertDescription>
               Failed to load business impact data. Please try again later.
@@ -218,7 +218,7 @@ export default function ImpactPage() {
         {/* Header with Actions */}
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Business Impact</h1>
+            <h1 className="text-2xl font-semibold">Business Impact</h1>
             <p className="text-muted-foreground">
               Track ROI, value creation, and business outcomes driven by AI agents
             </p>
@@ -267,7 +267,7 @@ export default function ImpactPage() {
                 <Skeleton className="h-10 w-32" />
               ) : (
                 <>
-                  <div className="text-3xl font-bold text-green-600">
+                  <div className="text-2xl font-semibold text-green-600">
                     {overview?.roi_percentage.toFixed(1)}%
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -291,7 +291,7 @@ export default function ImpactPage() {
                 <Skeleton className="h-10 w-32" />
               ) : (
                 <>
-                  <div className="text-3xl font-bold text-blue-600">
+                  <div className="text-2xl font-semibold text-sky-600">
                     ${overview?.net_value_created_usd.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -315,7 +315,7 @@ export default function ImpactPage() {
                 <Skeleton className="h-10 w-32" />
               ) : (
                 <>
-                  <div className="text-3xl font-bold text-green-600">
+                  <div className="text-2xl font-semibold text-green-600">
                     ${overview?.cumulative_savings_usd.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -339,7 +339,7 @@ export default function ImpactPage() {
                 <Skeleton className="h-10 w-32" />
               ) : (
                 <>
-                  <div className="text-3xl font-bold text-purple-600">
+                  <div className="text-2xl font-semibold text-cyan-700">
                     ${overview?.total_revenue_impact_usd.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -363,7 +363,7 @@ export default function ImpactPage() {
                 <Skeleton className="h-10 w-32" />
               ) : (
                 <>
-                  <div className="text-3xl font-bold text-orange-600">
+                  <div className="text-2xl font-semibold text-amber-600">
                     {overview?.productivity_hours_saved.toLocaleString(undefined, { maximumFractionDigits: 0 })}h
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -387,7 +387,7 @@ export default function ImpactPage() {
                 <Skeleton className="h-10 w-32" />
               ) : (
                 <>
-                  <div className="text-3xl font-bold text-indigo-600">
+                  <div className="text-2xl font-semibold text-teal-600">
                     {overview?.business_goals.avg_progress.toFixed(0)}%
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">

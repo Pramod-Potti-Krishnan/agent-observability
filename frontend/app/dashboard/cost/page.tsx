@@ -176,7 +176,7 @@ export default function CostPage() {
   if (overviewError) {
     return (
       <div className="p-8">
-        <h1 className="text-3xl font-bold mb-6">Cost Management</h1>
+        <h1 className="text-2xl font-semibold mb-6">Cost Management</h1>
         <Alert variant="destructive">
           <AlertDescription>
             Failed to load cost data. Please try again later.
@@ -190,7 +190,7 @@ export default function CostPage() {
   if (overviewLoading) {
     return (
       <div className="p-8">
-        <h1 className="text-3xl font-bold mb-6">Cost Management</h1>
+        <h1 className="text-2xl font-semibold mb-6">Cost Management</h1>
         <div className="space-y-4">
           <Skeleton className="h-32 w-full" />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -213,7 +213,7 @@ export default function CostPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Cost Management</h1>
+            <h1 className="text-2xl font-semibold">Cost Management</h1>
             <p className="text-muted-foreground">
               Monitor spending, set budgets, and optimize costs across departments and providers
             </p>

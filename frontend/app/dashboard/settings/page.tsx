@@ -5,7 +5,7 @@ import { GeneralSettings } from './components/GeneralSettings'
 export default function SettingsPage() {
   return (
     <div className="p-8">
-      <h1 className="text-3xl font-bold mb-6">Settings</h1>
+      <h1 className="text-2xl font-semibold mb-6">Settings</h1>
 
       <Tabs defaultValue="workspace">
         <TabsList>

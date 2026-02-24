@@ -131,7 +131,7 @@ export default function PerformancePage() {
   if (overviewError) {
     return (
       <div className="p-8">
-        <h1 className="text-3xl font-bold mb-6">Performance Monitoring</h1>
+        <h1 className="text-2xl font-semibold mb-6">Performance Monitoring</h1>
         <Alert variant="destructive">
           <AlertDescription>
             Failed to load performance data. Please try again later.
@@ -150,7 +150,7 @@ export default function PerformancePage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Performance Monitoring</h1>
+            <h1 className="text-2xl font-semibold">Performance Monitoring</h1>
             <p className="text-muted-foreground">
               Track latency, throughput, error rates, and environment parity across your agent fleet
             </p>

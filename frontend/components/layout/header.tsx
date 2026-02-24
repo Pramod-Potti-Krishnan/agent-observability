@@ -15,14 +15,14 @@ import { Settings, User, LogOut } from 'lucide-react'
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-border/70 bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/70">
       <div className="flex h-16 items-center px-4">
         {/* Logo */}
         <div className="flex items-center gap-3">
           <GarudaiLogo className="h-8 w-8 text-primary" />
           <div className="flex flex-col">
-            <h1 className="text-xl font-bold leading-tight">GARUDAI</h1>
-            <p className="text-[10px] text-muted-foreground leading-tight">Global Agent Runtime Unified Dashboard AI</p>
+            <h1 className="text-lg font-semibold leading-tight">GARUDAI</h1>
+            <p className="text-[10px] uppercase tracking-wide text-muted-foreground leading-tight">Global Agent Runtime Unified Dashboard AI</p>
           </div>
         </div>
 

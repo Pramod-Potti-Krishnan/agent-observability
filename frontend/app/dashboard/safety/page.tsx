@@ -165,7 +165,7 @@ export default function SafetyPage() {
       <div>
         <FilterBar />
         <div className="p-8">
-          <h1 className="text-3xl font-bold mb-6">Safety & Guardrails</h1>
+          <h1 className="text-2xl font-semibold mb-6">Safety & Guardrails</h1>
           <Alert variant="destructive">
             <AlertDescription>
               Failed to load safety metrics. Please try again later.
@@ -184,7 +184,7 @@ export default function SafetyPage() {
       <div className="p-8 space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold">Safety & Guardrails</h1>
+          <h1 className="text-2xl font-semibold">Safety & Guardrails</h1>
           <p className="text-muted-foreground">
             Monitor PII detection, toxicity, and prompt injection violations
           </p>

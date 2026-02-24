@@ -222,7 +222,7 @@ export default function AgentDetailPage() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
-          <h1 className="text-3xl font-bold">Agent Details</h1>
+          <h1 className="text-2xl font-semibold">Agent Details</h1>
           <p className="text-sm text-muted-foreground font-mono">{agentId}</p>
         </div>
 

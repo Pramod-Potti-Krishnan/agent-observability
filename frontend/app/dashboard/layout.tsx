@@ -20,7 +20,7 @@ export default function DashboardLayout({
       <Sidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header />
-        <main className="flex-1 overflow-y-auto bg-background">
+        <main className="dashboard-shell flex-1 overflow-y-auto bg-background">
           {children}
         </main>
       </div>

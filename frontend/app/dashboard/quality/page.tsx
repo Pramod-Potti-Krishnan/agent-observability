@@ -189,7 +189,7 @@ export default function QualityPage() {
   if (overviewError || historyError) {
     return (
       <div className="p-8">
-        <h1 className="text-3xl font-bold mb-6">Quality Monitoring</h1>
+        <h1 className="text-2xl font-semibold mb-6">Quality Monitoring</h1>
         <Alert variant="destructive">
           <AlertDescription>
             Failed to load quality metrics. Please try again later.
@@ -207,7 +207,7 @@ export default function QualityPage() {
       <div className="p-8 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">Quality Monitoring</h1>
+        <h1 className="text-2xl font-semibold">Quality Monitoring</h1>
         <p className="text-muted-foreground">
           Monitor and optimize AI agent response quality with evaluation metrics
         </p>
@@ -245,7 +245,7 @@ export default function QualityPage() {
               <Skeleton className="h-12 w-24" />
             ) : (
               <>
-                <div className="text-3xl font-bold">{totalEvaluations.toLocaleString()}</div>
+                <div className="text-2xl font-semibold">{totalEvaluations.toLocaleString()}</div>
                 <p className="text-xs text-muted-foreground mt-1">
                   in last {filters.range}
                 </p>
@@ -266,7 +266,7 @@ export default function QualityPage() {
             ) : (
               <>
                 <div className="flex items-center gap-2">
-                  <div className={`text-3xl font-bold ${atRiskAgents > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                  <div className={`text-2xl font-semibold ${atRiskAgents > 0 ? 'text-red-600' : 'text-green-600'}`}>
                     {atRiskAgents}
                   </div>
                   {atRiskAgents > 0 && <AlertTriangle className="h-5 w-5 text-red-600" />}

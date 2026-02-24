@@ -144,7 +144,7 @@ export default function UsagePage() {
       <div>
         <FilterBar />
         <div className="p-8">
-          <h1 className="text-3xl font-bold mb-6">Usage Analytics</h1>
+          <h1 className="text-2xl font-semibold mb-6">Usage Analytics</h1>
           <Alert variant="destructive">
             <AlertDescription>
               Failed to load usage analytics. Please try again later.
@@ -163,7 +163,7 @@ export default function UsagePage() {
       <div className="p-8 space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold">Usage Analytics</h1>
+          <h1 className="text-2xl font-semibold">Usage Analytics</h1>
           <p className="text-muted-foreground">
             Track adoption, engagement patterns, and agent portfolio utilization across the organization
           </p>
