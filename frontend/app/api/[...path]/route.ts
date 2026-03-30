@@ -1,81 +1,96 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 
-const GATEWAY_URL = process.env.GATEWAY_URL || 'http://gateway:8000'
+export const dynamic = 'force-dynamic'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { path: string[] } }
-) {
-  return proxyRequest(request, params.path)
+function getBackendBaseUrl(): string {
+  const base =
+    process.env.API_URL ||
+    process.env.BACKEND_URL ||
+    process.env.GATEWAY_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    'http://localhost:8000'
+
+  return base.replace(/\/$/, '')
 }
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { path: string[] } }
-) {
-  return proxyRequest(request, params.path)
+function buildTargetUrl(req: NextRequest): string {
+  const base = getBackendBaseUrl()
+  const pathname = req.nextUrl.pathname
+  const search = req.nextUrl.search || ''
+  return `${base}${pathname}${search}`
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { path: string[] } }
-) {
-  return proxyRequest(request, params.path)
-}
+async function proxy(req: NextRequest) {
+  const targetUrl = buildTargetUrl(req)
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { path: string[] } }
-) {
-  return proxyRequest(request, params.path)
-}
-
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { path: string[] } }
-) {
-  return proxyRequest(request, params.path)
-}
-
-async function proxyRequest(request: NextRequest, pathSegments: string[]) {
-  const path = pathSegments.join('/')
-  const search = request.nextUrl.search
-  const url = `${GATEWAY_URL}/api/${path}${search}`
-
-  // Forward headers (exclude host)
   const headers = new Headers()
-  request.headers.forEach((value, key) => {
-    if (key.toLowerCase() !== 'host') {
-      headers.set(key, value)
+  req.headers.forEach((value, key) => {
+    const lowerKey = key.toLowerCase()
+    if (lowerKey === 'host' || lowerKey === 'content-length') {
+      return
     }
+    headers.set(key, value)
   })
 
+  const authorization = req.headers.get('authorization')
+  if (authorization) {
+    headers.set('authorization', authorization)
+  }
+
+  headers.delete('host')
+  headers.delete('content-length')
+
+  const init: RequestInit = {
+    method: req.method,
+    headers,
+    redirect: 'manual',
+  }
+
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    init.body = await req.arrayBuffer()
+  }
+
+  let upstream: Response
   try {
-    // Get request body for non-GET/HEAD requests
-    const body = request.method !== 'GET' && request.method !== 'HEAD'
-      ? await request.text()
-      : undefined
-
-    // Forward request to gateway
-    const response = await fetch(url, {
-      method: request.method,
-      headers,
-      body,
-    })
-
-    // Get response data
-    const data = await response.text()
-
-    // Return proxied response
-    return new NextResponse(data, {
-      status: response.status,
-      headers: response.headers,
-    })
-  } catch (error) {
-    console.error('Proxy error:', error)
-    return NextResponse.json(
+    upstream = await fetch(targetUrl, init)
+  } catch {
+    return Response.json(
       { error: 'Gateway unreachable' },
       { status: 503 }
     )
   }
+
+  const responseHeaders = new Headers(upstream.headers)
+  responseHeaders.delete('content-encoding')
+  responseHeaders.delete('transfer-encoding')
+
+  return new Response(upstream.body, {
+    status: upstream.status,
+    statusText: upstream.statusText,
+    headers: responseHeaders,
+  })
+}
+
+export async function GET(req: NextRequest) {
+  return proxy(req)
+}
+
+export async function POST(req: NextRequest) {
+  return proxy(req)
+}
+
+export async function PUT(req: NextRequest) {
+  return proxy(req)
+}
+
+export async function PATCH(req: NextRequest) {
+  return proxy(req)
+}
+
+export async function DELETE(req: NextRequest) {
+  return proxy(req)
+}
+
+export async function OPTIONS(req: NextRequest) {
+  return proxy(req)
 }

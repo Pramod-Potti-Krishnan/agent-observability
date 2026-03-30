@@ -21,19 +21,6 @@ apiClient.interceptors.request.use(
       // Add workspace ID header
       const workspaceId = localStorage.getItem('workspace_id')
 
-      // DEBUG: Log what we're sending (remove this after debugging)
-      console.log('🔍 API Request:', {
-        url: config.url,
-        method: config.method,
-        hasToken: !!token,
-        workspaceId: workspaceId,
-        workspaceIdLength: workspaceId?.length || 0,
-        headers: {
-          'Authorization': token ? 'Bearer ***' : 'missing',
-          'X-Workspace-ID': workspaceId || 'missing'
-        }
-      })
-
       if (workspaceId) {
         config.headers['X-Workspace-ID'] = workspaceId
       }
